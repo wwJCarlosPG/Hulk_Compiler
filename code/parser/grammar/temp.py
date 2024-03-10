@@ -1,4 +1,4 @@
-from utils import compute_firsts
+from utils import compute_firsts, compute_follows
 from grammar import Grammar
 
 # Grammar example
@@ -15,4 +15,5 @@ F %= num | opar + E + cpar
 
 print(G)
 
-compute_firsts(G)
+firsts = compute_firsts(G)
+compute_follows(G, firsts)

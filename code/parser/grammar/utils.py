@@ -1,5 +1,5 @@
 from ContainerSet import ContainerSet
-from definitions import NonTerminal
+from definitions import NonTerminal, Sentence
 
 def compute_firsts(G):
     firsts = {}
@@ -44,6 +44,11 @@ def compute_firsts(G):
             if isinstance(key, NonTerminal):
                 file.write(f"{key}: {value}\n")
 
+        file.write("\nSentences:\n")
+        for key, value in firsts.items():
+            if isinstance(key, Sentence):
+                file.write(f"{key}: {value}\n")
+
     return firsts
 
 def _compute_local_first(firsts, alpha):
@@ -74,3 +79,51 @@ def _compute_local_first(firsts, alpha):
                 break 
     
     return first_alpha
+
+
+def compute_follows(G, firsts):
+    follows = { }
+    change = True
+    
+    # init Follow(Vn)
+    for nonterminal in G.nonTerminals:
+        follows[nonterminal] = ContainerSet()
+    follows[G.startSymbol] = ContainerSet(G.EOF)
+    
+    while change:
+        change = False
+        
+        # P: X -> alpha
+        for production in G.Productions:
+            X = production.Left
+            alpha = production.Right
+            
+            follow_X = follows[X]
+            
+            if not alpha.IsEpsilon:
+                len_alpha = len(alpha._symbols)
+
+                for i in range(len_alpha):
+                    Y = alpha._symbols[i]
+                    try:
+                        beta = alpha._symbols[i+1]
+                    except:
+                        beta = None
+
+                    if Y.IsNonTerminal and beta:
+                        # First(beta) - { epsilon } subset of Follow(Y)
+                        change |= follows[Y].update(firsts[beta])
+
+                        # beta ->* epsilon ? Follow(X) subset of Follow(Y)
+                        if firsts[beta].contains_epsilon:
+                            change |= follows[Y].update(follow_X)
+
+                    # X -> zY ? Follow(X) subset of Follow(Y)
+                    if i == len_alpha-1 and Y.IsNonTerminal:
+                        change |= follows[Y].update(follow_X)
+
+    with open('follows.txt', 'w') as file:
+        for key, value in follows.items():
+            file.write(f"{key}: {value}\n")
+
+    return follows

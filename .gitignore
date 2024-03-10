@@ -1,1 +1,3 @@
 /code/parser/grammar/__pycache__
+/code/parser/grammar/firsts.txt
+/code/parser/grammar/follows.txt

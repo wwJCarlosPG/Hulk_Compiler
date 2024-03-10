@@ -1,6 +1,0 @@
-Non Terminals:
-E: {'num', '('}-False
-T: {'num', '('}-False
-F: {'num', '('}-False
-X: {'+', '-'}-True
-Y: {'*', '/'}-True
