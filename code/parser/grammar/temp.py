@@ -1,3 +1,4 @@
+from utils import compute_firsts
 from grammar import Grammar
 
 # Grammar example
@@ -13,3 +14,5 @@ Y %= star + F + Y | div + F + Y | G.Epsilon
 F %= num | opar + E + cpar
 
 print(G)
+
+compute_firsts(G)
