@@ -1,7 +1,7 @@
 from ContainerSet import ContainerSet
 from Item import Item
 from automata import State
-from grammar import Grammar
+from grammar.grammar import Grammar
 from definitions import NonTerminal, Sentence
 
 def compute_firsts(G: Grammar):
@@ -43,7 +43,7 @@ def compute_firsts(G: Grammar):
                 first_alpha = firsts[alpha] = ContainerSet()
             
             # CurrentFirst(alpha)???
-            local_first = _compute_local_first(firsts, alpha)
+            local_first = __compute_local_first(firsts, alpha)
             
             # update First(X) and First(alpha) from CurrentFirst(alpha)
             change |= first_alpha.hard_update(local_first)
@@ -63,7 +63,7 @@ def compute_firsts(G: Grammar):
 
     return firsts
 
-def _compute_local_first(firsts, alpha):
+def __compute_local_first(firsts, alpha):
     first_alpha = ContainerSet()
     
     try:

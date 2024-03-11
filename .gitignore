@@ -1,3 +1,5 @@
 **/__pycache__
-/code/parser/grammar/firsts.txt
-/code/parser/grammar/follows.txt
+/code/parser/firsts.txt
+/code/parser/follows.txt
+/code/parser/nfa.dot
+/code/parser/dfa.dot
