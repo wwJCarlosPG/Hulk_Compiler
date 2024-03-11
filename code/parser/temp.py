@@ -1,13 +1,8 @@
-from grammar.grammar import Grammar
 from Parser_Generator import Parser_Generator
+from grammar.hulk_grammar import get_grammar
 
-# Grammar a^{n}b^{n}
-G = Grammar()
-S = G.NonTerminal('S', True)
-a, b = G.Terminals('a b')
 
-S %= a + S + b | a + b
-
+G = get_grammar()
 print(G)
 
 parser_generator = Parser_Generator(G)
