@@ -1,0 +1,25 @@
+digraph G {
+margin=0.1;
+rankdir=LR;
+start [height=0, label="", shape=plaintext, width=0];
+2904124580832 [label="S' -> .S, ", shape=circle, style=bold];
+2904124580976 [label="S' -> S., ", shape=circle, style=bold];
+2904124580832 -> 2904124580976  [label=S, labeldistance=2];
+2904124581264 [label="S -> .aSb, ", shape=circle, style=bold];
+2904124581696 [label="S -> a.Sb, ", shape=circle, style=bold];
+2904124581840 [label="S -> aS.b, ", shape=circle, style=bold];
+2904124582176 [label="S -> aSb., ", shape=circle, style=bold];
+2904124581840 -> 2904124582176  [label=b, labeldistance=2];
+2904124581696 -> 2904124581840  [label=S, labeldistance=2];
+2904124581696 -> 2904124581264  [label="ε", labeldistance=2];
+2904124581312 [label="S -> .ab, ", shape=circle, style=bold];
+2904124581408 [label="S -> a.b, ", shape=circle, style=bold];
+2904124581552 [label="S -> ab., ", shape=circle, style=bold];
+2904124581408 -> 2904124581552  [label=b, labeldistance=2];
+2904124581312 -> 2904124581408  [label=a, labeldistance=2];
+2904124581696 -> 2904124581312  [label="ε", labeldistance=2];
+2904124581264 -> 2904124581696  [label=a, labeldistance=2];
+2904124580832 -> 2904124581264  [label="ε", labeldistance=2];
+2904124580832 -> 2904124581312  [label="ε", labeldistance=2];
+start -> 2904124580832  [label="", style=dashed];
+}
