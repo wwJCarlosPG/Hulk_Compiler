@@ -33,7 +33,6 @@ class ShiftReduceParser:
             
             if action == self.SHIFT: # --------------------------- (SHIFT case)
                 stack.append(tag)
-                # stack.append(lookahead)
                 cursor += 1
 
             elif action == self.REDUCE: # ------------------------ (REDUCE case: S -> alpha)

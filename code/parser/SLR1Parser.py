@@ -36,10 +36,39 @@ class SLR1Parser(ShiftReduceParser):
         for node in DFA:
             idx = node.idx
             for state in node.state:
-                item = state.state
-                # Your code here!!!
-                # - Fill `self.Action` and `self.Goto` according to `item`)
-                # - Feel free to use `self._register(...)`)
+                lr0_item = state.state
+
+                next_symbol = lr0_item.NextSymbol
+
+                # S -> alpha
+                item_production = lr0_item.production
+                S = item_production.Left
+
+                if lr0_item.IsReduceItem:
+
+                    # Augmented symbol production, OK case
+                    if S == G.startSymbol:
+                        # (S' -> S.)
+                        self._register(self.action, (idx, G.EOF), (self.OK, None))
+
+                    # Reduce item REDUCE case
+                    else:
+                        # (S -> wxv.)
+                        production_index = G.Productions.index(item_production)
+                        for follower in follows[S]:
+                            self._register(self.action, (idx, follower), (self.REDUCE, production_index))
+                            
+                else:
+                    # Transition SHIFT case:
+                    if next_symbol:
+                        dest_index = node.transitions[next_symbol.Name][0].idx
+                        if next_symbol.IsTerminal:
+                            # (S -> w.xv)
+                            self._register(self.action, (idx, next_symbol), (self.SHIFT, dest_index))
+                        if next_symbol.IsNonTerminal:
+                            # (S -> w.Xv)
+                            self._register(self.goto, (idx, next_symbol), dest_index)
+
     
     @staticmethod
     def _register(table, key, value):

@@ -7,4 +7,11 @@ print(G)
 
 
 slr1_parser = SLR1Parser(G, verbose=True)
-# Ahora se puede evaluar el parser en array de tokens de la gramatica y se obtiene como resultado la secuencia de producciones
+string = 'aaabbb$'
+tokenized_string = [G[x] for x in string]
+# tokenized_string = [G['a'], G['a'], G['a'], G['b'], G['b'], G['b'], G['$']]
+print(f'\nString to parse: {string}\n')
+
+output = slr1_parser(tokenized_string)
+
+print(f'\nDerivations sequence: {output}')
