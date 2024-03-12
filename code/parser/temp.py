@@ -1,8 +1,8 @@
-from grammar.hulk_grammar import get_grammar
+from grammar.anbn_grammar import get_grammar as get_anbn
 from SLR1Parser import SLR1Parser
 
 
-G = get_grammar()
+G = get_anbn()
 print(G)
 
 
