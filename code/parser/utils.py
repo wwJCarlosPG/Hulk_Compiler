@@ -196,7 +196,7 @@ def build_LR0_automaton(G: Grammar):
             # (E -> .T+E) -T-> (E -> T.+E)
             # (E -> T.+E) -+-> (E -> T+.E)
             dest_state = visited[next_item]
-            current_state.add_transition(next_symbol, dest_state)
+            current_state.add_transition(next_symbol.Name, dest_state)
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 

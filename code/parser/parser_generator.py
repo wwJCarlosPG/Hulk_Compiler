@@ -2,7 +2,7 @@ from grammar.grammar import Grammar
 from SLR1_Parser import SLR1_Parser
 from ContainerSet import ContainerSet
 from Item import Item
-from automata import State
+from automata import State, lr0_formatter
 from definitions import NonTerminal, Sentence
 from utils import compute_firsts, compute_follows, build_LR0_automaton
 
@@ -34,7 +34,7 @@ class Parser_Generator():
         NFA = build_LR0_automaton(GG)
 
         # Convert to FDA LR(0) automaton
-        DFA = NFA.to_deterministic()
+        DFA = NFA.to_deterministic(lr0_formatter)
         self.DFA = DFA
 
         # Write automatons
