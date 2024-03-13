@@ -1,5 +1,4 @@
-from parser.grammar.Grammar import Grammar
-
+from parser.grammar.grammar import Grammar
 
 # Grammar a^{n}b^{n}
 G = Grammar()
