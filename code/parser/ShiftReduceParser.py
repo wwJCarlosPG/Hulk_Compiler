@@ -1,4 +1,4 @@
-from parser.grammar.Grammar import Grammar
+from parser.grammar.grammar import Grammar
 
 
 class ShiftReduceParser:

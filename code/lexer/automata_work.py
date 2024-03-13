@@ -3,7 +3,6 @@ import sys
 current_route = os.path.dirname(os.path.abspath(__file__))
 prev_route = os.path.join(current_route, "..", "parser")
 sys.path.append(prev_route)
-x = os.listdir(prev_route)
 from ContainerSet import ContainerSet
 class NFA:
     def __init__(self, states, finals, transitions, start=0):

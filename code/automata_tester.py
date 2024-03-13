@@ -1,5 +1,5 @@
-import automata_work
-from automata_work import *
+from lexer.automata_work import NFA, nfa_to_dfa, DFA, move
+from lexer.automaton_operations import automata_union
 automaton = NFA(states=3, finals=[2], transitions={
     (0,'a'): [ 0 ],
     (0,'b'): [ 0, 1 ],
