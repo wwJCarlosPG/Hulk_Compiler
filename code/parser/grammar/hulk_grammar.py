@@ -1,7 +1,7 @@
-from grammar.grammar import Grammar
+from parser.grammar.grammar import Grammar
 
 
-# Grammar a^{n}b^{n}
+# Grammar hulk
 G = Grammar()
 
 

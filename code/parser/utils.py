@@ -1,8 +1,8 @@
-from ContainerSet import ContainerSet
-from Item import Item
-from automata import State
-from grammar.grammar import Grammar
-from definitions import NonTerminal, Sentence
+from parser.ContainerSet import ContainerSet
+from parser.Item import Item
+from parser.automata import State
+from parser.grammar.grammar import Grammar
+from parser.definitions import NonTerminal, Sentence
 
 def compute_firsts(G: Grammar):
     """

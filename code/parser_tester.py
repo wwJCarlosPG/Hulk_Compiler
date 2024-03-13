@@ -1,5 +1,5 @@
-from grammar.anbn_grammar import get_grammar as get_anbn
-from SLR1Parser import SLR1Parser
+from parser.grammar.anbn_grammar import get_grammar as get_anbn
+from parser.SLR1Parser import SLR1Parser
 
 
 G = get_anbn()

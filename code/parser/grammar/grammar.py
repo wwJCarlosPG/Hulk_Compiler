@@ -1,5 +1,5 @@
 import json
-from definitions import EOF, AttributeProduction, Epsilon, NonTerminal, Sentence, Terminal
+from parser.definitions import EOF, AttributeProduction, Epsilon, NonTerminal, Sentence, Terminal
 
 class Grammar():
     def __init__(self):
