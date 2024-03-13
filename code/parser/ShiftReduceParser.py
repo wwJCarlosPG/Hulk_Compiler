@@ -1,12 +1,21 @@
-from parser.grammar.grammar import Grammar
+from parser.grammar.Grammar import Grammar
 
 
 class ShiftReduceParser:
+    """An abstract shift-reduce parser implementation."""
+
     SHIFT = 'SHIFT'
     REDUCE = 'REDUCE'
     OK = 'OK'
     
     def __init__(self, G: Grammar, verbose=False):
+        """
+        Initialize the Shift-Reduce Parser.
+
+        Args:
+            G (Grammar): The grammar for the parser.
+            verbose (bool): Whether to print verbose output during parsing.
+        """
         self.grammar = G
         self.verbose = verbose
         self.action = {}
@@ -14,9 +23,19 @@ class ShiftReduceParser:
         self._build_parsing_table()
     
     def _build_parsing_table(self):
+        """Build the parsing table for the parser."""
         raise NotImplementedError()
 
     def __call__(self, w):
+        """
+        Parse the input sequence using shift-reduce parsing.
+
+        Args:
+            w (list): The input sequence to parse.
+
+        Returns:
+            list: The list of productions used for parsing.
+        """
         stack = [ 0 ]
         cursor = 0
         output = []

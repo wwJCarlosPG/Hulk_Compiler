@@ -5,6 +5,9 @@ from parser.ShiftReduceParser import ShiftReduceParser
 from parser.utils import build_LR0_automaton, compute_firsts, compute_follows
 
 class SLR1Parser(ShiftReduceParser):
+    """
+    SLR(1) Parser implementation, a type of LR parser that uses lookahead of one symbol.
+    """
     # self.grammar
     # self.verbose
     # self.action
@@ -12,6 +15,9 @@ class SLR1Parser(ShiftReduceParser):
     # self._build_parsing_table
 
     def _build_parsing_table(self):
+        """
+        Build the parsing table for SLR(1) parser.
+        """
 
         G = self.grammar.AugmentedGrammar(True)
         
@@ -72,5 +78,13 @@ class SLR1Parser(ShiftReduceParser):
     
     @staticmethod
     def _register(table, key, value):
+        """
+        Helper method to register values into the parsing tables.
+        
+        Args:
+            table (dict): The ACTION or GOTO table.
+            key: The key for the table.
+            value: The value to store.
+        """
         assert key not in table or table[key] == value, 'Shift-Reduce or Reduce-Reduce conflict!!!'
         table[key] = value

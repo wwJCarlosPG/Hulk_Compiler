@@ -1,7 +1,7 @@
 from parser.ContainerSet import ContainerSet
 from parser.Item import Item
 from parser.automata import State
-from parser.grammar.grammar import Grammar
+from parser.grammar.Grammar import Grammar
 from parser.definitions import NonTerminal, Sentence
 
 def compute_firsts(G: Grammar):
