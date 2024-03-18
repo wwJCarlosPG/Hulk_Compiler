@@ -1,4 +1,4 @@
-from lexer.automata_work import NFA
+from automata_work import NFA
 from copy import copy
 
 def automata_union(a1, a2):

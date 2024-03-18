@@ -1,8 +1,11 @@
 import os
 import sys
-from lexer.ast_node import * 
-from lexer.automata_work import NFA
-from lexer.automaton_operations import *
+current_route = os.path.dirname(os.path.abspath(__file__))
+prev_route = os.path.join(current_route, "..", "lexer")
+sys.path.append(prev_route)
+from ast_node import AtomicNode, UnaryNode, BinaryNode
+from automata_work import NFA
+from automaton_operations import *
 
 EPSILON = 'ε'
 
@@ -34,3 +37,9 @@ class ComplementNode(UnaryNode):
     @staticmethod
     def operate(value):
         return automata_complement(value)
+
+#search how to implement this    
+class SquareBracketNode(UnaryNode):
+    @staticmethod
+    def operate(value):
+        pass

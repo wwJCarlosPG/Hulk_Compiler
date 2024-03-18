@@ -1,40 +1,29 @@
-from lexer.automata_work import NFA, nfa_to_dfa, DFA, move
-from lexer.automaton_operations import automata_union
-from lexer.ast_regularexp_node import *
+import sys
+sys.path.append('code/lexer')
+sys.path.append('code/parser/grammar')
+sys.path.append('code/parser')
+from lexer import Lexer
+nonzero_digits = '|'.join(str(n) for n in range(1,10))
+letters = '|'.join(chr(n) for n in range(ord('a'),ord('z')+1))
 
-# automaton = NFA(states=3, finals=[2], transitions={
-#     (0,'a'): [ 0 ],
-#     (0,'b'): [ 0, 1 ],
-#     (1,'a'): [ 2 ],
-#     (1,'b'): [ 2 ],
-# })
+lexer = Lexer([
+    ('plus', '+'),
+    ('num', f'({nonzero_digits})(0|{nonzero_digits})*'),
+    ('minus', '-'),
+    ('star', '\*'),
+    ('div', '/'),
+    ('pow', '^'),
+    ('opar', '\('),
+    ('cpar', '\)'),
+    ('comma', ','),
+    ('equals', '='),
+    ('let' , 'let'),
+    ('in' , 'in'), 
+    ('str', f'(")({letters})*(")'),      
+    ('id', f'({letters})({letters}|0|{nonzero_digits})*')
+], 'eof')
 
-# print("Reconoce el lenguaje de las cadenas formadas por a's y b's tal que el penúltimo caracter es b.")
-
-
-# move(automaton, [0, 1], 'a') == {0, 2}
-# move(automaton, [0, 1], 'b') == {0, 1, 2}
-
-# dfa = nfa_to_dfa(automaton)
-
-# print(dfa.recognize('aba'))
-# print(dfa.recognize('bb'))
-# print(dfa.recognize('aaaaaaaaaaaba'))
-
-# print(not dfa.recognize('aaa'))
-# print(not dfa.recognize('ab'))
-# print(not dfa.recognize('b'))
-# print(not dfa.recognize(''))
-
-a = SymbolNode('a').evaluate()
-dfa = nfa_to_dfa(a)
-print(dfa.recognize('aa'))
-b = ClosureNode(SymbolNode('a')).evaluate()
-dfa = nfa_to_dfa(b)
-print(dfa.recognize('aaaa'))
-union = UnionNode(SymbolNode('a'),SymbolNode('b')).evaluate()
-dfa = nfa_to_dfa(union)
-print(dfa.recognize('b'))
-concat = ConcatNode(SymbolNode('a'),SymbolNode('b')).evaluate()
-dfa = nfa_to_dfa(concat)
-print(dfa.recognize('ab'))
+text = 'let    x="a",y=222 in (332823948*xiom304230)'
+print(f'\n>>> Tokenizando: "{text}"')
+tokens = lexer(text)
+print(tokens)
