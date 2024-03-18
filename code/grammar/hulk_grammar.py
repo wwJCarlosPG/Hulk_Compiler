@@ -1,4 +1,4 @@
-from parser.grammar.Grammar import Grammar
+from grammar.Grammar import Grammar
 
 
 # Grammar hulk
