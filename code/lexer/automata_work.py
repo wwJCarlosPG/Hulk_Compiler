@@ -1,5 +1,6 @@
 import os
 import sys
+import pydot
 current_route = os.path.dirname(os.path.abspath(__file__))
 prev_route = os.path.join(current_route, "..", "parser")
 sys.path.append(prev_route)

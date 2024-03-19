@@ -271,3 +271,66 @@ class DisjointNode:
 
     def __repr__(self):
         return str(self)
+
+
+class Token:
+    """
+    Basic token class.
+
+    Parameters
+    ----------
+    lex : str
+        Token's lexeme.
+    token_type : Enum
+        Token's type.
+    """
+
+    def __init__(self, lex, token_type):
+        self.lex = lex
+        self.token_type = token_type
+
+    def __str__(self):
+        return f'{self.token_type}: {self.lex}'
+
+    def __repr__(self):
+        return str(self)
+
+    @property
+    def is_valid(self):
+        return True
+
+class UnknownToken(Token):
+    def __init__(self, lex):
+        Token.__init__(self, lex, None)
+
+    def transform_to(self, token_type):
+        return Token(self.lex, token_type)
+
+    @property
+    def is_valid(self):
+        return False
+
+def tokenizer(G, fixed_tokens):
+    def decorate(func):
+        def tokenize_text(text):
+            tokens = []
+            for lex in text.split():
+                try:
+                    token = fixed_tokens[lex]
+                except KeyError:
+                    token = UnknownToken(lex)
+                    try:
+                        token = func(token)
+                    except TypeError:
+                        pass
+                tokens.append(token)
+            tokens.append(Token('$', G.EOF))
+            return tokens
+
+        if hasattr(func, '__call__'):
+            return tokenize_text
+        elif isinstance(func, str):
+            return tokenize_text(func)
+        else:
+            raise TypeError('Argument must be "str" or a callable object.')
+    return decorate
