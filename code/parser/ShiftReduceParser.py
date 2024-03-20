@@ -39,6 +39,7 @@ class ShiftReduceParser:
         stack = [ 0 ]
         cursor = 0
         output = []
+        operations = []
         
         while True:
             state = stack[-1]
@@ -52,6 +53,7 @@ class ShiftReduceParser:
             
             if action == self.SHIFT: # --------------------------- (SHIFT case)
                 stack.append(tag)
+                operations.append(self.SHIFT)
                 cursor += 1
 
             elif action == self.REDUCE: # ------------------------ (REDUCE case: S -> alpha)
@@ -69,10 +71,11 @@ class ShiftReduceParser:
 
                 # Add production to output
                 output.append(production)
+                operations.append(self.REDUCE)
 
             elif action == self.OK: # ---------------------------- (OK case)
                 break
             else:
                 raise SyntaxError('Syntax error in Shift-Reduce parser')
 
-        return output
+        return output, operations
