@@ -1,5 +1,5 @@
-from parser.grammar.anbn_grammar import get_grammar as get_anbn
-from parser.grammar.simple_expression import get_grammar as get_exp
+from grammar.anbn_grammar import get_grammar as get_anbn
+from grammar.simple_expression import get_grammar as get_exp
 from parser.SLR1Parser import SLR1Parser
 
 selector = 2
@@ -18,6 +18,7 @@ match selector:
 
 
 slr1_parser = SLR1Parser(G, verbose=True)
-output = slr1_parser(tokenized_string)
+output, operations = slr1_parser(tokenized_string)
 
 print(f'\nDerivations sequence: {output}')
+print(f'\nOperations sequence: {operations}')
