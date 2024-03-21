@@ -1,6 +1,8 @@
+from utils import Token
+
 class Node:
     def __init__(self, token):
-        self.token = token 
+        self.token = token
 
 
 class ProgramNode(Node):
@@ -21,17 +23,34 @@ class FuncDefNode(StatementNode):
         self.body = body_expr
         self.token = token
 
-      
+
 class TypeDefNode(StatementNode):
-    def __init__(self, id, body, token, parent_id=None):
+    def __init__(self, id, body, token, params=[], parent_id=None, parent_params=[]):
         self.id = id
         self.body = body
         self.token = token
         self.parent = parent_id
 
+class TypeBodyItemNode(Node):
+    pass
+
+class TypePropDefNode(TypeBodyItemNode):
+    def __init__(self, id, exp, token):
+        self.id = id
+        self.exp = exp
+        self.token = token
+
+class TypeFuncDefNode(TypeBodyItemNode):
+    def __init__(self, id, params, body):
+        self.id = id
+        self.params = params
+        self.body = body
+        self.token = Token(id.lex, 'typeFuncNode')
+
+
 
 class ExpressionNode(Node):
-    pass      
+    pass
 
 
 # Use also for <destr_assignation>
@@ -42,14 +61,14 @@ class AssignationNode(Node):
         self.token = token
 
 
-class VarDefNode(ExpressionNode):
+class LetNode(ExpressionNode):
     def __init__(self, assignations, body, token):
         self.assignations = assignations
         self.body = body
         self.token = token
 
 
-class ConditionalNode(ExpressionNode):
+class IfElseNode(ExpressionNode):
     def __init__(self, condition, then_expr, else_expr, token, elif_list=[]):
         self.condition = condition
         self.then_expr = then_expr
@@ -110,11 +129,21 @@ class AtomicNode(ExpressionNode):
 
 
 class CallNode(AtomicNode):
-    def __init__(self, id, params, token):
+    def __init__(self, id, params):
         self.id = id
         self.params = params
-        self.token = token
+        self.token = Token(id.lex, 'functionCall')
 
+class TypePropCallNode(AtomicNode):
+    def __init__(self, type_id, prop_id):
+        self.type_id = type_id
+        self.prop_id = prop_id
+
+class TypeFuncCallNode(AtomicNode):
+    def __init__(self, type_id, prop_id, params):
+        self.type_id = type_id
+        self.prop_id = prop_id
+        self.params = params
 
 class NumNode(AtomicNode):
     pass

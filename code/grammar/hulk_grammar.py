@@ -1,4 +1,14 @@
 from grammar.Grammar import Grammar
+from parser.ast_nodes import (Node, ProgramNode, StatementNode, FuncDefNode, TypeDefNode, 
+    TypePropDefNode, TypeFuncDefNode, ExpressionNode, AssignationNode, LetNode, IfElseNode, ElifNode, WhileNode, 
+    ForNode, BlockNode, RangeNode, PrintNode, InstanceNode, AtomicNode, CallNode, TypePropCallNode, TypeFuncCallNode, NumNode, 
+    StringNode, BoolNode, VarNode, RanNode, UnaryNode, UnaryNumOperationNode, 
+    UnaryLogicOperationNode, SqrtNode, SinNode, CosNode, ExpNode, NotNode, BinaryNode, 
+    BinaryNumOperationNode, BinaryLogicOperationNode, BinaryStringOperationNode, PlusNode, 
+    MinusNode, StartNode, DivNode, ModNode, PowNode, LogNode, EqualNode, DifferenceNode, 
+    LessThanNode, LessEqualThanNode, GreaterThanNode, GreaterEqualThanNode, AndNode, 
+    OrNode, ConcatNode, DoubleConcatNode
+)
 
 
 # Grammar hulk
@@ -45,64 +55,156 @@ function_, arrow_, semicolon_, obracket_, cbracket_ = G.Terminals('function => ;
 inline_func_def, exp_list, block_func_def, block_exp, block_items = G.NonTerminals('<inline_func_def> <exp_list> <block_func_def> <block_exp> <block_items>')
 
 # types
-type_def, type_header_def, type_body, type_body_items, type_body_props, type_body_funcs, type_instance = G.NonTerminals('<type_def> <type_header_def> <type_body> <type_body_items> <type_body_props> <type_body_funcs> <type_instance>')
+type_def, type_header_def, type_body, type_body_items, type_body_prop, type_body_func, type_instance = G.NonTerminals('<type_def> <type_header_def> <type_body> <type_body_items> <type_body_prop> <type_body_func> <type_instance>')
 type_, inherits_, new_, dot_ = G.Terminals('type inherits new .')
 
 
 # ~~~~~~~~~~~~~~~~ PRODUCTIONS ~~~~~~~~~~~~~~~~~~~
-program %= statement_seq + exp | exp
+program %= statement_seq + exp, lambda _, s: ProgramNode(s[1], s[2])
+program %= exp, lambda _, s: s[1] 
 
-statement_seq %= statement | statement + statement_seq
-statement %= inline_func_def | block_func_def | type_def
+statement_seq %= statement, lambda _, s: [s[1]]
+statement_seq %= statement + statement_seq, lambda _, s: [s[1]] + s[2] 
+
+statement %= inline_func_def, lambda _, s: s[1] 
+statement %= block_func_def, lambda _, s: s[1] 
+statement %= type_def, lambda _, s: s[1] 
 
 # functions
-inline_func_def %= function_ + id_ + opar_ + exp_list + cpar_ + arrow_ + exp + semicolon_ | function_ + id_ + opar_ + cpar_ + arrow_ + exp + semicolon_
-block_func_def %= function_ + id_ + opar_ + exp_list + cpar_ + block_exp | function_ + id_ + opar_ + cpar_ + block_exp
-block_exp %= obracket_ + block_items + cbracket_
-block_items %= exp + semicolon_ | exp + semicolon_ + block_items
-exp_list %= exp | exp + coma_ + exp_list
+inline_func_def %= function_ + id_ + opar_ + exp_list + cpar_ + arrow_ + exp + semicolon_, lambda _, s: FuncDefNode(s[2], s[4], s[7], s[1])
+inline_func_def %= function_ + id_ + opar_ + cpar_ + arrow_ + exp + semicolon_, lambda _, s: FuncDefNode(s[2], [], s[6], s[1])
 
-func_call %= id_ + opar_ + exp_list + cpar_
+block_func_def %= function_ + id_ + opar_ + exp_list + cpar_ + block_exp, lambda _, s: FuncDefNode(s[2], s[4], s[6], s[1])
+block_func_def %= function_ + id_ + opar_ + cpar_ + block_exp, lambda _, s: FuncDefNode(s[2], [], s[5], s[1])
+
+block_exp %= obracket_ + block_items + cbracket_, lambda _, s: BlockNode(s[2], s[1])
+
+block_items %= exp + semicolon_, lambda _, s: [s[1]]
+block_items %= exp + semicolon_ + block_items, lambda _, s: [s[1]] + s[3]
+
+exp_list %= exp, lambda _, s: [s[1]]
+exp_list %= exp + coma_ + exp_list, lambda _, s: [s[1]] + s[3]
+
+func_call %= id_ + opar_ + exp_list + cpar_, lambda _, s: CallNode(s[1], s[3])
 
 # variable assignment
-var_def %= let_ + var_def_list + in_ + exp
-var_def_list %= id_ + equals_ + exp | id_ + equals_ + exp + coma_ + var_def_list
-destr_assignment %= id_ + destr_assign_ + exp
+var_def %= let_ + var_def_list + in_ + exp, lambda _, s: LetNode(s[2], s[4], s[1])
+
+var_def_list %= id_ + equals_ + exp, lambda _, s: [AssignationNode(s[1], s[3], s[2])]
+var_def_list %= id_ + equals_ + exp + coma_ + var_def_list, lambda _, s: [AssignationNode(s[1], s[3], s[2])] + s[5]
+
+destr_assignment %= id_ + destr_assign_ + exp, lambda _, s: AssignationNode(s[1], s[3], s[2])
 
 # expression
-exp %= num_exp | str_exp | bool_exp | print_ + opar_ + exp + cpar_ | var_def | destr_assignment | conditionals_exp | range_exp | loop_exp | type_instance | block_exp | opar_ + exp + cpar_
+exp %= num_exp, lambda _, s: s[1] 
+exp %= str_exp, lambda _, s: s[1] 
+exp %= bool_exp, lambda _, s: s[1] 
+exp %= print_ + opar_ + exp + cpar_ , lambda _, s: PrintNode(s[3], s[1]) 
+exp %= var_def, lambda _, s: s[1] 
+exp %= destr_assignment, lambda _, s: s[1] 
+exp %= conditionals_exp, lambda _, s: s[1] 
+exp %= range_exp, lambda _, s: s[1] 
+exp %= loop_exp, lambda _, s: s[1] 
+exp %= type_instance, lambda _, s: s[1] 
+exp %= block_exp, lambda _, s: s[1] 
+exp %= opar_ + exp + cpar_, lambda _, s: s[2]
 
 # types
-type_def %= type_header_def | type_ + id_ + inherits_ + id_ + type_body | type_ + id_ + opar_ + exp_list + cpar_ + inherits_ + id_ + opar_ + exp_list + cpar_ + type_body
-type_header_def %= type_ + id_ + opar_ + exp_list + cpar_ + type_body | type_ + id_ + type_body
-type_body %= obracket_ + type_body_items + cbracket_
-type_body_items %= type_body_props + type_body_funcs | type_body_props + type_body_funcs + type_body_items
-type_body_props %= id_ + equals_ + exp + semicolon_ | id_ + equals_ + exp + semicolon_ + type_body_props | G.Epsilon
-type_body_funcs %= id_ + opar_ + exp_list + cpar_ + arrow_ + exp | id_ + opar_ + cpar_ + arrow_ + exp | id_ + opar_ + exp_list + cpar_ + block_exp | id_ + opar_ + cpar_ + block_exp | G.Epsilon
-type_instance %= new_ + id_ + opar_ + exp_list + cpar_ | new_ + id_ + opar_ + cpar_
-type_prop_func_call %= id_ + dot_ + id_ + opar_ + cpar_ | id_ + dot_ + id_ + opar_ + exp_list + cpar_ | id_ + dot_ + id_
+type_def %= type_header_def, lambda _, s: s[1]
+type_def %= type_ + id_ + inherits_ + id_ + type_body, lambda _, s: TypeDefNode(s[2], s[5], s[1], [], s[4], [])
+type_def %= type_ + id_ + opar_ + exp_list + cpar_ + inherits_ + id_ + opar_ + exp_list + cpar_ + type_body, lambda _, s: TypeDefNode(s[2], s[11], s[1], s[4], s[7], s[9])
+
+type_header_def %= type_ + id_ + opar_ + exp_list + cpar_ + type_body, lambda _, s: TypeDefNode(s[2], s[6], s[1], s[4], None, [])
+type_header_def %= type_ + id_ + type_body, lambda _, s: TypeDefNode(s[2], s[3], s[1], [], None, [])
+
+type_body %= obracket_ + type_body_items + cbracket_, lambda _, s: s[2]
+
+type_body_items %= type_body_prop + type_body_func, lambda _, s: s[1] + s[2]
+type_body_items %= type_body_prop + type_body_func + type_body_items, lambda _, s: s[1] + s[2] + s[3]
+
+type_body_prop %= id_ + equals_ + exp + semicolon_, lambda _, s: [TypePropDefNode(s[1], s[3], s[2])]
+type_body_prop %= G.Epsilon, lambda _, s: []
+
+type_body_func %= id_ + opar_ + exp_list + cpar_ + arrow_ + exp, lambda _, s: [TypeFuncDefNode(s[1], s[3], s[6])]
+type_body_func %= id_ + opar_ + cpar_ + arrow_ + exp, lambda _, s: [TypeFuncDefNode(s[1], [], s[5])]
+type_body_func %= id_ + opar_ + exp_list + cpar_ + block_exp , lambda _, s: [TypeFuncDefNode(s[1], s[3], s[5])]
+type_body_func %= id_ + opar_ + cpar_ + block_exp, lambda _, s: [TypeFuncDefNode(s[1], [], s[4])]
+type_body_func %= G.Epsilon, lambda _, s: []
+
+type_instance %= new_ + id_ + opar_ + exp_list + cpar_, lambda _, s: InstanceNode(s[2], s[4], s[1])
+type_instance %= new_ + id_ + opar_ + cpar_, lambda _, s: InstanceNode(s[2], [], s[1])
+
+type_prop_func_call %= id_ + dot_ + id_ + opar_ + cpar_, lambda _, s: TypeFuncCallNode(s[1], s[3], [])
+type_prop_func_call %= id_ + dot_ + id_ + opar_ + exp_list + cpar_, lambda _, s: TypeFuncCallNode(s[1], s[3], s[5])
+type_prop_func_call %= id_ + dot_ + id_, lambda _, s: TypePropCallNode(s[1], s[3])
 
 # boolean and conditions
-bool_exp %= bool_const | exp + doubleequals_c_ + exp | exp + different_c_ + exp | exp + lt_c_ + exp | exp + gt_c_ + exp | exp + get_c_ + exp | exp + let_c_ + exp | bool_exp + or_logic_c_ + bool_exp | bool_exp + and_logic_c_ + bool_exp | not_logic_c_ + bool_exp
-bool_const %= true_ | false_ | id_ | func_call | type_prop_func_call
+bool_exp %= bool_const, lambda _, s: s[1]
+bool_exp %= exp + doubleequals_c_ + exp, lambda _, s: EqualNode(s[1], s[3], s[2])
+bool_exp %= exp + different_c_ + exp, lambda _, s: DifferenceNode(s[1], s[3], s[2])
+bool_exp %= exp + lt_c_ + exp, lambda _, s: LessThanNode(s[1], s[3], s[2])
+bool_exp %= exp + gt_c_ + exp, lambda _, s: GreaterThanNode(s[1], s[3], s[2])
+bool_exp %= exp + get_c_ + exp, lambda _, s: GreaterEqualThanNode(s[1], s[3], s[2])
+bool_exp %= exp + let_c_ + exp, lambda _, s: LessEqualThanNode(s[1], s[3], s[2])
+bool_exp %= bool_exp + or_logic_c_ + bool_exp, lambda _, s: OrNode(s[1], s[3], s[2]) 
+bool_exp %= bool_exp + and_logic_c_ + bool_exp, lambda _, s: AndNode(s[1], s[3], s[2])
+bool_exp %= not_logic_c_ + bool_exp, lambda _, s: NotNode(s[2], s[1])
 
-conditionals_exp %= if_ + opar_ + bool_exp + cpar_ + exp + else_ + exp | if_ + opar_ + bool_exp + cpar_ + exp + elif_list + else_ + exp
-elif_list %= elif_ + opar_ + bool_exp + cpar_ + exp | elif_ + opar_ + bool_exp + cpar_ + exp + elif_list
+bool_const %= true_, lambda _, s: BoolNode(s[1])
+bool_const %= false_, lambda _, s: BoolNode(s[1])
+bool_const %= id_, lambda _, s: VarNode(s[1])
+bool_const %= func_call, lambda _, s: s[1]
+bool_const %= type_prop_func_call, lambda _, s: s[1]
+
+conditionals_exp %= if_ + opar_ + bool_exp + cpar_ + exp + else_ + exp, lambda _, s: IfElseNode(s[3], s[5], s[7], s[1])
+conditionals_exp %= if_ + opar_ + bool_exp + cpar_ + exp + elif_list + else_ + exp, lambda _, s: IfElseNode(s[3], s[5], s[8], s[1], s[6])
+
+elif_list %= elif_ + opar_ + bool_exp + cpar_ + exp, lambda _, s: [ElifNode(s[3], s[5], s[1])]
+elif_list %= elif_ + opar_ + bool_exp + cpar_ + exp + elif_list, lambda _, s: [ElifNode(s[3], s[5], s[1])] + s[6]
 
 # loops
-loop_exp %= while_ + opar_ + bool_exp + cpar_ + exp | for_ + opar_ + id_ + in_ + range_exp + cpar_ + exp
-range_exp %= range_ + opar_ + num_exp + coma_ + num_exp + cpar_
+loop_exp %= while_ + opar_ + bool_exp + cpar_ + exp, lambda _, s: WhileNode(s[3], s[5], s[1]) 
+loop_exp %= for_ + opar_ + id_ + in_ + range_exp + cpar_ + exp, lambda _, s: ForNode(s[5], s[7], s[1])
+range_exp %= range_ + opar_ + num_exp + coma_ + num_exp + cpar_, lambda _, s: RangeNode(s[3], s[5], s[1])
 
 # num
-num_exp %= num_exp + plus_ + term | num_exp + minus_ + term | term
-term %= term + times_ + factor | term + div_ + factor | term + mod_ + factor | factor
-factor %= factor + pow_ + const | const
-const %= opar_ + num_exp + cpar_ | num_ | E_const_ | PI_const_ | math_func | id_ | func_call | type_prop_func_call
+num_exp %= num_exp + plus_ + term, lambda _, s: PlusNode(s[1], s[3], s[2])
+num_exp %= num_exp + minus_ + term, lambda _, s: MinusNode(s[1], s[3], s[2])
+num_exp %= term, lambda _, s: s[1]
 
-math_func %= sqrt_ + opar_ + num_exp + cpar_ | sin_ + opar_ + num_exp + cpar_ | cos_ + opar_ + num_exp + cpar_ | exp_ + opar_ + num_exp + cpar_ | log_ + opar_ + num_exp + coma_ + num_exp + cpar_ | rand_ + opar_ + cpar_
+term %= term + times_ + factor, lambda _, s: StartNode(s[1], s[3], s[2]) 
+term %= term + div_ + factor, lambda _, s: DivNode(s[1], s[3], s[2]) 
+term %= term + mod_ + factor, lambda _, s: ModNode(s[1], s[3], s[2]) 
+term %= factor, lambda _, s: s[1]
+
+factor %= factor + pow_ + const, lambda _, s: PowNode(s[1], s[3], s[2]) 
+factor %= const, lambda _, s: s[1]
+
+const %= opar_ + num_exp + cpar_, lambda _, s: s[2]
+const %= num_, lambda _, s: NumNode(s[1])
+const %= E_const_, lambda _, s: NumNode(s[1])
+const %= PI_const_, lambda _, s: NumNode(s[1])
+const %= math_func, lambda _, s: s[1]
+const %= id_ , lambda _, s: VarNode(s[1])
+const %= func_call, lambda _, s: s[1]
+const %= type_prop_func_call, lambda _, s: s[1]
+
+math_func %= sqrt_ + opar_ + num_exp + cpar_, lambda _, s: SqrtNode(s[3], s[1])
+math_func %= sin_ + opar_ + num_exp + cpar_, lambda _, s: SinNode(s[3], s[1]) 
+math_func %= cos_ + opar_ + num_exp + cpar_, lambda _, s: CosNode(s[3], s[1])
+math_func %= exp_ + opar_ + num_exp + cpar_, lambda _, s: ExpNode(s[3], s[1])
+math_func %= log_ + opar_ + num_exp + coma_ + num_exp + cpar_ , lambda _, s: LogNode(s[3], s[5], s[1])
+math_func %= rand_ + opar_ + cpar_, lambda _, s: RanNode(s[1])
 
 # str
-str_exp %= string_ | str_exp + at_ + string_ | str_exp + at_ + term | id_ | func_call | type_prop_func_call | str_exp + doubleat_ + string_ | str_exp + doubleat_ + term
+str_exp %= string_, lambda _, s: StringNode(s[1])
+str_exp %= str_exp + at_ + string_, lambda _, s: ConcatNode(s[1], StringNode(s[3]), s[2])
+str_exp %= str_exp + at_ + term, lambda _, s: ConcatNode(s[1], s[3], s[2])
+str_exp %= id_, lambda _, s: VarNode(s[1])
+str_exp %= func_call, lambda _, s: s[1]
+str_exp %= type_prop_func_call, lambda _, s: s[1]
+str_exp %= str_exp + doubleat_ + string_, lambda _, s: DoubleConcatNode(s[1], StringNode(s[3]), s[2])
+str_exp %= str_exp + doubleat_ + term, lambda _, s: DoubleConcatNode(s[1], s[3], s[2])
 
 
 

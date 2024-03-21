@@ -35,10 +35,10 @@
   | type id ( <exp_list> ) inherits id ( <exp_list> ) <type_body>
 <type_header_def> -> type id ( <exp_list> ) <type_body> | type id <type_body> 
 <type_body> -> { <type_body_items> }
-<type_body_items> ->  <type_body_props> <type_body_funcs>  
-  | <type_body_props> <type_body_funcs> <type_body_items> 
-<type_body_props> -> id = <exp> ; | id = <exp> ; <type_body_props> | e
-<type_body_funcs> -> id ( <exp_list> ) => <exp> | id ( ) => <exp> | id ( <exp_list> ) <block_exp> 
+<type_body_items> ->  <type_body_prop> <type_body_func>  
+  | <type_body_prop> <type_body_func> <type_body_items> 
+<type_body_prop> -> id = <exp> ; | e
+<type_body_func> -> id ( <exp_list> ) => <exp> | id ( ) => <exp> | id ( <exp_list> ) <block_exp> 
     | id ( ) <block_exp> | e
 <type_instance> -> new id ( <exp_list> ) | new id ( )
 <type_prop_func_call> -> id . id ( ) | id . id ( <exp_list> ) | id . id 
