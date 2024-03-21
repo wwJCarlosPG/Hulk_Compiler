@@ -6,7 +6,6 @@ sys.path.append(prev_route)
 from ast_node import AtomicNode, UnaryNode, BinaryNode
 from automata_work import NFA
 from automaton_operations import *
-
 EPSILON = 'ε'
 
 class EpsilonNode(AtomicNode):
@@ -33,10 +32,10 @@ class ConcatNode(BinaryNode):
     def operate(lvalue, rvalue):
         return automata_concatenation(lvalue, rvalue)
     
-class ComplementNode(UnaryNode):
-    @staticmethod
-    def operate(value):
-        return automata_complement(value)
+# class ComplementNode(UnaryNode):
+#     @staticmethod
+#     def operate(value):
+#         return automata_complement(value)
 
 #search how to implement this    
 class SquareBracketNode(UnaryNode):

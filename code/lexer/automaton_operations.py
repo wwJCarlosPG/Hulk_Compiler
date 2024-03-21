@@ -14,9 +14,10 @@ def automata_union(a1, a2):
     - NFA representing the union of the two input automata.
     """
     transitions = {}
-    
     start = 0
     d1 = 1
+    finals_a1 = {f+d1 for f in a1.finals}
+    finals_a2 = {f+a1.states+d1 for f in a2.finals}
     d2 = a1.states + d1
     final = a2.states + d2
     
@@ -27,9 +28,10 @@ def automata_union(a1, a2):
         transitions[d2 + origin, symbol] = [d2 + d for d in destinations]
     
     transitions[start, ''] = [d1,d2]
-    
-    transitions[d2 - 1, ''] = [final]
-    transitions[final - 1, ''] = [final]
+    for f1 in finals_a1:
+        transitions[f1, ''] = [final]
+    for f2 in finals_a2:
+        transitions[f2, ''] = [final]
             
     states = a1.states + a2.states + 2
     finals = { final }  
@@ -48,7 +50,9 @@ def automata_concatenation(a1, a2):
     - NFA representing the concatenation of the two input automata.
     """
     transitions = {}
-    
+    finals_a1 = {f for f in a1.finals}
+    finals_a2 = {f+a1.states for f in a2.finals}
+    finals = finals_a2
     start = 0
     d1 = 0
     d2 = a1.states + d1
@@ -59,13 +63,16 @@ def automata_concatenation(a1, a2):
 
     for (origin, symbol), destinations in a2.map.items():
         transitions[d2 + origin, symbol] = [d2 + d for d in destinations]
-    
-    transitions[d2 - 1, ''] = [d2]
-    transitions[final - 1, ''] = [final]
-            
+    for f1 in finals_a1:
+        transitions[f1, ''] = [d2]
+    for f2 in finals_a2:
+        try:
+            transitions[f2, ''] = transitions[f2,'']+[final]
+        except: 
+             transitions[f2,''] = [final] 
+
     states = a1.states + a2.states + 1
     finals = { final }
-    
     return NFA(states, finals, transitions, start)
 
 def automata_closure(a1):
@@ -79,24 +86,24 @@ def automata_closure(a1):
     - NFA representing the Kleene closure of the input automaton.
     """
     transitions = {}
-    
     start = 0
     d1 = 1
+    finals = {f+d1 for f in a1.finals}
     final = a1.states + d1
     
 
     for (origin, symbol), destinations in a1.map.items():
         transitions[d1 + origin, symbol] = [d1 + d for d in destinations]              
-    
+    for f in finals:
+        transitions[f, ''] = [final]
     transitions[start, ''] = [d1]
-    
-    transitions[final - 1, ''] = [final]
+
     transitions[final,''] = [start]  
             
     states = a1.states +  2
     finals = {start,final}
-    
     return NFA(states, finals, transitions, start)
+
 
 
 def automata_complement(a1):
@@ -138,46 +145,3 @@ def automata_plus(a1):
 
 
 
-# automaton = DFA(states=3, finals=[2], transitions={
-#     (0,'b'): 0,
-#     (0,'a'): 1,
-#     (1,'b'): 2,
-#     (1,'a'): 0,
-#     (2,'a'): 2,
-#     (2,'b'): 2
-# })
-
-# automaton = DFA(states=2, finals=[1], transitions={
-#     (0,'a'):  0,
-#     (0,'b'):  1,
-#     (1,'a'):  0,
-#     (1,'b'):  1,
-# })
-# plus = automata_plus(automaton)
-# recognize = nfa_to_dfa(plus).recognize
-# # con = automata_concatenation(automaton, automaton)
-# # recognize = nfa_to_dfa(con).recognize
-# print(recognize('abba'))
-# print(recognize('abab'))
-# print(recognize('ababab'))
-automaton = DFA(states=2, finals=[1], transitions={
-    (0,'a'):  0,
-    (0,'b'):  0,
-    (0,'c'):  0,
-    (0,'1'):  1,
-    (0,'2'):  1,
-    (0,'3'):  1,
-    (0,'4'):  1,
-    (0,'5'):  1,
-    (1,'1'):  1,
-    (1,'2'):  1,
-    (1,'3'):  1,
-    (1,'4'):  1,
-    (1,'5'):  1
-    
-})
-automata_plusplus = automata_plus(automaton)
-recognize = nfa_to_dfa(automata_plusplus).recognize
-print(recognize('a2'))
-print(recognize('aa'))
-print(recognize("abca12"))
