@@ -40,6 +40,7 @@ class State:
         return self
 
     def add_epsilon_transition(self, state):
+        self.add_transition('', state)
         self.epsilon_transitions.add(state)
         return self
 

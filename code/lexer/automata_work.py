@@ -133,7 +133,6 @@ def nfa_to_dfa(automaton):
     - DFA representing the converted automaton.
     """
     transitions = {}
-    #analizar esto, por que tiene un id y to eso.
     start = epsilon_closure(automaton, [automaton.start])
     start.id = 0
     start.is_final = any(s in automaton.finals for s in start)
