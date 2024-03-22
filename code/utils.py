@@ -1,9 +1,16 @@
-from parser.ContainerSet import ContainerSet
-from parser.Item import Item
-from parser.automata import State
-from grammar.Grammar import Grammar
-from parser.definitions import NonTerminal, Sentence
-
+ # type: ignore
+import os
+import sys
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(parent_dir)
+sys.path.append('code/lexer')
+sys.path.append('code/parser')
+sys.path.append('code/grammar')
+from ContainerSet import ContainerSet
+from Item import Item
+from automata import State
+from Grammar import Grammar 
+from definitions import NonTerminal, Sentence 
 def compute_firsts(G: Grammar):
     """
     Compute the First sets for the given grammar.
