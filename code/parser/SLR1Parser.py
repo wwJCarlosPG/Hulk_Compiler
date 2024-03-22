@@ -1,4 +1,4 @@
-from parser.automata import State, lr0_formatter
+from cmp.automata import State, lr0_formatter
 from parser.ShiftReduceParser import ShiftReduceParser
 
     
