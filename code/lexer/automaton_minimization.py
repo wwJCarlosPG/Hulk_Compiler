@@ -4,7 +4,7 @@ import sys
 current_route = os.path.dirname(os.path.abspath(__file__))
 prev_route = os.path.join(current_route, "..", "parser")
 sys.path.append(prev_route)
-from utils import DisjointSet
+from code.utils.utils import DisjointSet
 def distinguish_states(group, automaton, partition):
     """
     Distinguish states within a group based on transitions and a given partition.
