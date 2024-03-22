@@ -30,6 +30,7 @@ class TypeDefNode(StatementNode):
         self.body = body
         self.token = token
         self.parent = parent_id
+        self.parent_params = parent_params
 
 class TypeBodyItemNode(Node):
     pass
