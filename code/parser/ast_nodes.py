@@ -1,4 +1,4 @@
-from utils import Token
+from cmp.utils import Token
 
 class Node:
     def __init__(self, token):

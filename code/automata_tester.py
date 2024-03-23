@@ -1,8 +1,5 @@
-import sys
-sys.path.append('code/lexer')
-sys.path.append('code/parser/grammar')
-sys.path.append('code/parser')
-from lexer import Lexer
+from lexer.lexer import Lexer
+
 nonzero_digits = '|'.join(str(n) for n in range(1,10))
 zero_digits = '|'.join(str(n) for n in range(0,10))
 letters = '|'.join(chr(n) for n in range(ord('a'),ord('z')+1))

@@ -1,8 +1,8 @@
-from parser.automata import State, lr0_formatter
+from cmp.automata import State, lr0_formatter
 from parser.ShiftReduceParser import ShiftReduceParser
 
     
-from utils import build_LR0_automaton, compute_firsts, compute_follows
+from parser.utils import build_LR0_automaton, compute_firsts, compute_follows
 
 class SLR1Parser(ShiftReduceParser):
     """

@@ -1,4 +1,4 @@
-from grammar.Grammar import Grammar
+from cmp.pycompiler import Grammar
 from parser.ast_nodes import (Node, ProgramNode, StatementNode, FuncDefNode, TypeDefNode, 
     TypePropDefNode, TypeFuncDefNode, ExpressionNode, AssignationNode, LetNode, IfElseNode, ElifNode, WhileNode, 
     ForNode, BlockNode, RangeNode, PrintNode, InstanceNode, AtomicNode, CallNode, TypePropCallNode, TypeFuncCallNode, NumNode, 

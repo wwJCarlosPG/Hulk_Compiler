@@ -1,11 +1,5 @@
-import os
-import sys
-sys.path.append('code/lexer')
-sys.path.append('code')
-sys.path.append('code/parser/grammar')
-sys.path.append('code/parser')
-from utils import Token
-from parser.grammar.test_grammar import G
+from cmp.utils import Token
+from grammar.test_grammar import G
 from cmp.tools.parsing import metodo_predictivo_no_recursivo
 from cmp.tools.evaluation import evaluate_parse
 #from automaton_minimization import automata_minimization este es el mío que da error
