@@ -1,6 +1,7 @@
 from lexer.ast_regex_node import *
 from lexer.regex_work import regex_automaton
-from utils import State, Token
+from cmp.utils import Token
+from cmp.automata import State
 
 class Lexer:
     def __init__(self, table, eof):
