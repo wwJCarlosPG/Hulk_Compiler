@@ -2,7 +2,7 @@ from cmp.utils import Token
 from grammar.test_grammar import G
 from cmp.tools.parsing import metodo_predictivo_no_recursivo
 from cmp.tools.evaluation import evaluate_parse
-#from automaton_minimization import automata_minimization este es el mío que da error
+from automaton_minimization import automata_minimization #este es el mío que da error
 from cmp.tools.automata import automata_minimization
 from automata_work import nfa_to_dfa
 

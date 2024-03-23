@@ -50,7 +50,7 @@ lexer = Lexer([
 ], 'eof')
 text = 'let    x=10,y=202 in (332823948*xiom304230)'
 text = 'while(x<=new 104){ \n if (x!=136) x = @4 else x="asss5" }'
-#text = 'let    xz=10,y=222 in (332823948*xiom304230)'
+text = 'let    xz=10,y=222 in (332823948*xiom304230)'
 print(f'\n>>> Tokenizando: "{text}"')
 tokens = lexer(text)
 print(tokens)

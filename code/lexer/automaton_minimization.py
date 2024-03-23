@@ -1,10 +1,5 @@
-from automata_work import DFA
-import os
-import sys
-current_route = os.path.dirname(os.path.abspath(__file__))
-prev_route = os.path.join(current_route, "..", "parser")
-sys.path.append(prev_route)
-from code.utils.utils import DisjointSet
+from lexer.automata_work import DFA
+from cmp.utils import DisjointSet
 def distinguish_states(group, automaton, partition):
     """
     Distinguish states within a group based on transitions and a given partition.
