@@ -1,6 +1,6 @@
 from grammar.anbn_grammar import get_grammar as get_anbn
 from grammar.simple_expression import get_grammar as get_exp
-from grammar.hulk_grammar_copy import get_grammar as get_hulk
+from grammar.hulk_grammar import get_grammar as get_hulk
 from parser.SLR1Parser import SLR1Parser
 from cmp.tools.parsing import LR1Parser
 
