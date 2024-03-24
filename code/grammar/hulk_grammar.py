@@ -181,8 +181,6 @@ bool_cmp %= bool_cmp + get_c_ + bool_const, lambda _, s: GreaterEqualThanNode(s[
 bool_cmp %= bool_cmp + let_c_ + bool_const, lambda _, s: LessEqualThanNode(s[1], s[3], s[2])
 bool_cmp %= bool_const, lambda _, s: s[1]
 
-bool_const %= true_, lambda _, s: BoolNode(s[1])
-bool_const %= false_, lambda _, s: BoolNode(s[1])
 bool_const %= str_exp, lambda _, s: s[1]
 
 
@@ -192,7 +190,6 @@ str_exp %= str_exp + at_ + str_const, lambda _, s: ConcatNode(s[1], s[3], s[2])
 str_exp %= str_exp + doubleat_ + str_const, lambda _, s: DoubleConcatNode(s[1], s[3], s[2])
 str_exp %= str_const, lambda _, s: s[1]
 
-str_const %= string_, lambda _, s: StringNode(s[1])
 str_const %= num_exp, lambda _, s: s[1]
 
 
@@ -219,6 +216,9 @@ const %= base_element, lambda _, s: s[1]
 
 
 # Base elements
+base_element %= string_, lambda _, s: StringNode(s[1])
+base_element %= true_, lambda _, s: BoolNode(s[1])
+base_element %= false_, lambda _, s: BoolNode(s[1])
 base_element %= id_ , lambda _, s: VarNode(s[1])
 base_element %= func_call, lambda _, s: s[1]
 base_element %= type_prop_func_call, lambda _, s: s[1]

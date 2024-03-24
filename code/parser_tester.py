@@ -17,12 +17,15 @@ match selector:
         tokenized_string = [G['int'], G['*'], G['('], G['int'], G['+'], G['int'], G[')'], G['$']]
     case 3:
         G = get_hulk()
+        # tokenized_string = [G['print'], G['('], G['num'], G[')'], G['$']]
+        # tokenized_string = [G['print'], G['('], G['('], G['('], G['string'], G[')'], G[')'], G[')'], G['$']]
+        tokenized_string = [G['num'], G['*'], G['('], G['num'], G['+'], G['num'], G[')'], G['$']]
     case _:
         raise Exception("No match case")
 
 # lr1_parser = LR1Parser(G)
 slr1_parser = SLR1Parser(G, verbose=True)
-# output, operations = slr1_parser(tokenized_string)
+output, operations = slr1_parser(tokenized_string)
 
-# print(f'\nDerivations sequence: {output}')
-# print(f'\nOperations sequence: {operations}')
+print(f'\nDerivations sequence: {output}')
+print(f'\nOperations sequence: {operations}')

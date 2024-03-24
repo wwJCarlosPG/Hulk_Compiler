@@ -13,6 +13,8 @@ class SLR1Parser(ShiftReduceParser):
     # self.action
     # self.goto
     # self._build_parsing_table
+    def otrafunc():
+        pass
 
     def _build_parsing_table(self):
         """
@@ -86,11 +88,5 @@ class SLR1Parser(ShiftReduceParser):
             key: The key for the table.
             value: The value to store.
         """
-        try:
-            assert key not in table or table[key] == value, 'Shift-Reduce or Reduce-Reduce conflict!!!'
-        except:
-            print(key not in table)
-            print(table[key])
-            print(value)
-            pass
+        assert key not in table or table[key] == value, 'Shift-Reduce or Reduce-Reduce conflict!!!'
         table[key] = value
