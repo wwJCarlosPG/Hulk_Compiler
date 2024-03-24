@@ -60,12 +60,12 @@
 <bool_factor> -> "!" <bool_factor> | <bool_cmp> 
 <bool_cmp> -> <bool_cmp> "lt" <bool_const> | <bool_cmp> "gt" <bool_const> | <bool_cmp> "get" <bool_const> 
 	| <bool_cmp> "let" <bool_const> | <bool_cmp> == <bool_const> | <bool_cmp> != <bool_const> | <bool_const>
-<bool_const> -> true | false | <str_exp>
+<bool_const> -> <str_exp>
 
 
 <!-- str -->
 <str_exp> -> <str_exp> @ <str_const> | <str_exp> @@ <str_const> | <str_const>
-<str_const> -> string | <num_exp>
+<str_const> -> <num_exp>
 
 
 <!-- num --> 
@@ -76,7 +76,7 @@
 
 
 <!-- base_element --> 
-<base_element> -> id | <fun_call> | <type_prop_func_call>
+<base_element> -> true | false | string | id | <fun_call> | <type_prop_func_call>
 
 
 <!-- calls -->
