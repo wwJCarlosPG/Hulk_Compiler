@@ -15,6 +15,10 @@ class StatementNode(Node):
     pass
 
 
+class ExpressionNode(Node):
+    pass
+
+
 # body_exp = ( <exp> | <block_exp> )
 class FuncDefNode(StatementNode):
     def __init__(self, id, params, body_expr, token):
@@ -47,11 +51,6 @@ class TypeFuncDefNode(TypeBodyItemNode):
         self.params = params
         self.body = body
         self.token = Token(id.lex, 'typeFuncNode')
-
-
-
-class ExpressionNode(Node):
-    pass
 
 
 # Use also for <destr_assignation>

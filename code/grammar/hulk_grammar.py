@@ -1,14 +1,5 @@
 from cmp.pycompiler import Grammar
-from parser.ast_nodes import (Node, ProgramNode, StatementNode, FuncDefNode, TypeDefNode, 
-    TypePropDefNode, TypeFuncDefNode, ExpressionNode, AssignationNode, LetNode, IfElseNode, ElifNode, WhileNode, 
-    ForNode, BlockNode, RangeNode, PrintNode, InstanceNode, AtomicNode, CallNode, TypePropCallNode, TypeFuncCallNode, NumNode, 
-    StringNode, BoolNode, VarNode, RanNode, UnaryNode, UnaryNumOperationNode, 
-    UnaryLogicOperationNode, SqrtNode, SinNode, CosNode, ExpNode, NotNode, BinaryNode, 
-    BinaryNumOperationNode, BinaryLogicOperationNode, BinaryStringOperationNode, PlusNode, 
-    MinusNode, StartNode, DivNode, ModNode, PowNode, LogNode, EqualNode, DifferenceNode, 
-    LessThanNode, LessEqualThanNode, GreaterThanNode, GreaterEqualThanNode, AndNode, 
-    OrNode, ConcatNode, DoubleConcatNode
-)
+from parser.ast_nodes import *
 
 
 # Grammar hulk
@@ -120,9 +111,9 @@ exp %= bool_exp, lambda _, s: s[1]
 
 
 # Types definition
-type_def %= type_header_def, lambda _, s: s[1]
-type_def %= type_ + id_ + inherits_ + id_ + type_body, lambda _, s: TypeDefNode(s[2], s[5], s[1], [], s[4], [])
-type_def %= type_ + id_ + opar_ + exp_list + cpar_ + inherits_ + id_ + opar_ + exp_list + cpar_ + type_body, lambda _, s: TypeDefNode(s[2], s[11], s[1], s[4], s[7], s[9])
+type_def %= type_header_def + semicolon_, lambda _, s: s[1]
+type_def %= type_ + id_ + inherits_ + id_ + type_body + semicolon_, lambda _, s: TypeDefNode(s[2], s[5], s[1], [], s[4], [])
+type_def %= type_ + id_ + opar_ + exp_list + cpar_ + inherits_ + id_ + opar_ + exp_list + cpar_ + type_body + semicolon_, lambda _, s: TypeDefNode(s[2], s[11], s[1], s[4], s[7], s[9])
 
 type_header_def %= type_ + id_ + opar_ + exp_list + cpar_ + type_body, lambda _, s: TypeDefNode(s[2], s[6], s[1], s[4], None, [])
 type_header_def %= type_ + id_ + type_body, lambda _, s: TypeDefNode(s[2], s[3], s[1], [], None, [])

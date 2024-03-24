@@ -31,8 +31,8 @@
 
 
 <!-- types -->
-<type_def> -> <type_header_def> | type id inherits id <type_body> 
-  | type id ( <exp_list> ) inherits id ( <exp_list> ) <type_body>
+<type_def> -> <type_header_def> ; | type id inherits id <type_body> ;
+  | type id ( <exp_list> ) inherits id ( <exp_list> ) <type_body> ;
 <type_header_def> -> type id ( <exp_list> ) <type_body> | type id <type_body> 
 <type_body> -> { <type_body_items> }
 <type_body_items> ->  <type_body_prop> <type_body_func>  
