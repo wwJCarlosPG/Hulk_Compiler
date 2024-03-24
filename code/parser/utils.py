@@ -64,6 +64,8 @@ def compute_firsts(G: Grammar):
     return firsts
 
 def __compute_local_first(firsts, alpha):
+    if not alpha.IsEpsilon and alpha._symbols[0].Name == '<type_body_prop>':
+        pass
     first_alpha = ContainerSet()
     
     try:
@@ -84,11 +86,11 @@ def __compute_local_first(firsts, alpha):
             if i == len(alpha._symbols):
                 first_alpha.set_epsilon()
                 break
-            i += 1
             Xi = alpha._symbols[i]
             if not firsts[Xi].contains_epsilon:
                 first_alpha.update(firsts[Xi])  
                 break 
+            i += 1
     
     return first_alpha
 

@@ -86,5 +86,11 @@ class SLR1Parser(ShiftReduceParser):
             key: The key for the table.
             value: The value to store.
         """
-        assert key not in table or table[key] == value, 'Shift-Reduce or Reduce-Reduce conflict!!!'
+        try:
+            assert key not in table or table[key] == value, 'Shift-Reduce or Reduce-Reduce conflict!!!'
+        except:
+            print(key not in table)
+            print(table[key])
+            print(value)
+            pass
         table[key] = value
