@@ -15,7 +15,7 @@ class StatementNode(Node):
     pass
 
 
-# body_exp = <exp> | <block_exp>
+# body_exp = ( <exp> | <block_exp> )
 class FuncDefNode(StatementNode):
     def __init__(self, id, params, body_expr, token):
         self.id = id
