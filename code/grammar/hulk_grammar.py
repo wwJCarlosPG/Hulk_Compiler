@@ -112,7 +112,6 @@ exp %= print_ + opar_ + exp + cpar_ , lambda _, s: PrintNode(s[3], s[1])
 exp %= var_def, lambda _, s: s[1] 
 exp %= destr_assignment, lambda _, s: s[1] 
 exp %= conditionals_exp, lambda _, s: s[1] 
-exp %= range_exp, lambda _, s: s[1] 
 exp %= loop_exp, lambda _, s: s[1] 
 exp %= type_instance, lambda _, s: s[1] 
 exp %= block_exp, lambda _, s: s[1] 
@@ -180,6 +179,7 @@ bool_cmp %= bool_cmp + lt_c_ + bool_const, lambda _, s: LessThanNode(s[1], s[3],
 bool_cmp %= bool_cmp + gt_c_ + bool_const, lambda _, s: GreaterThanNode(s[1], s[3], s[2])
 bool_cmp %= bool_cmp + get_c_ + bool_const, lambda _, s: GreaterEqualThanNode(s[1], s[3], s[2])
 bool_cmp %= bool_cmp + let_c_ + bool_const, lambda _, s: LessEqualThanNode(s[1], s[3], s[2])
+bool_cmp %= bool_const, lambda _, s: s[1]
 
 bool_const %= true_, lambda _, s: BoolNode(s[1])
 bool_const %= false_, lambda _, s: BoolNode(s[1])

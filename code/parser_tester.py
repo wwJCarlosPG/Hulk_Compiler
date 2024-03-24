@@ -22,7 +22,6 @@ match selector:
 
 # lr1_parser = LR1Parser(G)
 slr1_parser = SLR1Parser(G, verbose=True)
-print("paso")
 # output, operations = slr1_parser(tokenized_string)
 
 # print(f'\nDerivations sequence: {output}')
