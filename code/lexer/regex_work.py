@@ -2,11 +2,9 @@ from cmp.utils import Token
 from grammar.test_grammar import G
 from cmp.tools.parsing import metodo_predictivo_no_recursivo
 from cmp.tools.evaluation import evaluate_parse
-#from automaton_minimization import automata_minimization este es el mío que da error
-from cmp.tools.automata import automata_minimization
 from automata_work import nfa_to_dfa
-
-def regex_tokenizer(text, G, skip_whitespaces=True): #retorna los tokens de las expresiones regulares
+from automaton_minimization import automata_minimization
+def regex_tokenizer(text, G, skip_whitespaces=True): 
     """
     Tokenizes the regular expressions.
     
@@ -18,6 +16,7 @@ def regex_tokenizer(text, G, skip_whitespaces=True): #retorna los tokens de las 
     Returns:
         list: List of tokens representing the regular expression.
     """
+    x = 0
     tokens = []    
     fixed_tokens = { lex: Token(lex, G[lex]) for lex in '| * ( ) ε'.split() }
     special_char = False
@@ -28,6 +27,7 @@ def regex_tokenizer(text, G, skip_whitespaces=True): #retorna los tokens de las 
             token = Token(char, G['symbol'])
             special_char = False            
         elif char == '\\':
+            x = 0
             special_char = True
             continue 
         else:
@@ -49,11 +49,11 @@ def regex_automaton(regex):
         regex (str): The regular expression.
     
     Returns:
-        Automaton: The minimized deterministic finite automaton (DFA) representing the regular expression.
+        Automaton: The deterministic finite automaton (DFA) representing the regular expression.
     """
     # This parser needs to be a global variable because it is shared across the grammar.
      parser = metodo_predictivo_no_recursivo(G)
-     regex_tokens = regex_tokenizer(regex,G)
+     regex_tokens = regex_tokenizer(regex,G, False)
      regex_parser = parser(regex_tokens)
      regex_ast = evaluate_parse(regex_parser,regex_tokens)
      regex_nfa = regex_ast.evaluate()
