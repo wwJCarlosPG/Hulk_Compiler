@@ -148,10 +148,24 @@ class VoidType(Type):
 
 class IntType(Type):
     def __init__(self):
-        Type.__init__(self, 'int')
+        Type.__init__(self, 'number')
 
     def __eq__(self, other):
         return other.name == self.name or isinstance(other, IntType)
+
+class StringType(Type):
+    def __init__(self):
+        Type.__init__(self, 'string')
+
+    def __eq__(self, other):
+        return other.name == self.name or isinstance(other, StringType)
+    
+class BoolType(Type):
+    def __init__(self):
+        Type.__init__(self, 'bool')
+
+    def __eq__(self, other):
+        return other.name == self.name or isinstance(other, BoolType)
 
 class Context:
     def __init__(self):
