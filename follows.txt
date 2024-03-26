@@ -1,0 +1,44 @@
+<program>: {'$'}-False
+<exp>: set()-False
+<statement_seq>: {'id', 'cos', 'exp', 'log', 'if', 'rand', 'new', 'while', '{', 'for', 'string', '!', 'true', 'print', 'false', 'num', 'E', 'PI', '(', 'sqrt', 'let', 'sin'}-False
+<statement>: {'id', 'cos', 'exp', 'log', 'if', 'rand', 'type', 'new', 'function', 'while', '{', 'for', 'string', '!', 'true', 'print', 'false', 'num', 'E', 'PI', '(', 'sqrt', 'let', 'sin'}-False
+<inline_func_def>: set()-False
+<block_func_def>: set()-False
+<num_exp>: {'in', 'id', ',', 'else', 'elif', '==', '!=', '<', '@', ';', '>', '<=', '@@', '}', '>=', '|', '+', '$', '&', '-', ')'}-False
+<term>: {'in', 'id', ',', 'else', 'elif', '==', '!=', '<', '@', ';', '>', '<=', '@@', '}', '>=', '|', '+', '$', '&', '-', '*', '/', '%', ')'}-False
+<factor>: {'in', 'id', ',', 'else', 'elif', '==', '!=', '<', '@', ';', '>', '<=', '@@', '}', '>=', '|', '+', '$', '&', '-', '^', '*', '/', '%', ')'}-False
+<const>: {'in', 'id', ',', 'else', 'elif', '==', '!=', '<', ';', '@', '>', '<=', '@@', '}', '>=', '|', '+', '$', '&', '-', '^', '*', '/', '%', ')'}-False
+<math_func>: set()-False
+<func_call>: {'in', 'id', ',', 'else', 'elif', '==', '!=', '<', '@', ';', '>', '<=', '@@', '}', '>=', '|', '+', '$', '&', '-', '^', '*', '/', '%', ')'}-False
+<type_prop_func_call>: {'in', 'id', ',', 'else', 'elif', '==', '!=', '<', '@', ';', '>', '<=', '@@', '}', '>=', '|', '+', '$', '&', '-', '^', '*', '/', '%', ')'}-False
+<str_exp>: {'in', '<=', '@@', '}', '>=', 'id', ',', '|', '$', '&', 'else', 'elif', '==', '!=', ';', ')', '<', '@', '>'}-False
+<str_const>: {'in', 'id', ',', 'else', 'elif', '==', '!=', '<', ';', '@', '>', '<=', '@@', '}', '>=', '|', '$', '&', ')'}-False
+<math_func>: {'in', 'id', ',', 'else', 'elif', '==', '!=', '<', '@', ';', '>', '<=', '@@', '}', '>=', '|', '+', '$', '&', '-', '^', '*', '/', '%', ')'}-False
+<bool_exp>: {'in', '}', 'id', ',', '|', '$', 'else', 'elif', ')', ';'}-False
+<bool_term>: {'in', '}', 'id', ',', '|', '$', '&', 'else', 'elif', ')', ';'}-False
+<bool_factor>: {'in', '}', 'id', ',', '|', '$', '&', 'else', 'elif', ')', ';'}-False
+<bool_cmp>: {'in', '<=', '}', 'id', '>=', ',', '|', '$', '&', 'else', 'elif', '==', '!=', ')', '<', ';', '>'}-False
+<bool_const>: {'in', '<=', '}', 'id', '>=', ',', '|', '$', '&', 'else', 'elif', '==', '!=', ')', '<', ';', '>'}-False
+<conditionals_exp>: {'in', '}', 'id', ',', '$', 'elif', ')', 'else', ';'}-False
+<elif_list>: {'else'}-False
+<loop_exp>: {'in', '}', 'id', ',', '$', 'elif', ')', 'else', ';'}-False
+<range_exp>: {')'}-False
+<exp>: {'in', '}', 'id', ',', '$', 'elif', ')', 'else', ';'}-False
+<base_element>: {'in', 'id', ',', 'else', 'elif', '==', '!=', '<', '@', ';', '>', '<=', '@@', '}', '>=', '|', '+', '$', '&', '-', '^', '*', '/', '%', ')'}-False
+<var_def>: {'in', '}', 'id', ',', '$', 'elif', ')', 'else', ';'}-False
+<var_def_list>: {'in'}-False
+<destr_assignment>: {'in', '}', 'id', ',', '$', 'elif', ')', 'else', ';'}-False
+<inline_func_def>: {'id', 'cos', 'exp', 'log', 'if', 'rand', 'type', 'new', 'function', 'while', '{', 'for', 'string', '!', 'true', 'print', 'false', 'num', 'E', 'PI', '(', 'sqrt', 'let', 'sin'}-False
+<exp_list>: {')'}-False
+<block_func_def>: {'id', 'cos', 'exp', 'log', 'if', 'rand', 'type', 'new', 'function', 'while', '{', 'for', 'string', '!', 'true', 'print', 'false', 'num', 'E', 'PI', '(', 'sqrt', 'let', 'sin'}-False
+<block_exp>: {'id', 'cos', 'in', 'exp', 'log', ',', 'if', 'rand', 'else', 'type', 'elif', 'new', 'function', 'while', ';', '{', 'for', '}', 'string', '$', '!', 'true', 'print', 'false', 'num', 'E', 'PI', '(', 'sqrt', ')', 'let', 'sin'}-False
+<block_items>: {'}'}-False
+<type_def>: {'id', 'cos', 'exp', 'log', 'if', 'rand', 'type', 'new', 'function', 'while', '{', 'for', 'string', '!', 'true', 'print', 'false', 'num', 'E', 'PI', '(', 'sqrt', 'let', 'sin'}-False
+<type_header_def>: {';'}-False
+<type_body>: {';'}-False
+<type_body_statements>: {'}'}-False
+<type_body_item>: {'}', 'id'}-False
+<type_body_prop>: {'}', 'id'}-False
+<type_body_func>: {'}', 'id'}-False
+<type_instance>: {'in', '}', 'id', ',', '$', 'elif', ')', 'else', ';'}-False
+S': {'$'}-False

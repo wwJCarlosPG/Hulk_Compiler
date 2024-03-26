@@ -91,7 +91,6 @@ class Lexer:
         """
         remaining_text = text
         while True:
-            x = 0
             if skip_whitespaces and remaining_text[0].isspace():     
                 remaining_text = remaining_text[1:]
                 continue                

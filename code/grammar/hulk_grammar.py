@@ -61,7 +61,7 @@ type_, inherits_, new_, dot_ = G.Terminals('type inherits new .')
 
 # ~~~~~~~~~~~~~~~~ PRODUCTIONS ~~~~~~~~~~~~~~~~~~~
 program %= statement_seq + exp, lambda _, s: ProgramNode(s[1], s[2])
-program %= exp, lambda _, s: s[1] 
+program %= exp, lambda _, s: ProgramNode([],s[1]) 
 
 statement_seq %= statement, lambda _, s: [s[1]]
 statement_seq %= statement + statement_seq, lambda _, s: [s[1]] + s[2] 
