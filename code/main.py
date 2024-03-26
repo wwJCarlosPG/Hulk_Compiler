@@ -5,21 +5,25 @@ from grammar.hulk_grammar import get_grammar
 from cmp.evaluation import evaluate_reverse_parse
 
 G = get_grammar()
+
+text = '''while(x<=4){
+      print(x); 
+      x:=6;}'''
+print(f'Program:\n\n {text}')
+
+print("\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx Lexer results xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n")
 lexer = Lexer(table, G.EOF)
-print('OK')
-# text = '''while(x<=4){
-#       print(x); 
-#       x:=6;}'''
-# tokenss = lexer(text)
-# slr1 = SLR1Parser(G,verbose=True)
+tokenss = lexer(text)
 # print(tokenss)
-# print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
-# tokens = [token.token_type for token in tokenss]
-# out, oper = slr1(tokens)
-# # print(out)
-# # print(oper)
-# print()
-# print('OK')
-# print()
-# ast = evaluate_reverse_parse(out,oper,tokenss)
-# print()
+tokens = [token.token_type for token in tokenss]
+print('✅ OK')
+
+print("\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx Parser results xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n")
+slr1 = SLR1Parser(G)
+out, oper = slr1(tokens)
+# print(out)
+# print(oper)
+ast = evaluate_reverse_parse(out,oper,tokenss)
+print('✅ OK')
+
+
