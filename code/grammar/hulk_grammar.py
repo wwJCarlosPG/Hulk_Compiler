@@ -122,7 +122,7 @@ type_body %= obracket_ + cbracket_, lambda _, s: []
 type_body %= obracket_ + type_body_statements + cbracket_, lambda _, s: s[2]
 
 type_body_statements %= type_body_item, lambda _, s: s[1]
-type_body_statements %= type_body_item + type_body_statements, lambda _, s: s[1]
+type_body_statements %= type_body_item + type_body_statements, lambda _, s: s[1] + s[2]
 
 type_body_item %= type_body_prop, lambda _, s: s[1]
 type_body_item %= type_body_func, lambda _, s: s[1]
