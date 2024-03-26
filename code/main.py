@@ -6,14 +6,17 @@ from cmp.evaluation import evaluate_reverse_parse
 
 G = get_grammar()
 
-text = '''while(x<=4){
-      print(x); 
-      x:=6;}'''
-print(f'Program:\n\n {text}')
+program = '''
+while(x<=4){
+    print(x); 
+    x:=6;}
+'''
+
+print(f'Program:\n\n {program}')
 
 print("\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx Lexer results xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n")
 lexer = Lexer(table, G.EOF)
-tokenss = lexer(text)
+tokenss = lexer(program)
 # print(tokenss)
 tokens = [token.token_type for token in tokenss]
 print('✅ OK')
