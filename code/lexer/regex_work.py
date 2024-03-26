@@ -1,9 +1,11 @@
 from cmp.utils import Token
-from grammar.test_grammar import G
+from grammar.regex_grammar import G
 from cmp.tools.parsing import metodo_predictivo_no_recursivo
-from cmp.tools.evaluation import evaluate_parse
+from cmp.evaluation import evaluate_reverse_parse
 from automata_work import nfa_to_dfa
 from automaton_minimization import automata_minimization
+from parser.SLR1Parser import SLR1Parser
+
 def regex_tokenizer(text, G, skip_whitespaces=True): 
     """
     Tokenizes the regular expressions.
@@ -41,8 +43,9 @@ def regex_tokenizer(text, G, skip_whitespaces=True):
 
 
 
+parser = SLR1Parser(G) 
 def regex_automaton(regex):
-     """
+    """
     Constructs the automaton for a given regular expression.
     
     Args:
@@ -52,9 +55,11 @@ def regex_automaton(regex):
         Automaton: The deterministic finite automaton (DFA) representing the regular expression.
     """
     # This parser needs to be a global variable because it is shared across the grammar.
-     parser = metodo_predictivo_no_recursivo(G)
-     regex_tokens = regex_tokenizer(regex,G, False)
-     regex_parser = parser(regex_tokens)
-     regex_ast = evaluate_parse(regex_parser,regex_tokens)
-     regex_nfa = regex_ast.evaluate()
-     return automata_minimization(nfa_to_dfa(regex_nfa))
+    # parser = metodo_predictivo_no_recursivo(G)
+    regex_tokens = regex_tokenizer(regex,G, False)
+    token_types = [t.token_type for t in regex_tokens]
+    out, oper = parser(token_types)
+    regex_ast = evaluate_reverse_parse(out, oper, regex_tokens)
+
+    regex_nfa = regex_ast.evaluate()
+    return automata_minimization(nfa_to_dfa(regex_nfa))
