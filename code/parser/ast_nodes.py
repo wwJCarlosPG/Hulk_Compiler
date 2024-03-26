@@ -1,4 +1,4 @@
-from utils import Token
+from cmp.utils import Token
 
 class Node:
     def __init__(self, token):
@@ -16,7 +16,11 @@ class StatementNode(Node):
     pass
 
 
-# body_exp = <exp> | <block_exp>
+class ExpressionNode(Node):
+    pass
+
+
+# body_exp = ( <exp> | <block_exp> )
 class FuncDefNode(StatementNode):
     def __init__(self, id, params, body_expr, token):
         self.id = id
@@ -48,11 +52,6 @@ class TypeFuncDefNode(TypeBodyItemNode):
         self.params = params
         self.body = body
         self.token = Token(id.lex, 'typeFuncNode')
-
-
-
-class ExpressionNode(Node):
-    pass
 
 
 # Use also for <destr_assignation>

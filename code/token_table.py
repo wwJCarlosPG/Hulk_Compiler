@@ -23,6 +23,10 @@ alphanumeric = f'{letters}|{zero_digits}'
 alphanumeric_with_spaces = alphanumeric
 alphanumeric_with_spaces+='|'+ ' '
 alphanumeric_with_spaces+='|'+symbols
+alphanumeric = f'{letters}|{zero_digits}'
+alphanumeric_with_spaces = alphanumeric
+alphanumeric_with_spaces+='|'+ ' '
+alphanumeric_with_spaces+='|'+symbols
 table = [
     (string_, f'((")({alphanumeric_with_spaces})*("))'),
     (plus_, '+'),

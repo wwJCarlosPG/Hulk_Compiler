@@ -1,10 +1,7 @@
-import sys
-sys.path.append('code/lexer')
-sys.path.append('code/parser/grammar')
-sys.path.append('code/parser')
-from ast_regex_node import *
-from regex_work import regex_automaton
-from utils import State, Token
+from lexer.ast_regex_node import *
+from lexer.regex_work import regex_automaton
+from cmp.utils import Token
+from cmp.automata import State
 
 class Lexer:
     def __init__(self, table, eof):
