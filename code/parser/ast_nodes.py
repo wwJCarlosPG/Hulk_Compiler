@@ -24,6 +24,8 @@ class FuncDefNode(StatementNode):
     def __init__(self, id, params, body_expr, token):
         self.id = id
         self.params = params
+        self.params_types = ['any'] * len(params)
+        self.return_type = 'any'
         self.body = body_expr
         self.token = token
 
@@ -33,6 +35,8 @@ class TypeDefNode(StatementNode):
         self.id = id
         self.body = body
         self.token = token
+        self.params = params
+        self.params_types = ['any'] * len(params)
         self.parent = parent_id
         self.parent_params = parent_params
 
@@ -43,12 +47,15 @@ class TypePropDefNode(TypeBodyItemNode):
     def __init__(self, id, exp, token):
         self.id = id
         self.exp = exp
+        self.type = 'any'
         self.token = token
 
 class TypeFuncDefNode(TypeBodyItemNode):
     def __init__(self, id, params, body):
         self.id = id
         self.params = params
+        self.params_types = ['any'] * len(params)
+        self.return_type = 'any'
         self.body = body
         self.token = Token(id.lex, 'typeFuncNode')
 
