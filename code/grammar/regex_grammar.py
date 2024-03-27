@@ -1,4 +1,4 @@
-from lexer.ast_regex_node import *
+from lexer.ast_node import *
 from cmp.pycompiler import Grammar
 
 G = Grammar()
