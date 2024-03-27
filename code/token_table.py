@@ -1,7 +1,6 @@
 from grammar.hulk_grammar import *
 
-sym = [ 
-    '_', 
+sym = [  
     ',',
     ':',
     ';',
@@ -22,7 +21,7 @@ zero_digits = '|'.join(str(n) for n in range(0,10))
 letters = '|'.join(chr(n) for n in range(ord('a'),ord('z')+1))
 letters += letters.join('|')
 letters += '|'.join(chr(n) for n in range(ord('A'),ord('Z')+1))
-alphanumeric = f'{letters}|{zero_digits}'
+alphanumeric = f'{letters}|{zero_digits}'+'|'+'_'
 alphanumeric_with_symbols= alphanumeric+'|'+symbols
 
 table = [
