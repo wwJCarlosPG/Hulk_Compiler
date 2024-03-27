@@ -1,5 +1,6 @@
 from grammar.hulk_grammar import *
-s = [ 
+
+sym = [ 
     '_', 
     ',',
     ':',
@@ -10,25 +11,22 @@ s = [
     '!',
     '%',
     '.',
+    ' ',
     '\n',
-    '\t'
+    '\t',
+    # '\\"'
     ]
-symbols = '|'.join(str(n) for n in s)
+symbols = '|'.join(str(n) for n in sym)
 nonzero_digits = '|'.join(str(n) for n in range(1,10))
 zero_digits = '|'.join(str(n) for n in range(0,10))
 letters = '|'.join(chr(n) for n in range(ord('a'),ord('z')+1))
 letters += letters.join('|')
 letters += '|'.join(chr(n) for n in range(ord('A'),ord('Z')+1))
 alphanumeric = f'{letters}|{zero_digits}'
-alphanumeric_with_spaces = alphanumeric
-alphanumeric_with_spaces+='|'+ ' '
-alphanumeric_with_spaces+='|'+symbols
-alphanumeric = f'{letters}|{zero_digits}'
-alphanumeric_with_spaces = alphanumeric
-alphanumeric_with_spaces+='|'+ ' '
-alphanumeric_with_spaces+='|'+symbols
+alphanumeric_with_symbols= alphanumeric+'|'+symbols
+
 table = [
-    (string_, f'((")({alphanumeric_with_spaces})*("))'),
+    (string_, f'((")({alphanumeric_with_symbols})*("))'),
     (plus_, '+'),
     (minus_, '-'),
     (times_, '\*'),

@@ -1,5 +1,5 @@
-from lexer.ast_regex_node import *
-from lexer.regex_work import regex_automaton
+from lexer.ast_node import *
+from lexer.regex import Regex
 from cmp.utils import Token
 from cmp.automata import State
 
@@ -28,7 +28,7 @@ class Lexer:
         """
         regexs = []
         for n, (token_type, regex) in enumerate(table):            
-            automaton = regex_automaton(regex)           
+            automaton = Regex(regex).automaton          
             automaton = State.from_nfa(automaton)   
             for state in automaton:
                 if state.final:
