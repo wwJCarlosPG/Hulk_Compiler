@@ -13,9 +13,7 @@ class SLR1Parser(ShiftReduceParser):
     # self.action
     # self.goto
     # self._build_parsing_table
-    def otrafunc():
-        pass
-
+    
     def _build_parsing_table(self):
         """
         Build the parsing table for SLR(1) parser.

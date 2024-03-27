@@ -56,7 +56,7 @@ type_, inherits_, new_, dot_ = G.Terminals('type inherits new .')
 
 # ~~~~~~~~~~~~~~~~ PRODUCTIONS ~~~~~~~~~~~~~~~~~~~
 program %= statement_seq + exp, lambda _, s: ProgramNode(s[1], s[2])
-program %= exp, lambda _, s: s[1] 
+program %= exp, lambda _, s: ProgramNode([],s[1]) 
 
 statement_seq %= statement, lambda _, s: [s[1]]
 statement_seq %= statement + statement_seq, lambda _, s: [s[1]] + s[2] 
@@ -122,7 +122,7 @@ type_body %= obracket_ + cbracket_, lambda _, s: []
 type_body %= obracket_ + type_body_statements + cbracket_, lambda _, s: s[2]
 
 type_body_statements %= type_body_item, lambda _, s: s[1]
-type_body_statements %= type_body_item + type_body_statements, lambda _, s: s[1]
+type_body_statements %= type_body_item + type_body_statements, lambda _, s: s[1] + s[2]
 
 type_body_item %= type_body_prop, lambda _, s: s[1]
 type_body_item %= type_body_func, lambda _, s: s[1]

@@ -1,6 +1,5 @@
-from automata_work import NFA
+from lexer.automata import NFA
 from copy import copy
-from automata_work import DFA, nfa_to_dfa
 
 def automata_union(a1, a2):
     """
@@ -103,8 +102,6 @@ def automata_closure(a1):
     states = a1.states +  2
     finals = {start,final}
     return NFA(states, finals, transitions, start)
-
-
 
 def automata_complement(a1):
     """

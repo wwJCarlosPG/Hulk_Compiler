@@ -50,7 +50,7 @@ def compute_firsts(G: Grammar):
             change |= first_X.hard_update(local_first)
                     
     # First(Vt) + First(Vt) + First(RightSides)
-    with open('firsts.txt', 'w') as file:
+    with open('firsts.txt', 'w', encoding="utf-8") as file:
         file.write("Non Terminals:\n")
         for key, value in firsts.items():
             if isinstance(key, NonTerminal):
@@ -146,7 +146,7 @@ def compute_follows(G: Grammar, firsts):
                     if i == len_alpha-1 and Y.IsNonTerminal:
                         change |= follows[Y].update(follow_X)
 
-    with open('follows.txt', 'w') as file:
+    with open('follows.txt', 'w', encoding="utf-8") as file:
         for key, value in follows.items():
             file.write(f"{key}: {value}\n")
 

@@ -3,7 +3,8 @@ from cmp.utils import Token
 class Node:
     def __init__(self, token):
         self.token = token
-
+    def __repr__(self) -> str:
+        return "Node: "+self.token
 
 class ProgramNode(Node):
     def __init__(self, statement_seq, expr):
