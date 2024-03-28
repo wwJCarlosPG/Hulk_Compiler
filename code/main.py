@@ -29,7 +29,7 @@ type Animal(name){
     name = name;
     sound() => "Make Sound";
 };
-type Dog(name) {
+type Dog inherits Animal{
     name = name;
 };
 type Cat(name, skin) {

@@ -58,14 +58,15 @@ class Type:
         try:
             return next(attr for attr in self.attributes if attr.name == name)
         except StopIteration:
-            if self.parent is None:
-                raise SemanticError(
-                    f'Attribute "{name}" is not defined in {self.name}.')
-            try:
-                return self.parent.get_attribute(name)
-            except SemanticError:
-                raise SemanticError(
-                    f'Attribute "{name}" is not defined in {self.name}.')
+            # if self.parent is None:
+            #     raise SemanticError(
+            #         f'Attribute "{name}" is not defined in {self.name}.')
+            # try:
+            #     return self.parent.get_attribute(name)
+            # except SemanticError:
+            #     raise SemanticError(
+            #         f'Attribute "{name}" is not defined in {self.name}.')
+            raise SemanticError(f'Attribute "{name}" is not defined in {self.name}.')
 
     def define_attribute(self, name: str, typex):
         if name == "self":

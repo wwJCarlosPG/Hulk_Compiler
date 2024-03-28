@@ -34,7 +34,7 @@ class TypeBuilder:
                     current_type = self.context.get_type(item.id)
 
                     if item.parent:
-                        parent_type = self.context.get_type(item.parent.lex)
+                        parent_type = self.context.get_type(item.parent)
 
                         # parent defined
                         if parent_type in self.visited:
@@ -72,7 +72,7 @@ class TypeBuilder:
         # Set inheritance
         if node.parent:
             try:
-                parent_type = self.context.get_type(node.parent.lex)
+                parent_type = self.context.get_type(node.parent)
                 self.current_type.set_parent(parent_type)
             except SemanticError as ex:
                 self.errors.append(ex.text)
@@ -115,7 +115,7 @@ def build_graph(statements: List[TypeDefNode]):
         if item.parent:
             if item.id in adyacence_list:
                 if not startNode : startNode = item.id
-                adyacence_list[item.id].append(item.parent.lex)
+                adyacence_list[item.id].append(item.parent)
 
     return adyacence_list, startNode != None
 
