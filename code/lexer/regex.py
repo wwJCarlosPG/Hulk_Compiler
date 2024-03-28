@@ -1,5 +1,5 @@
 from cmp.utils import Token
-from grammar.regex_grammar import G
+from grammar.regex_grammar import G, symbol
 from cmp.tools.parsing import metodo_predictivo_no_recursivo
 from cmp.evaluation import evaluate_reverse_parse
 from lexer.automata import nfa_to_dfa, automata_minimization
@@ -12,7 +12,7 @@ class Regex():
         self.automaton = self.regex_automaton()
         pass
     
-    def regex_tokenizer(self, G, skip_whitespaces=True): 
+    def regex_tokenizer(self): 
         """
         Tokenizes the regular expressions.
         
@@ -27,15 +27,13 @@ class Regex():
         text = self.exp
         tokens = []    
         fixed_tokens = { lex: Token(lex, G[lex]) for lex in '| * ( ) ε'.split() }
-        special_char = False
+        is_escape = False
         for char in text:
-            if skip_whitespaces and char.isspace():
-                continue
-            elif special_char:
-                token = Token(char, G['symbol'])
-                special_char = False            
+            if is_escape:
+                token = Token(char, symbol)
+                is_escape = False            
             elif char == '\\':
-                special_char = True
+                is_escape = True
                 continue 
             else:
                 try:
@@ -58,7 +56,7 @@ class Regex():
         Returns:
             Automaton: The deterministic finite automaton (DFA) representing the regular expression.
         """
-        regex_tokens = self.regex_tokenizer(G, False)
+        regex_tokens = self.regex_tokenizer()
         token_types = [t.token_type for t in regex_tokens]
         parse, oper = parser(token_types)
         regex_ast = evaluate_reverse_parse(parse, oper, regex_tokens)
