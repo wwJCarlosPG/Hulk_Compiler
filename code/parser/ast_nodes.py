@@ -58,7 +58,7 @@ class TypeFuncDefNode(TypeBodyItemNode):
         self.params_types = ['any'] * len(params)
         self.return_type = 'any'
         self.body = body
-        self.token = Token(id.lex, 'typeFuncNode')
+        self.token = Token(id, 'typeFuncNode')
 
 
 # Use also for <destr_assignation>
@@ -140,7 +140,7 @@ class CallNode(AtomicNode):
     def __init__(self, id, params):
         self.id = id
         self.params = params
-        self.token = Token(id.lex, 'functionCall')
+        self.token = Token(id, 'functionCall')
 
 class TypePropCallNode(AtomicNode):
     def __init__(self, type_id, prop_id):

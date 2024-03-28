@@ -1,6 +1,7 @@
 from grammar.hulk_grammar import *
 
-sym = [ 
+
+sym = [  
     ',',
     ':',
     ';',
@@ -65,6 +66,7 @@ table = [
     (arrow_,'=>'),
     (new_,'new'),
     (type_,'type'),
+    (inherits_, 'inherits'),
     (print_,'print'),
     (sqrt_, 'sqrt'),
     (sin_,'sin'),

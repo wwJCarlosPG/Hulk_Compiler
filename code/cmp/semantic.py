@@ -30,6 +30,9 @@ class Method:
         params = ', '.join(f'{n}:{t.name}' for n, t in zip(
             self.param_names, self.param_types))
         return f'[method] {self.name}({params}): {self.return_type.name};'
+    
+    def __repr__(self):
+        return str(self)
 
     def __eq__(self, other):
         return other.name == self.name and \
@@ -55,14 +58,15 @@ class Type:
         try:
             return next(attr for attr in self.attributes if attr.name == name)
         except StopIteration:
-            if self.parent is None:
-                raise SemanticError(
-                    f'Attribute "{name}" is not defined in {self.name}.')
-            try:
-                return self.parent.get_attribute(name)
-            except SemanticError:
-                raise SemanticError(
-                    f'Attribute "{name}" is not defined in {self.name}.')
+            # if self.parent is None:
+            #     raise SemanticError(
+            #         f'Attribute "{name}" is not defined in {self.name}.')
+            # try:
+            #     return self.parent.get_attribute(name)
+            # except SemanticError:
+            #     raise SemanticError(
+            #         f'Attribute "{name}" is not defined in {self.name}.')
+            raise SemanticError(f'Attribute "{name}" is not defined in {self.name}.')
 
     def define_attribute(self, name: str, typex):
         if name == "self":

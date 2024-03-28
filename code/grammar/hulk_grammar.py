@@ -70,8 +70,8 @@ statement %= type_def, lambda _, s: s[1]
 inline_func_def %= function_ + id_ + opar_ + exp_list + cpar_ + arrow_ + exp + semicolon_, lambda _, s: FuncDefNode(s[2], s[4], s[7], s[1])
 inline_func_def %= function_ + id_ + opar_ + cpar_ + arrow_ + exp + semicolon_, lambda _, s: FuncDefNode(s[2], [], s[6], s[1])
 
-block_func_def %= function_ + id_ + opar_ + exp_list + cpar_ + block_exp, lambda _, s: FuncDefNode(s[2], s[4], s[6], s[1])
-block_func_def %= function_ + id_ + opar_ + cpar_ + block_exp, lambda _, s: FuncDefNode(s[2], [], s[5], s[1])
+block_func_def %= function_ + id_ + opar_ + exp_list + cpar_ + block_exp + semicolon_, lambda _, s: FuncDefNode(s[2], s[4], s[6], s[1])
+block_func_def %= function_ + id_ + opar_ + cpar_ + block_exp + semicolon_, lambda _, s: FuncDefNode(s[2], [], s[5], s[1])
 
 
 # Expression block
@@ -129,10 +129,10 @@ type_body_item %= type_body_func, lambda _, s: s[1]
 
 type_body_prop %= id_ + equals_ + exp + semicolon_, lambda _, s: [TypePropDefNode(s[1], s[3], s[2])]
 
-type_body_func %= id_ + opar_ + exp_list + cpar_ + arrow_ + exp, lambda _, s: [TypeFuncDefNode(s[1], s[3], s[6])]
-type_body_func %= id_ + opar_ + cpar_ + arrow_ + exp, lambda _, s: [TypeFuncDefNode(s[1], [], s[5])]
-type_body_func %= id_ + opar_ + exp_list + cpar_ + block_exp , lambda _, s: [TypeFuncDefNode(s[1], s[3], s[5])]
-type_body_func %= id_ + opar_ + cpar_ + block_exp, lambda _, s: [TypeFuncDefNode(s[1], [], s[4])]
+type_body_func %= id_ + opar_ + exp_list + cpar_ + arrow_ + exp + semicolon_, lambda _, s: [TypeFuncDefNode(s[1], s[3], s[6])]
+type_body_func %= id_ + opar_ + cpar_ + arrow_ + exp + semicolon_, lambda _, s: [TypeFuncDefNode(s[1], [], s[5])]
+type_body_func %= id_ + opar_ + exp_list + cpar_ + block_exp + semicolon_ , lambda _, s: [TypeFuncDefNode(s[1], s[3], s[5])]
+type_body_func %= id_ + opar_ + cpar_ + block_exp + semicolon_, lambda _, s: [TypeFuncDefNode(s[1], [], s[4])]
 
 type_instance %= new_ + id_ + opar_ + exp_list + cpar_, lambda _, s: InstanceNode(s[2], s[4], s[1])
 type_instance %= new_ + id_ + opar_ + cpar_, lambda _, s: InstanceNode(s[2], [], s[1])
