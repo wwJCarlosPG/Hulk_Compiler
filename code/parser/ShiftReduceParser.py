@@ -47,7 +47,8 @@ class ShiftReduceParser:
             if self.verbose: print(stack, '<---||--->', w[cursor:])
                 
             if (state, lookahead) not in self.action:
-                raise SyntaxError('Syntax error in Shift-Reduce parser')
+                snnipet = self.__getSnnipet__(w, cursor)
+                raise SyntaxError(' Symbol not expected:\n' + snnipet)
             
             action, tag = self.action[state, lookahead]
             
@@ -79,3 +80,37 @@ class ShiftReduceParser:
                 raise SyntaxError('Syntax error in Shift-Reduce parser')
 
         return output, operations
+
+    def __getSnnipet__(self, w, cursor):
+        position = cursor
+
+        if cursor < 10:
+            start = 0
+        else:
+            start = cursor - 10
+            position = 10
+
+        if cursor + 10 > len(w)-1:
+            end = len(w)-1
+        else:
+            end = cursor + 10
+
+        if cursor == 0:
+            return '', w[0:cursor]
+        if cursor == len(w)-1:
+            return w[start:cursor], ''
+        
+        tokens_list = w[start:end]
+        sizes = [len(x.Name) for x in tokens_list]
+        
+        first_line = ''
+        seconde_line = ''
+        for i in range(len(tokens_list)):
+            first_line += tokens_list[i].Name + ' '
+            if i == position:
+                seconde_line += ('^' * sizes[i]) + ' '
+            else:
+                seconde_line += (' ' * sizes[i]) + ' '
+
+    
+        return first_line + '\n' + seconde_line
