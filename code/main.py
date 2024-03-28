@@ -3,6 +3,8 @@ from lexer.lexer import Lexer
 from parser.SLR1Parser import SLR1Parser
 from grammar.hulk_grammar import get_grammar
 from cmp.evaluation import evaluate_reverse_parse
+from semantic_check.TypeCollector import TypeCollector
+from semantic_check.TypeBuilder import TypeBuilder
 
 G = get_grammar()
 
@@ -21,8 +23,23 @@ type Point(x, y) {
 };
 print("OK")
 '''
+program3 = '''
+type Animal(name){
+    name = name;
+    sound() => "Make Sound";
+};
+type Dog(name, age) {
+    name = name;
+    age = age;
+};
+type Cat(name, skin) {
+    name = name;
+    skin = skin;
+};
+print("OK")
+'''
 
-selector = 2
+selector = 3
 match selector:
     case 0:
         program = program0
@@ -30,6 +47,8 @@ match selector:
         program = program1
     case 2:
         program = program2
+    case 3:
+        program = program3
     case _:
         raise Exception("Selector error: selector out of range")
 
@@ -52,4 +71,19 @@ out, oper = slr1(tokens)
 ast = evaluate_reverse_parse(out,oper,tokenss)
 print('✅ OK')
 
+print("\nxxxxxxxxxxxxxxxxxxxxxxxxx Semantic-Checker results xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n")
+errors = []
 
+print("\nCollecting types...")
+collector = TypeCollector(errors)
+collector.visit(ast)
+
+context = collector.context
+
+collector_errors = len(errors)
+print(f"Found {collector_errors} errors")
+print('Context:')
+print(context)
+
+print()
+print('✅ OK')
