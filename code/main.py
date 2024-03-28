@@ -21,6 +21,7 @@ type Point(x, y) {
     x_prop = x;
     y_prop = y;
 };
+function AbsoluteMove(x, steps) => x + steps;
 print("OK")
 '''
 program3 = '''
