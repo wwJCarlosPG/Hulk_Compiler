@@ -31,7 +31,7 @@ class TypeBuilder:
             else:
                 # check method signature
                 for item in type_def_nodes:
-                    current_type = self.context.get_type(item.id.lex)
+                    current_type = self.context.get_type(item.id)
 
                     if item.parent:
                         parent_type = self.context.get_type(item.parent.lex)
@@ -66,7 +66,7 @@ class TypeBuilder:
 
     @visitor.when(TypeDefNode)
     def visit(self, node: TypeDefNode):
-        self.current_type = self.context.get_type(node.id.lex)
+        self.current_type = self.context.get_type(node.id)
         self.visited.add(self.current_type)
 
         # Set inheritance
@@ -88,7 +88,7 @@ class TypeBuilder:
     def visit(self, node: TypePropDefNode):
         try:
             prop_type = self.context.get_type(node.type)
-            self.current_type.define_attribute(node.id.lex, prop_type)
+            self.current_type.define_attribute(node.id, prop_type)
         except SemanticError as ex:
             self.errors.append(ex.text)
 
@@ -100,7 +100,7 @@ class TypeBuilder:
 
         try:
             return_type = self.context.get_type(node.return_type)
-            self.current_type.define_method(node.id.lex, param_names, param_types, return_type)
+            self.current_type.define_method(node.id, param_names, param_types, return_type)
         except SemanticError as ex:
             self.errors.append(ex.text)
 
@@ -108,14 +108,14 @@ class TypeBuilder:
 def build_graph(statements: List[TypeDefNode]):
     adyacence_list = dict()
     for item in statements:
-        adyacence_list[item.id.lex] = []
+        adyacence_list[item.id] = []
 
     startNode = None
     for item in statements:
         if item.parent:
-            if item.id.lex in adyacence_list:
-                if not startNode : startNode = item.id.lex
-                adyacence_list[item.id.lex].append(item.parent.lex)
+            if item.id in adyacence_list:
+                if not startNode : startNode = item.id
+                adyacence_list[item.id].append(item.parent.lex)
 
     return adyacence_list, startNode != None
 

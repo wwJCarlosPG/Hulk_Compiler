@@ -29,9 +29,8 @@ type Animal(name){
     name = name;
     sound() => "Make Sound";
 };
-type Dog(name, age) {
+type Dog(name) {
     name = name;
-    age = age;
 };
 type Cat(name, skin) {
     name = name;
@@ -83,8 +82,16 @@ context = collector.context
 
 collector_errors = len(errors)
 print(f"Found {collector_errors} errors")
-print('Context:')
+print()
+
+print("\nBuilding types...")
+builder = TypeBuilder(context, errors)
+builder.visit(ast)
+
+builder_errors = len(errors) - collector_errors
+print(f"Found {builder_errors} errors")
+
+print('\nContext:')
 print(context)
 
-print()
 print('✅ OK')
