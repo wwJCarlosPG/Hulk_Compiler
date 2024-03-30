@@ -34,9 +34,9 @@ while_, for_, range_ = G.Terminals('while for range')
 loop_exp, range_exp = G.NonTerminals('<loop_exp> <range_exp>')
 
 # expressions
-print_, self_= G.Terminals('print self')
+print_, self_, base_= G.Terminals('print self base')
 exp = G.NonTerminal('<exp>')
-base_element, self_call = G.NonTerminals('<base_element>, <self_call>')
+base_element, self_call, base_call = G.NonTerminals('<base_element> <self_call> <base_call>')
 
 # var assingnment
 let_, in_, equals_, coma_, destr_assign_ = G.Terminals('let in = , :=')
@@ -217,6 +217,7 @@ base_element %= id_ , lambda _, s: VarNode(s[1])
 base_element %= func_call, lambda _, s: s[1]
 base_element %= type_func_call, lambda _, s: s[1]
 base_element %= self_call, lambda _, s: s[1]
+base_element %= base_call, lambda _, s: s[1]
 
 
 
@@ -229,6 +230,9 @@ type_func_call %= id_ + dot_ + id_ + opar_ + exp_list + cpar_, lambda _, s: Type
 self_call %= self_ + dot_ + id_, lambda _, s: SelfCallPropNode(s[1], s[3])
 self_call %= self_ + dot_ + id_ + opar_ + cpar_, lambda _, s: SelfCallFuncNode(s[1], s[3])
 self_call %= self_ + dot_ + id_ + opar_ + exp_list + cpar_, lambda _, s: SelfCallFuncNode(s[1], s[3],s[5])
+
+base_call %= base_ + opar_ + cpar_, lambda _, s: BaseCallNode(s[1])
+base_call %= base_ + opar_ + exp_list + cpar_, lambda _, s: BaseCallNode(s[1], s[3])
 
 # Built-in functions
 math_func %= sqrt_ + opar_ + num_exp + cpar_, lambda _, s: UnaryNumOperationNode(s[3], s[1])

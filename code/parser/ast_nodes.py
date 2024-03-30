@@ -172,6 +172,12 @@ class SelfCallFuncNode(AtomicNode):
         self.id = id
         self.params = params
 
+class BaseCallNode(AtomicNode):
+    def __init__(self, token, params=[]):
+        self.token = token
+        self.params = params
+
+
 class NumNode(AtomicNode):
     pass
 class StringNode(AtomicNode):

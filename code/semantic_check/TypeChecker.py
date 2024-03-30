@@ -22,8 +22,8 @@ def iterabilizate(body):
 class TypeChecker:
     def __init__(self, context, errors=[]):
         self.context: Context = context
-        self.current_type:Type = None
-        self.current_method = None
+        self.current_type: Type = None
+        self.current_method: Method = None
         self.errors: list = errors
 
     @visitor.on('node')
@@ -493,20 +493,52 @@ class TypeChecker:
     def visit(self, node: SelfCallFuncNode, scope:Scope):
         try:
             method: Method = self.current_type.get_method(node.id)
-            for i, param in enumerate(node.params):
-                body = iterabilizate(param)
-                param_type_name = None
-                for item in body:
-                    param_type_name = self.visit(item, scope)
+            if len(node.params) == len(method.param_names):
+                for i, param in enumerate(node.params):
+                    body = iterabilizate(param)
+                    param_type_name = None
+                    for item in body:
+                        param_type_name = self.visit(item, scope)
+                    
+                    param_type: Type = self.context.get_type(param_type_name)
+                    method_param_type = self.context.get_type(method.param_types[i])
+
+                    if not param_type.conforms_to(method_param_type):
+                        self.errors.append(SemanticError(f"Types provided in {method.name} function call do not match with expected types"))
+                        return 'error'
+
+                return method.return_type
+            else:
+                self.errors.append(SemanticError(f"{len(method.param_names)} parameters expected for {node.id} call."))
                 
-                param_type: Type = self.context.get_type(param_type_name)
-                method_param_type = self.context.get_type(method.param_types[i])
+        except SemanticError as e:
+            self.errors.append(e)
+            return 'error'
 
-                if not param_type.conforms_to(method_param_type):
-                    self.errors.append(SemanticError(f"Types provided in {method.name} function call do not match with expected types"))
-                    return 'error'
 
-            return method.return_type
+    @visitor.when(BaseCallNode)
+    def visit(self, node: BaseCallNode, scope):
+        method_name = self.current_method.name
+        parent = self.current_type.parent
+
+        try:
+            parent_method: Method = parent.get_method(method_name)
+            if len(node.params) == len(parent_method.param_names):
+                for i, param in enumerate(node.params):
+                    body = iterabilizate(param)
+                    param_type_name = None
+                    for item in body:
+                        param_type_name = self.visit(item, scope)
+                    
+                    param_type: Type = self.context.get_type(param_type_name)
+                    parent_method_param_type = self.context.get_type(parent_method.param_types[i])
+
+                    if not param_type.conforms_to(parent_method_param_type):
+                        self.errors.append(SemanticError(f"Types provided in {parent_method.name} function call do not match with expected types"))
+                        return 'error'
+                return parent_method.return_type
+            else:
+                self.errors.append(SemanticError(f"{len(parent_method.param_names)} parameters expected for base method call."))
         except SemanticError as e:
             self.errors.append(e)
             return 'error'
