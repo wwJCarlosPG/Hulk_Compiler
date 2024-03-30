@@ -216,6 +216,7 @@ base_element %= false_, lambda _, s: BoolNode(s[1])
 base_element %= id_ , lambda _, s: VarNode(s[1])
 base_element %= func_call, lambda _, s: s[1]
 base_element %= type_func_call, lambda _, s: s[1]
+base_element %= self_call, lambda _, s: s[1]
 
 
 
