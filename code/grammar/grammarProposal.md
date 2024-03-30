@@ -77,7 +77,7 @@
 
 
 <!-- base_element --> 
-<base_element> -> true | false | string | id | <fun_call> | <type_func_call>
+<base_element> -> true | false | string | id | <fun_call> | <type_func_call> | <self_call>
 
 
 <!-- calls -->
