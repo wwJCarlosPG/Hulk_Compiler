@@ -9,7 +9,7 @@ from semantic_check.TypeBuilder import TypeBuilder
 G = get_grammar()
 
 program0 = '''
-print("Hello, World")
+print("Hello, World, \\"dear\\" Mr. while")
 '''
 program1 = '''
 while(x<=4){
@@ -28,10 +28,10 @@ program3 = '''
 type Animal(name){
     name = name;
     sound() => "Make Sound";
-};
+}
 type Dog inherits Animal{
     name = name;
-};
+}
 type Cat(name, skin) {
     name = name;
     skin = skin;
@@ -39,7 +39,47 @@ type Cat(name, skin) {
 print("OK")
 '''
 
-selector = 3
+program4 = '''
+    let a  = 10 in while (b<=0){   
+        print(a);
+        a:=a-1;
+    
+    }
+'''
+
+program5 = '''
+    function gcd(a, b) {
+        while (a > 0){
+            let m = a % b in {
+                b := a;
+                a := m;
+            };
+        };
+    }
+    for (x in range(0, 10)) print(x)
+'''
+program6 = '''
+    function gcd(a, b) {
+        while (a > 0){
+            let m = a % b in {
+                b := a;
+                a := m;
+            };
+        };
+    }
+    print(5)
+'''
+program7 = '''
+    function A() => let x=5 in {print(5);};
+    print(5)
+'''
+program8 ='''
+    function A(){
+        let x=5 in print(5);
+    }
+    print(5);
+'''
+selector = 8
 match selector:
     case 0:
         program = program0
@@ -49,6 +89,16 @@ match selector:
         program = program2
     case 3:
         program = program3
+    case 4:
+        program= program4
+    case 5:
+        program= program5
+    case 6:
+        program= program6
+    case 7:
+        program= program7
+    case 8:
+        program= program8
     case _:
         raise Exception("Selector error: selector out of range")
 
@@ -64,7 +114,7 @@ tokens = [token.token_type for token in tokenss]
 print('✅ OK')
 
 print("\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx Parser results xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n")
-slr1 = SLR1Parser(G)
+slr1 = SLR1Parser(G, verbose=True)
 out, oper = slr1(tokens)
 # print(out)
 # print(oper)

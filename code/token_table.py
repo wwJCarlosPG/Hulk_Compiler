@@ -75,7 +75,7 @@ table = [
     (log_,'log'),
     (rand_,'rand'),     
     (id_, f'(({letters})({alphanumeric})*)'),
-    (num_, f'(({nonzero_digits})({zero_digits})*)'),
+    (num_, f'0|(({nonzero_digits})({zero_digits})*)'),
     (at_,'@'),
     (doubleat_,'@@')
 ]
