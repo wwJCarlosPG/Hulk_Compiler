@@ -48,9 +48,9 @@ class TypeBuilder:
                                     current_method = current_type_methods[method_name][0]
                                     parent_method = parent_type_methods[method_name][0]
 
-                                    if len(current_method.param_types) == len(parent_method.param_types):
-                                        if(current_method.return_type.name == parent_method.return_type.name):
-                                            for i in range(len(current_method.param_types)):
+                                    if len(current_method.param_types) == len(parent_method.param_types): # same params length
+                                        if(current_method.return_type.name == parent_method.return_type.name): # same return type
+                                            for i in range(len(current_method.param_types)): # same params types
                                                 current_param_type = current_method.param_types[i]
                                                 parent_param_type = parent_method.param_types[i]
 
@@ -75,7 +75,7 @@ class TypeBuilder:
                 parent_type = self.context.get_type(node.parent)
                 self.current_type.set_parent(parent_type)
             except SemanticError as ex:
-                self.errors.append(ex.text)
+                self.errors.append(ex)
         else:
             parent_type = self.context.get_type('object')
             self.current_type.set_parent(parent_type)
@@ -90,7 +90,7 @@ class TypeBuilder:
             prop_type = self.context.get_type(node.type)
             self.current_type.define_attribute(node.id, prop_type)
         except SemanticError as ex:
-            self.errors.append(ex.text)
+            self.errors.append(ex)
 
 
     @visitor.when(TypeFuncDefNode)
@@ -102,7 +102,7 @@ class TypeBuilder:
             return_type = self.context.get_type(node.return_type)
             self.current_type.define_method(node.id, param_names, param_types, return_type)
         except SemanticError as ex:
-            self.errors.append(ex.text)
+            self.errors.append(ex)
 
 
 def build_graph(statements: List[TypeDefNode]):

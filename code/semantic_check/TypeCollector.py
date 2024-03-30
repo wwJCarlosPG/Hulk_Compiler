@@ -31,6 +31,7 @@ class TypeCollector(object):
     @visitor.when(TypeDefNode)
     def visit(self, node: TypeDefNode):
         try:
-            self.context.create_type(node.id)
+            self.context.create_type(node.id.lex, node.params, node.params_types)
+
         except SemanticError as ex:
-            self.errors.append(ex.text)
+            self.errors.append(ex)
