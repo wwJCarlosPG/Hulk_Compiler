@@ -38,8 +38,8 @@
 <type_body_items> ->  <type_body_prop> <type_body_func>  
   | <type_body_prop> <type_body_func> <type_body_items> 
 <type_body_prop> -> id = <exp> ; | e
-<type_body_func> -> id ( <exp_list> ) => <exp> | id ( ) => <exp> | id ( <exp_list> ) <block_exp> 
-    | id ( ) <block_exp> | e
+<type_body_func> -> id ( <exp_list> ) => <exp> ; | id ( ) => <exp> ; | id ( <exp_list> ) <block_exp> ;
+    | id ( ) <block_exp> ; | e
 <type_instance> -> new id ( <exp_list> ) | new id ( )
 
 

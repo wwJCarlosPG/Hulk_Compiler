@@ -35,9 +35,16 @@ class SLR1Parser(ShiftReduceParser):
         DFA.graph().write("dfa.dot", format='raw', encoding='utf-8')
 
 
-        for i, node in enumerate(DFA):
-            if self.verbose: print(i, '\t', '\n\t '.join(str(x) for x in node.state), '\n')
-            node.idx = i
+        with open('states.txt', 'w') as file:
+            for i, node in enumerate(DFA):
+
+                if self.verbose:
+                    file.write(f"{i}\t")
+                    file.write('\n\t'.join(str(x) for x in node.state))
+                    file.write('\n')
+                    # print(i, '\t', '\n\t '.join(str(x) for x in node.state), '\n')
+
+                node.idx = i
 
         for node in DFA:
             idx = node.idx

@@ -51,24 +51,27 @@ type_def, type_header_def, type_body, type_body_statements, type_body_item, type
 type_, inherits_, new_, dot_ = G.Terminals('type inherits new .')
 
 
-
+optional_semicolon = G.NonTerminal('<optional_semicolon>')
 
 
 # ~~~~~~~~~~~~~~~~ PRODUCTIONS ~~~~~~~~~~~~~~~~~~~
-program %= statement_seq + exp, lambda _, s: ProgramNode(s[1], s[2])
-program %= exp, lambda _, s: ProgramNode([],s[1]) 
+program %= statement_seq + exp + optional_semicolon, lambda _, s: ProgramNode(s[1], s[2])
+program %= exp + optional_semicolon, lambda _, s: ProgramNode([],s[1]) 
 
 statement_seq %= statement, lambda _, s: [s[1]]
 statement_seq %= statement + statement_seq, lambda _, s: [s[1]] + s[2] 
 
 
-statement %= inline_func_def, lambda _, s: s[1] 
-statement %= block_func_def, lambda _, s: s[1] 
-statement %= type_def, lambda _, s: s[1] 
+statement %= inline_func_def + semicolon_, lambda _, s: s[1] 
+statement %= block_func_def + optional_semicolon, lambda _, s: s[1] 
+statement %= type_def + optional_semicolon, lambda _, s: s[1]
+
+optional_semicolon %= semicolon_, lambda _, s: s[1]
+optional_semicolon %= G.Epsilon, lambda _, s: _
 
 # Function definitions
-inline_func_def %= function_ + id_ + opar_ + exp_list + cpar_ + arrow_ + exp + semicolon_, lambda _, s: FuncDefNode(s[2], s[4], s[7], s[1])
-inline_func_def %= function_ + id_ + opar_ + cpar_ + arrow_ + exp + semicolon_, lambda _, s: FuncDefNode(s[2], [], s[6], s[1])
+inline_func_def %= function_ + id_ + opar_ + exp_list + cpar_ + arrow_ + exp, lambda _, s: FuncDefNode(s[2], s[4], s[7], s[1])
+inline_func_def %= function_ + id_ + opar_ + cpar_ + arrow_ + exp, lambda _, s: FuncDefNode(s[2], [], s[6], s[1])
 
 block_func_def %= function_ + id_ + opar_ + exp_list + cpar_ + block_exp, lambda _, s: FuncDefNode(s[2], s[4], s[6], s[1])
 block_func_def %= function_ + id_ + opar_ + cpar_ + block_exp, lambda _, s: FuncDefNode(s[2], [], s[5], s[1])
@@ -111,9 +114,9 @@ exp %= bool_exp, lambda _, s: s[1]
 
 
 # Types definition
-type_def %= type_header_def + semicolon_, lambda _, s: s[1]
-type_def %= type_ + id_ + inherits_ + id_ + type_body + semicolon_, lambda _, s: TypeDefNode(s[2], s[5], s[1], [], s[4], [])
-type_def %= type_ + id_ + opar_ + exp_list + cpar_ + inherits_ + id_ + opar_ + exp_list + cpar_ + type_body + semicolon_, lambda _, s: TypeDefNode(s[2], s[11], s[1], s[4], s[7], s[9])
+type_def %= type_header_def, lambda _, s: s[1]
+type_def %= type_ + id_ + inherits_ + id_ + type_body, lambda _, s: TypeDefNode(s[2], s[5], s[1], [], s[4], [])
+type_def %= type_ + id_ + opar_ + exp_list + cpar_ + inherits_ + id_ + opar_ + exp_list + cpar_ + type_body, lambda _, s: TypeDefNode(s[2], s[11], s[1], s[4], s[7], s[9])
 
 type_header_def %= type_ + id_ + opar_ + exp_list + cpar_ + type_body, lambda _, s: TypeDefNode(s[2], s[6], s[1], s[4], None, [])
 type_header_def %= type_ + id_ + type_body, lambda _, s: TypeDefNode(s[2], s[3], s[1], [], None, [])
@@ -129,10 +132,10 @@ type_body_item %= type_body_func, lambda _, s: s[1]
 
 type_body_prop %= id_ + equals_ + exp + semicolon_, lambda _, s: [TypePropDefNode(s[1], s[3], s[2])]
 
-type_body_func %= id_ + opar_ + exp_list + cpar_ + arrow_ + exp, lambda _, s: [TypeFuncDefNode(s[1], s[3], s[6])]
-type_body_func %= id_ + opar_ + cpar_ + arrow_ + exp, lambda _, s: [TypeFuncDefNode(s[1], [], s[5])]
-type_body_func %= id_ + opar_ + exp_list + cpar_ + block_exp , lambda _, s: [TypeFuncDefNode(s[1], s[3], s[5])]
-type_body_func %= id_ + opar_ + cpar_ + block_exp, lambda _, s: [TypeFuncDefNode(s[1], [], s[4])]
+type_body_func %= id_ + opar_ + exp_list + cpar_ + arrow_ + exp + semicolon_, lambda _, s: [TypeFuncDefNode(s[1], s[3], s[6])]
+type_body_func %= id_ + opar_ + cpar_ + arrow_ + exp + semicolon_, lambda _, s: [TypeFuncDefNode(s[1], [], s[5])]
+type_body_func %= id_ + opar_ + exp_list + cpar_ + block_exp + semicolon_ , lambda _, s: [TypeFuncDefNode(s[1], s[3], s[5])]
+type_body_func %= id_ + opar_ + cpar_ + block_exp + semicolon_, lambda _, s: [TypeFuncDefNode(s[1], [], s[4])]
 
 type_instance %= new_ + id_ + opar_ + exp_list + cpar_, lambda _, s: InstanceNode(s[2], s[4], s[1])
 type_instance %= new_ + id_ + opar_ + cpar_, lambda _, s: InstanceNode(s[2], [], s[1])
@@ -221,7 +224,6 @@ func_call %= id_ + opar_ + exp_list + cpar_, lambda _, s: CallNode(s[1], s[3])
 
 type_prop_func_call %= id_ + dot_ + id_ + opar_ + cpar_, lambda _, s: TypeFuncCallNode(s[1], s[3], [])
 type_prop_func_call %= id_ + dot_ + id_ + opar_ + exp_list + cpar_, lambda _, s: TypeFuncCallNode(s[1], s[3], s[5])
-type_prop_func_call %= id_ + dot_ + id_, lambda _, s: TypePropCallNode(s[1], s[3])
 
 
 # Built-in functions

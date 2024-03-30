@@ -3,3 +3,8 @@
 **/follows.txt
 **/nfa.dot
 **/dfa.dot
+**/states.txt
+firsts.txt
+follows.txt
+nfa.dot
+dfa.dot
