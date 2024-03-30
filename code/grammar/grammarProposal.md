@@ -77,13 +77,14 @@
 
 
 <!-- base_element --> 
-<base_element> -> true | false | string | id | <fun_call> | <type_func_call> | <self_call>
+<base_element> -> true | false | string | id | <fun_call> | <type_func_call> | <self_call> | <base_call>
 
 
 <!-- calls -->
 <func_call> -> id ( <exp_list> )
 <type_func_call> -> id . id ( ) | id . id ( <exp_list> )
 <self_call> -> self . id | self . id ( ) | self . id ( <exp_list> )
+<base_call> -> base ( ) | base ( <exp_list> )
 
 
 <!-- math_func -->

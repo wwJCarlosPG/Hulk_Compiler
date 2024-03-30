@@ -67,6 +67,8 @@ table = [
     (new_,'new'),
     (type_,'type'),
     (inherits_, 'inherits'),
+    (self_, 'self'),
+    (base_, 'base'),
     (print_,'print'),
     (sqrt_, 'sqrt'),
     (sin_,'sin'),
