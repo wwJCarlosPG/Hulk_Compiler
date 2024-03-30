@@ -152,7 +152,7 @@ elif_list %= elif_ + opar_ + bool_exp + cpar_ + exp + elif_list, lambda _, s: [E
 
 # Loops
 loop_exp %= while_ + opar_ + bool_exp + cpar_ + exp, lambda _, s: WhileNode(s[3], s[5], s[1]) 
-loop_exp %= for_ + opar_ + id_ + in_ + range_exp + cpar_ + exp, lambda _, s: ForNode(s[5], s[7], s[1])
+loop_exp %= for_ + opar_ + id_ + in_ + range_exp + cpar_ + exp, lambda _, s: ForNode(s[3], s[5], s[7], s[1])
 range_exp %= range_ + opar_ + num_exp + coma_ + num_exp + cpar_, lambda _, s: RangeNode(s[3], s[5], s[1])
 
 

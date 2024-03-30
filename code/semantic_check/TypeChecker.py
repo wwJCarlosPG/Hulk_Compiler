@@ -318,10 +318,11 @@ class TypeChecker:
 
     @visitor.when(ForNode)
     def visit(self, node: ForNode, scope: Scope):
-        self.visit(node.iterable, scope)
-
         child_scope = scope.create_child()
-
+        
+        iterable_type = self.visit(node.iterable, scope)
+        child_scope.define_variable(node.id, iterable_type)
+        
         body = iterabilizate(node.body)
 
         exp_type_name = None
@@ -355,7 +356,7 @@ class TypeChecker:
             self.errors.append(SemanticError(INCOMPATIBLE_TYPES % (end_type_name, 'number')))
             return 'error'
 
-        return 'object'       
+        return 'number'       
      
     
     @visitor.when(PrintNode)

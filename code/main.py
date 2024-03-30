@@ -68,7 +68,7 @@ program5 = '''
             };
         };
     }
-    for (x in range(0, 10)) print(x)
+    for (x in range(gcd(6,2), 10)) print(x)
 '''
 program6 = '''
     function gcd(a, b) {

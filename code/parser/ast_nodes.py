@@ -109,7 +109,8 @@ class WhileNode(ExpressionNode):
 
 
 class ForNode(ExpressionNode):
-    def __init__(self, iterable, body, token):
+    def __init__(self, id, iterable, body, token):
+        self.id = id
         self.iterable = iterable
         self.body = body
         self.token = token
