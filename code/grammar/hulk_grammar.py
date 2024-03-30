@@ -11,7 +11,7 @@ exp, statement_seq, statement, inline_func_def, block_func_def = G.NonTerminals(
 
 # num
 plus_, minus_, times_, div_, mod_, pow_, opar_, cpar_, num_, E_const_, PI_const_, id_ = G.Terminals('+ - * / % ^ ( ) num E PI id')
-num_exp, term, factor, const, math_func, func_call, type_prop_func_call = G.NonTerminals('<num_exp> <term> <factor> <const> <math_func> <func_call> <type_prop_func_call>')
+num_exp, term, factor, const, math_func, func_call, type_func_call = G.NonTerminals('<num_exp> <term> <factor> <const> <math_func> <func_call> <type_prop_func_call>')
 
 # string
 at_, doubleat_, string_ = G.Terminals('@ @@ string')
@@ -215,15 +215,15 @@ base_element %= true_, lambda _, s: BoolNode(s[1])
 base_element %= false_, lambda _, s: BoolNode(s[1])
 base_element %= id_ , lambda _, s: VarNode(s[1])
 base_element %= func_call, lambda _, s: s[1]
-base_element %= type_prop_func_call, lambda _, s: s[1]
+base_element %= type_func_call, lambda _, s: s[1]
 
 
 
 # Calls
 func_call %= id_ + opar_ + exp_list + cpar_, lambda _, s: CallNode(s[1], s[3])
 
-type_prop_func_call %= id_ + dot_ + id_ + opar_ + cpar_, lambda _, s: TypeFuncCallNode(s[1], s[3], [])
-type_prop_func_call %= id_ + dot_ + id_ + opar_ + exp_list + cpar_, lambda _, s: TypeFuncCallNode(s[1], s[3], s[5])
+type_func_call %= id_ + dot_ + id_ + opar_ + cpar_, lambda _, s: TypeFuncCallNode(s[1], s[3], [])
+type_func_call %= id_ + dot_ + id_ + opar_ + exp_list + cpar_, lambda _, s: TypeFuncCallNode(s[1], s[3], s[5])
 
 
 # Built-in functions
