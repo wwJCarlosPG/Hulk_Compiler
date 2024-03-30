@@ -184,17 +184,8 @@ class UnaryLogicOperationNode(UnaryNode):
     pass
 
 
-class SqrtNode(UnaryNumOperationNode):
-    pass
-class SinNode(UnaryNumOperationNode):
-    pass
-class CosNode(UnaryNumOperationNode):
-    pass
-class ExpNode(UnaryNumOperationNode):
-    pass
 class NotNode(UnaryLogicOperationNode):
     pass
-
 
 
 class BinaryNode(ExpressionNode):
@@ -212,37 +203,13 @@ class BinaryStringOperationNode(BinaryNode):
     pass
 
 
-class PlusNode(BinaryNumOperationNode):
-    pass
-class MinusNode(BinaryNumOperationNode):
-    pass
-class StartNode(BinaryNumOperationNode):
-    pass
-class DivNode(BinaryNumOperationNode):
-    pass
-class ModNode(BinaryNumOperationNode):
-    pass
-class PowNode(BinaryNumOperationNode):
-    pass
-class LogNode(BinaryNumOperationNode):
+class EqualDiffNode(BinaryLogicOperationNode):
     pass
 
+class ComparisonNode(BinaryLogicOperationNode):
+    pass
 
-class EqualNode(BinaryLogicOperationNode):
-    pass
-class DifferenceNode(BinaryLogicOperationNode):
-    pass
-class LessThanNode(BinaryLogicOperationNode):
-    pass
-class LessEqualThanNode(BinaryLogicOperationNode):
-    pass
-class GreaterThanNode(BinaryLogicOperationNode):
-    pass
-class GreaterEqualThanNode(BinaryLogicOperationNode):
-    pass
-class AndNode(BinaryLogicOperationNode):
-    pass
-class OrNode(BinaryLogicOperationNode):
+class AndOrNode(BinaryLogicOperationNode):
     pass
 
 

@@ -158,21 +158,21 @@ range_exp %= range_ + opar_ + num_exp + coma_ + num_exp + cpar_, lambda _, s: Ra
 
 
 # boolean
-bool_exp %= bool_exp + or_logic_c_ + bool_term, lambda _, s: OrNode(s[1], s[3], s[2])
+bool_exp %= bool_exp + or_logic_c_ + bool_term, lambda _, s: AndOrNode(s[1], s[3], s[2])
 bool_exp %= bool_term, lambda _, s: s[1]
 
-bool_term %= bool_term + and_logic_c_ + bool_factor, lambda _, s: AndNode(s[1], s[3], s[2])
+bool_term %= bool_term + and_logic_c_ + bool_factor, lambda _, s: AndOrNode(s[1], s[3], s[2])
 bool_term %= bool_factor, lambda _, s: s[1]
 
 bool_factor %= not_logic_c_ + bool_factor, lambda _, s: NotNode(s[2], s[1])
 bool_factor %= bool_cmp, lambda _, s: s[1]
 
-bool_cmp %= bool_cmp + doubleequals_c_ + bool_const, lambda _, s: EqualNode(s[1], s[3], s[2])
-bool_cmp %= bool_cmp + different_c_ + bool_const, lambda _, s: DifferenceNode(s[1], s[3], s[2])
-bool_cmp %= bool_cmp + lt_c_ + bool_const, lambda _, s: LessThanNode(s[1], s[3], s[2])
-bool_cmp %= bool_cmp + gt_c_ + bool_const, lambda _, s: GreaterThanNode(s[1], s[3], s[2])
-bool_cmp %= bool_cmp + get_c_ + bool_const, lambda _, s: GreaterEqualThanNode(s[1], s[3], s[2])
-bool_cmp %= bool_cmp + let_c_ + bool_const, lambda _, s: LessEqualThanNode(s[1], s[3], s[2])
+bool_cmp %= bool_cmp + doubleequals_c_ + bool_const, lambda _, s: EqualDiffNode(s[1], s[3], s[2])
+bool_cmp %= bool_cmp + different_c_ + bool_const, lambda _, s: EqualDiffNode(s[1], s[3], s[2])
+bool_cmp %= bool_cmp + lt_c_ + bool_const, lambda _, s: ComparisonNode(s[1], s[3], s[2])
+bool_cmp %= bool_cmp + gt_c_ + bool_const, lambda _, s: ComparisonNode(s[1], s[3], s[2])
+bool_cmp %= bool_cmp + get_c_ + bool_const, lambda _, s: ComparisonNode(s[1], s[3], s[2])
+bool_cmp %= bool_cmp + let_c_ + bool_const, lambda _, s: ComparisonNode(s[1], s[3], s[2])
 bool_cmp %= bool_const, lambda _, s: s[1]
 
 bool_const %= str_exp, lambda _, s: s[1]
@@ -180,8 +180,8 @@ bool_const %= str_exp, lambda _, s: s[1]
 
 
 # str
-str_exp %= str_exp + at_ + str_const, lambda _, s: ConcatNode(s[1], s[3], s[2])
-str_exp %= str_exp + doubleat_ + str_const, lambda _, s: DoubleConcatNode(s[1], s[3], s[2])
+str_exp %= str_exp + at_ + str_const, lambda _, s: BinaryStringOperationNode(s[1], s[3], s[2])
+str_exp %= str_exp + doubleat_ + str_const, lambda _, s: BinaryStringOperationNode(s[1], s[3], s[2])
 str_exp %= str_const, lambda _, s: s[1]
 
 str_const %= num_exp, lambda _, s: s[1]
@@ -189,16 +189,16 @@ str_const %= num_exp, lambda _, s: s[1]
 
 
 # num
-num_exp %= num_exp + plus_ + term, lambda _, s: PlusNode(s[1], s[3], s[2])
-num_exp %= num_exp + minus_ + term, lambda _, s: MinusNode(s[1], s[3], s[2])
+num_exp %= num_exp + plus_ + term, lambda _, s: BinaryNumOperationNode(s[1], s[3], s[2])
+num_exp %= num_exp + minus_ + term, lambda _, s: BinaryNumOperationNode(s[1], s[3], s[2])
 num_exp %= term, lambda _, s: s[1]
 
-term %= term + times_ + factor, lambda _, s: StartNode(s[1], s[3], s[2]) 
-term %= term + div_ + factor, lambda _, s: DivNode(s[1], s[3], s[2]) 
-term %= term + mod_ + factor, lambda _, s: ModNode(s[1], s[3], s[2]) 
+term %= term + times_ + factor, lambda _, s: BinaryNumOperationNode(s[1], s[3], s[2]) 
+term %= term + div_ + factor, lambda _, s: BinaryNumOperationNode(s[1], s[3], s[2]) 
+term %= term + mod_ + factor, lambda _, s: BinaryNumOperationNode(s[1], s[3], s[2]) 
 term %= factor, lambda _, s: s[1]
 
-factor %= factor + pow_ + const, lambda _, s: PowNode(s[1], s[3], s[2]) 
+factor %= factor + pow_ + const, lambda _, s: BinaryNumOperationNode(s[1], s[3], s[2]) 
 factor %= const, lambda _, s: s[1]
 
 const %= opar_ + num_exp + cpar_, lambda _, s: s[2]
@@ -227,11 +227,11 @@ type_prop_func_call %= id_ + dot_ + id_ + opar_ + exp_list + cpar_, lambda _, s:
 
 
 # Built-in functions
-math_func %= sqrt_ + opar_ + num_exp + cpar_, lambda _, s: SqrtNode(s[3], s[1])
-math_func %= sin_ + opar_ + num_exp + cpar_, lambda _, s: SinNode(s[3], s[1]) 
-math_func %= cos_ + opar_ + num_exp + cpar_, lambda _, s: CosNode(s[3], s[1])
-math_func %= exp_ + opar_ + num_exp + cpar_, lambda _, s: ExpNode(s[3], s[1])
-math_func %= log_ + opar_ + num_exp + coma_ + num_exp + cpar_ , lambda _, s: LogNode(s[3], s[5], s[1])
+math_func %= sqrt_ + opar_ + num_exp + cpar_, lambda _, s: UnaryNumOperationNode(s[3], s[1])
+math_func %= sin_ + opar_ + num_exp + cpar_, lambda _, s: UnaryNumOperationNode(s[3], s[1]) 
+math_func %= cos_ + opar_ + num_exp + cpar_, lambda _, s: UnaryNumOperationNode(s[3], s[1])
+math_func %= exp_ + opar_ + num_exp + cpar_, lambda _, s: UnaryNumOperationNode(s[3], s[1])
+math_func %= log_ + opar_ + num_exp + coma_ + num_exp + cpar_ , lambda _, s: BinaryNumOperationNode(s[3], s[5], s[1])
 math_func %= rand_ + opar_ + cpar_, lambda _, s: RanNode(s[1])
 
 

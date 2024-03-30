@@ -574,4 +574,64 @@ class TypeChecker:
             return 'error'
 
         return 'string'
+    
+
+    @visitor.when(AndOrNode)
+    def visit(self, node, scope):
+        left_body = iterabilizate(node.left)
+        left_type = None
+        for item in left_body:
+            left_type = self.visit(item, scope)
+        
+        right_body = iterabilizate(node.right)
+        right_type = None
+        for item in right_body:
+            right_type = self.visit(item, scope)
+
+        if left_type != 'bool' or right_type != 'bool':
+            self.errors.append(INVALID_OPERATION %left_type %right_type)
+            return 'error'
+
+        return 'bool'
+    
+
+    @visitor.when(EqualDiffNode)
+    def visit(self, node, scope):
+        left_body = iterabilizate(node.left)
+        left_type = None
+        for item in left_body:
+            left_type = self.visit(item, scope)
+        
+        right_body = iterabilizate(node.right)
+        right_type = None
+        for item in right_body:
+            right_type = self.visit(item, scope)
+
+        if left_type != right_type:
+            self.errors.append(INVALID_OPERATION %left_type %right_type)
+            return 'error'
+
+        return 'bool'
+    
+
+    @visitor.when(ComparisonNode)
+    def visit(self, node, scope):
+        left_body = iterabilizate(node.left)
+        left_type = None
+        for item in left_body:
+            left_type = self.visit(item, scope)
+        
+        right_body = iterabilizate(node.right)
+        right_type = None
+        for item in right_body:
+            right_type = self.visit(item, scope)
+
+        if left_type != 'number' or right_type != 'number':
+            self.errors.append(INVALID_OPERATION %left_type %right_type)
+            return 'error'
+
+        return 'bool'
+            
+
+
         
