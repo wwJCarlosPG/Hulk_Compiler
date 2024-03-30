@@ -6,13 +6,14 @@
 
 ```xaml
 <!-- program -->
-<program> -> <statement_seq> <exp> | <exp>
+<program> -> <statement_seq> <exp> <optional_semicolon> | <exp> <optional_semicolon>
 <statement_seq> -> <statement> | <statement> <statement_seq>
-<statement> -> <inline_func_def> | <block_func_def> | <type_def>
+<statement> -> <inline_func_def> ; | <block_func_def> <optional_semicolon> | <type_def> <optional_semicolon>
 
+<optional_semicolon> -> ; | e
 
 <!-- functions -->
-<inline_func_def> -> function id ( <exp_list> ) => <exp> ; | function id ( ) => <exp> ;
+<inline_func_def> -> function id ( <exp_list> ) => <exp> | function id ( ) => <exp>
 <block_func_def> -> function id ( <exp_list> ) <block_exp> | function id ( ) <block_exp>
 <block_exp> -> { <block_items> }
 <block_items> -> <exp> ; | <exp> ; <block_items>
@@ -26,13 +27,13 @@
 
   
 <!-- expression -->
-<exp> -> print ( <exp> ) | <var_def> | <destr_assignment> | <conditional_exp> | <range_exp> | <loop_exp> 
-	| <type_instance> | <block_exp> | <bool_exp> 
+<exp> -> print ( <exp> ) | <var_def> | <destr_assignment> | <conditional_exp> | <loop_exp> 
+  | <type_instance> | <block_exp> | <bool_exp> 
 
 
 <!-- types -->
-<type_def> -> <type_header_def> ; | type id inherits id <type_body> ;
-  | type id ( <exp_list> ) inherits id ( <exp_list> ) <type_body> ;
+<type_def> -> <type_header_def> | type id inherits id <type_body>
+  | type id ( <exp_list> ) inherits id ( <exp_list> ) <type_body>
 <type_header_def> -> type id ( <exp_list> ) <type_body> | type id <type_body> 
 <type_body> -> { <type_body_items> }
 <type_body_items> ->  <type_body_prop> <type_body_func>  
@@ -59,7 +60,7 @@
 <bool_term> -> <bool_term> "&" <bool_factor> | <bool_factor>
 <bool_factor> -> "!" <bool_factor> | <bool_cmp> 
 <bool_cmp> -> <bool_cmp> "lt" <bool_const> | <bool_cmp> "gt" <bool_const> | <bool_cmp> "get" <bool_const> 
-	| <bool_cmp> "let" <bool_const> | <bool_cmp> == <bool_const> | <bool_cmp> != <bool_const> | <bool_const>
+  | <bool_cmp> "let" <bool_const> | <bool_cmp> == <bool_const> | <bool_cmp> != <bool_const> | <bool_const>
 <bool_const> -> <str_exp>
 
 
@@ -76,12 +77,12 @@
 
 
 <!-- base_element --> 
-<base_element> -> true | false | string | id | <fun_call> | <type_prop_func_call>
+<base_element> -> true | false | string | id | <fun_call> | <type_func_call>
 
 
 <!-- calls -->
 <func_call> -> id ( <exp_list> )
-<type_prop_func_call> -> id . id ( ) | id . id ( <exp_list> ) | id . id
+<type_func_call> -> id . id ( ) | id . id ( <exp_list> )
 
 
 <!-- math_func -->
