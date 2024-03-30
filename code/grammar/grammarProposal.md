@@ -83,6 +83,7 @@
 <!-- calls -->
 <func_call> -> id ( <exp_list> )
 <type_func_call> -> id . id ( ) | id . id ( <exp_list> )
+<self_call> -> self . id | self . id ( ) | self . id ( <exp_list> )
 
 
 <!-- math_func -->
@@ -90,3 +91,4 @@
     | exp ( <num_exp> ) | log ( <num_exp> , <num_exp> ) | rand ( ) 
 
 ```
+
