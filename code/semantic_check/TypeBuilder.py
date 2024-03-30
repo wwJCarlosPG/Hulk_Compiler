@@ -1,6 +1,6 @@
 import cmp.visitor as visitor
 from parser.ast_nodes import ProgramNode, TypeDefNode, TypePropDefNode, TypeFuncDefNode
-from cmp.semantic import SemanticError
+from cmp.semantic import SemanticError, Type
 from typing import List
 
 class TypeBuilder:
@@ -23,9 +23,10 @@ class TypeBuilder:
 
         type_def_nodes = [node for node in node.statement_seq if isinstance(node, TypeDefNode)]
 
-        graph, nonEmpty = build_graph(type_def_nodes)
+        graph = build_graph(type_def_nodes)
 
-        if nonEmpty:
+        # if there are user defined types
+        if len(type_def_nodes) > 0:
             if check_cycles(graph):
                 self.errors.append(SemanticError("Circular inheritance detected"))
             else:
@@ -34,30 +35,29 @@ class TypeBuilder:
                     current_type = self.context.get_type(item.id)
 
                     if item.parent:
-                        parent_type = self.context.get_type(item.parent)
+                        parent_type: Type = self.context.get_type(item.parent)
 
                         # parent defined
                         if parent_type in self.visited:
 
                             # get methods 
-                            current_type_methods = current_type.all_methods()
-                            parent_type_methods = parent_type.all_methods()
+                            current_type_methods = [method[0] for method in current_type.all_methods()] 
+                            parent_type_methods = [method[0] for method in parent_type.all_methods()] 
 
-                            for method_name in current_type_methods:
-                                if method_name in parent_type_methods: # method inherited
-                                    current_method = current_type_methods[method_name][0]
-                                    parent_method = parent_type_methods[method_name][0]
+                            for method in current_type_methods:
+                                if method.name in [m.name for m in parent_type_methods]: # method inherited
+                                    parent_method = parent_type.get_method(method.name)
 
-                                    if len(current_method.param_types) == len(parent_method.param_types): # same params length
-                                        if(current_method.return_type.name == parent_method.return_type.name): # same return type
-                                            for i in range(len(current_method.param_types)): # same params types
-                                                current_param_type = current_method.param_types[i]
-                                                parent_param_type = parent_method.param_types[i]
+                                    if len(method.param_types) == len(parent_method.param_types): # same params length
+                                        if(method.return_type.name == parent_method.return_type.name): # same return type
+                                            for i in range(len(method.param_types)): # same params types
+                                                current_param_type: Type = self.context.get_type(method.param_types[i])
+                                                parent_param_type = self.context.get_type(parent_method.param_types[i])
 
-                                                if(current_param_type.name != parent_param_type.name):
-                                                    self.errors.append(SemanticError(f'{method_name} method must have same types for parameters in parent ({parent_type.name}) and inheritor ({current_type.name}) types.'))
+                                                if not current_param_type.conforms_to(parent_param_type):
+                                                    self.errors.append(SemanticError(f'{method} method must have same types for parameters in parent ({parent_type.name}) and inheritor ({current_type.name}) types.'))
                                         else:
-                                            self.errors.append(SemanticError(f'{method_name} method must have same return type in parent ({parent_type.name}) and inheritor ({current_type.name}) types.'))
+                                            self.errors.append(SemanticError(f'{method} method must have same return type in parent ({parent_type.name}) and inheritor ({current_type.name}) types.'))
                                     else:
                                         self.errors.append(SemanticError(f'Inheritor type ({current_type.name}) must have {len(parent_method.param_types)} paramaters.'))
                         else:
@@ -107,17 +107,15 @@ class TypeBuilder:
 
 def build_graph(statements: List[TypeDefNode]):
     adyacence_list = dict()
-    for item in statements:
-        adyacence_list[item.id] = []
 
-    startNode = None
     for item in statements:
         if item.parent:
-            if item.id in adyacence_list:
-                if not startNode : startNode = item.id
-                adyacence_list[item.id].append(item.parent)
+            if item.parent in adyacence_list:
+                adyacence_list[item.parent].append(item.id)
+            else: 
+                adyacence_list[item.parent] = [item.id]
 
-    return adyacence_list, startNode != None
+    return adyacence_list
 
 
 def check_cycles(adyacence_list):
@@ -131,10 +129,11 @@ def check_cycles(adyacence_list):
             current = queue.pop(0)
             visited.add(current)
 
-            for node in adyacence_list[current]:
-                if node in visited:
-                    return True
-                
-                queue.append(node)
+            if current in adyacence_list:
+                for node in adyacence_list[current]:
+                    if node in visited:
+                        return True
+                    
+                    queue.append(node)
         
     return False

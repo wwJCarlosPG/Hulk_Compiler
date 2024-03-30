@@ -91,7 +91,23 @@ program8 ='''
     }
     print(5);
 '''
-selector = 8
+
+program9 = '''
+type Animal(name) inherits Firulai(name){
+    name = name;
+    sound() => "Make Sound";
+}
+type Dog(name) inherits Animal(name){
+    name = name;
+}
+type Firulai(name) inherits Dog(name) {
+    name = name;
+    skin = skin;
+};
+print("CYCLEEE")
+'''
+
+selector = 0
 match selector:
     case 0:
         program = program0
@@ -111,6 +127,8 @@ match selector:
         program= program7
     case 8:
         program= program8
+    case 9:
+        program= program8
     case _:
         raise Exception("Selector error: selector out of range")
 
@@ -120,7 +138,7 @@ match selector:
 # SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
 slr1 = SLR1Parser(G)
 lexer = Lexer(table, G.EOF)
-for i in range(9):
+for i in range(10):
     selector = i
 
     match selector:
@@ -142,6 +160,8 @@ for i in range(9):
             program= program7
         case 8:
             program= program8
+        case 9:
+            program= program9
         case _:
             raise Exception("Selector error: selector out of range")
 
