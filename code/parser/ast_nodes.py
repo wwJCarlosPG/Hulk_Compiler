@@ -61,6 +61,8 @@ class TypeFuncDefNode(TypeBodyItemNode):
         self.token = Token(id, 'typeFuncNode')
 
 
+
+
 # Use also for <destr_assignation>
 class AssignationNode(Node):
     def __init__(self, id, body, token):
@@ -73,7 +75,6 @@ class DestructiveAssignationNode(Node):
         self.id = id
         self.body = body
         self.token = token 
-
 
 
 class LetNode(ExpressionNode):
@@ -155,9 +156,20 @@ class TypePropCallNode(AtomicNode):
         self.prop_id = prop_id
 
 class TypeFuncCallNode(AtomicNode):
-    def __init__(self, type_id, prop_id, params):
+    def __init__(self, type_id, prop_id, params=[]):
         self.type_id = type_id
         self.prop_id = prop_id
+        self.params = params
+
+class SelfCallPropNode(AtomicNode):
+    def __init__(self,token, id):
+        self.token = token
+        self.id = id
+
+class SelfCallFuncNode(AtomicNode):
+    def __init__(self,token, id, params=[]):
+        self.token = token
+        self.id = id
         self.params = params
 
 class NumNode(AtomicNode):
