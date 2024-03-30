@@ -58,7 +58,7 @@ class TypeFuncDefNode(TypeBodyItemNode):
         self.params_types = ['any'] * len(params)
         self.return_type = 'any'
         self.body = body
-        self.token = Token(id, 'typeFuncNode')
+        self.token = 'typeFuncNode'
 
 
 
@@ -68,6 +68,7 @@ class AssignationNode(Node):
     def __init__(self, id, body, token):
         self.id = id
         self.body = body
+        self.type = 'any'
         self.token = token
 
 class DestructiveAssignationNode(Node):
@@ -114,10 +115,10 @@ class ForNode(ExpressionNode):
         self.token = token
 
 
-class BlockNode(ExpressionNode):
-    def __init__(self, expr_list, token):
-        self.expr_list = expr_list
-        self.token = token
+# class BlockNode(ExpressionNode):
+#     def __init__(self, expr_list, token):
+#         self.expr_list = expr_list
+#         self.token = token
 
 
 class RangeNode(ExpressionNode):
@@ -157,7 +158,7 @@ class TypePropCallNode(AtomicNode):
 
 class TypeFuncCallNode(AtomicNode):
     def __init__(self, type_id, prop_id, params=[]):
-        self.type_id = type_id
+        self.instance_id = type_id
         self.prop_id = prop_id
         self.params = params
 

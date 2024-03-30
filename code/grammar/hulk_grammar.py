@@ -78,7 +78,7 @@ block_func_def %= function_ + id_ + opar_ + cpar_ + block_exp, lambda _, s: Func
 
 
 # Expression block
-block_exp %= obracket_ + block_items + cbracket_, lambda _, s: BlockNode(s[2], s[1])
+block_exp %= obracket_ + block_items + cbracket_, lambda _, s: s[2]
 
 block_items %= exp + semicolon_, lambda _, s: [s[1]]
 block_items %= exp + semicolon_ + block_items, lambda _, s: [s[1]] + s[3]

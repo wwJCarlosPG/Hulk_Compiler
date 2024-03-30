@@ -11,7 +11,7 @@ SCOPE_ALREADY_DEFINED = 'Variable "%s" is already defined in scope.'
 INCOMPATIBLE_TYPES = 'Cannot convert "%s" into "%s".'
 VARIABLE_NOT_DEFINED = 'Variable "%s" is not defined in "%s".'
 FUNCTION_NOT_DEFINED = 'Function "%s" is not defined in "%s".'
-INVALID_OPERATION = 'Operation is not defined between "%s" and "%s".'
+INVALID_OPERATION = 'Operation "%s" is not defined between "%s" and "%s".'
 
 def iterabilizate(body):
     if not isinstance(body, list):
@@ -58,8 +58,8 @@ class TypeChecker:
 
         for i, param in enumerate(node.params):
             # define params variables
-            if not child_scope.is_local(param):
-                child_scope.define_variable(param, node.params_types[i])
+            if not child_scope.is_local(param.token):
+                child_scope.define_variable(param.token, node.params_types[i])
             else:
                 self.errors.append(SemanticError(SCOPE_ALREADY_DEFINED %param))
         
@@ -69,7 +69,11 @@ class TypeChecker:
         for exp in body:
            exp_type_name = self.visit(exp, child_scope)
         
-        exp_type : Type = self.context.get_type(exp_type_name)
+        try:
+            exp_type : Type = self.context.get_type(exp_type_name)
+        except TypeError as e:
+            print(exp_type_name)
+            raise e
 
         try:
             node_type = self.context.get_type(node.return_type)
@@ -77,7 +81,7 @@ class TypeChecker:
             self.errors.append(e)
 
         if not exp_type.conforms_to(node_type):
-            self.errors.append(SemanticError(INCOMPATIBLE_TYPES %exp_type_name %node.return_type))
+            self.errors.append(SemanticError(INCOMPATIBLE_TYPES % (exp_type_name, node.return_type)))
 
 
     @visitor.when(TypeDefNode)
@@ -87,14 +91,34 @@ class TypeChecker:
 
         for i, param in enumerate(node.params):
             # define params variables
-            if not child_scope.is_local(param):
-                child_scope.define_variable(param, node.params_types[i])
+            if not child_scope.is_local(param.token):
+                child_scope.define_variable(param.token, node.params_types[i])
             else:
                 self.errors.append(SemanticError(SCOPE_ALREADY_DEFINED %param))
         
         for item in node.body:
             self.visit(item, child_scope)
-        
+
+        if node.parent is not None:
+            parent = node.parent
+            parent_type:Type = self.context.get_type(parent)
+            if len(parent_type.params) == len(node.parent_params):
+                for i, param in enumerate(node.parent_params):
+                    node_parent_param = iterabilizate(param)
+                    node_parent_param_name = None
+                    for item in node_parent_param:
+                        node_parent_param_name=self.visit(item, child_scope)
+                    node_parent_param_type:Type = self.context.get_type(node_parent_param_name)
+                    parent_param_type:Type = self.context.get_type(parent_type.params_types[i])
+                    
+                    if not node_parent_param_type.conforms_to(parent_param_type):
+                        self.errors.append(SemanticError(f"Types provided in {node_parent_param_type.name} type do not match with expected types"))
+                        return 'error' 
+
+            else:
+                self.errors.append(SemanticError(f'({parent_type.name}) type initalization must have {len(parent_type.params)} paramaters.'))
+                return 'error'
+
         self.current_type = None
         
 
@@ -116,7 +140,7 @@ class TypeChecker:
             self.errors.append(e)
         
         if not exp_type.conforms_to(node_type):
-            self.errors.append(SemanticError(INCOMPATIBLE_TYPES %exp_type_name %node.type))
+            self.errors.append(SemanticError(INCOMPATIBLE_TYPES % (exp_type_name, node.type)))
         
 
     @visitor.when(TypeFuncDefNode)
@@ -145,7 +169,7 @@ class TypeChecker:
             self.errors.append(e)
 
         if not exp_type.conforms_to(node_type):
-            self.errors.append(SemanticError(INCOMPATIBLE_TYPES %exp_type_name %node.type))
+            self.errors.append(SemanticError(INCOMPATIBLE_TYPES % (exp_type_name, node.return_type)))
 
         self.current_method = None
 
@@ -189,7 +213,7 @@ class TypeChecker:
             self.errors.append(e)
 
         if not exp_type.conforms_to(node_type):
-            self.errors.append(SemanticError(INCOMPATIBLE_TYPES %exp_type_name %node.type))
+            self.errors.append(SemanticError(INCOMPATIBLE_TYPES % (exp_type_name, node.type)))
 
     
     @visitor.when(DestructiveAssignationNode)
@@ -202,7 +226,7 @@ class TypeChecker:
 
         is_defined = scope.is_defined(node.id)
         if not is_defined:
-            self.errors.append(SemanticError(VARIABLE_NOT_DEFINED %node.id %'scope'))
+            self.errors.append(SemanticError(VARIABLE_NOT_DEFINED % (node.id, 'scope')))
         else:
             scope.redefine_variable(node.id, exp_type_name)
         
@@ -324,11 +348,11 @@ class TypeChecker:
         end_type = self.context.get_type(end_type_name)
 
         if not start_type.conforms_to(number_type):
-            self.errors.append(SemanticError(INCOMPATIBLE_TYPES %start_type_name %'number'))
+            self.errors.append(SemanticError(INCOMPATIBLE_TYPES % (start_type_name, 'number')))
             return 'error'
 
         if not end_type.conforms_to(number_type):
-            self.errors.append(SemanticError(INCOMPATIBLE_TYPES %end_type_name %'number'))
+            self.errors.append(SemanticError(INCOMPATIBLE_TYPES % (end_type_name, 'number')))
             return 'error'
 
         return 'object'       
@@ -411,7 +435,7 @@ class TypeChecker:
                 self.errors.append(e)
                 return 'error'
         else:
-            self.errors.append(SemanticError(FUNCTION_NOT_DEFINED %function_name %"scope"))
+            self.errors.append(SemanticError(FUNCTION_NOT_DEFINED % (function_name, "scope")))
             return 'error'
 
 
@@ -475,7 +499,7 @@ class TypeChecker:
                 self.errors.append(e)
                 return 'error'
         else:
-            self.errors.append(SemanticError(VARIABLE_NOT_DEFINED %var_name %"scope"))
+            self.errors.append(SemanticError(VARIABLE_NOT_DEFINED % (var_name, "scope")))
             return 'error'
 
 
@@ -561,9 +585,9 @@ class TypeChecker:
 
     @visitor.when(VarNode)
     def visit(self, node: VarNode, scope: Scope):
-        var: VariableInfo = scope.find_variable(node.token.lex) 
+        var: VariableInfo = scope.find_variable(node.token) 
         if var is None:
-            self.errors.append(VARIABLE_NOT_DEFINED %node.token.lex %"scope")
+            self.errors.append(VARIABLE_NOT_DEFINED % (node.token, "scope"))
             return 'error'
         
         return var.type
@@ -582,7 +606,7 @@ class TypeChecker:
             exp_type_name = self.visit(item, scope)
 
         if exp_type_name != 'number':
-            self.errors.append(SemanticError(INCOMPATIBLE_TYPES %exp_type_name %"number"))
+            self.errors.append(SemanticError(INCOMPATIBLE_TYPES % (exp_type_name, "number")))
             return "error"
         
         return 'number'
@@ -596,7 +620,7 @@ class TypeChecker:
             exp_type_name = self.visit(item, scope)
 
         if exp_type_name != 'bool':
-            self.errors.append(SemanticError(INCOMPATIBLE_TYPES %exp_type_name %"bool"))
+            self.errors.append(SemanticError(INCOMPATIBLE_TYPES % (exp_type_name, "bool")))
             return "error"
         
         return 'bool'
@@ -615,7 +639,7 @@ class TypeChecker:
             right_type = self.visit(item, scope)
 
         if left_type != 'number' or right_type != 'number':
-            self.errors.append(INVALID_OPERATION %left_type %right_type)
+            self.errors.append(INVALID_OPERATION % (node.token, left_type, right_type))
             return 'error'
 
         return 'number'
@@ -634,7 +658,7 @@ class TypeChecker:
 
         basic_types = ['number', 'string', 'bool']
         if left_type not in basic_types or right_type not in basic_types:
-            self.errors.append(INVALID_OPERATION %left_type %right_type)
+            self.errors.append(INVALID_OPERATION % (node.token, left_type, right_type))
             return 'error'
 
         return 'string'
@@ -653,7 +677,7 @@ class TypeChecker:
             right_type = self.visit(item, scope)
 
         if left_type != 'bool' or right_type != 'bool':
-            self.errors.append(INVALID_OPERATION %left_type %right_type)
+            self.errors.append(INVALID_OPERATION % (node.token, left_type, right_type))
             return 'error'
 
         return 'bool'
@@ -672,7 +696,7 @@ class TypeChecker:
             right_type = self.visit(item, scope)
 
         if left_type != right_type:
-            self.errors.append(INVALID_OPERATION %left_type %right_type)
+            self.errors.append(INVALID_OPERATION % (node.token, left_type, right_type))
             return 'error'
 
         return 'bool'
@@ -691,7 +715,7 @@ class TypeChecker:
             right_type = self.visit(item, scope)
 
         if left_type != 'number' or right_type != 'number':
-            self.errors.append(INVALID_OPERATION %left_type %right_type)
+            self.errors.append(INVALID_OPERATION % (node.token, left_type, right_type))
             return 'error'
 
         return 'bool'

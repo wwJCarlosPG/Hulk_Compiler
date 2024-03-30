@@ -71,15 +71,22 @@ class Type:
             raise SemanticError(
                 f'Attribute "{name}" is not valid assignation object.')
 
-        try:
-            self.get_attribute(name)
-        except SemanticError:
+        if name not in [a.name for a in self.attributes]:
             attribute = Attribute(name, typex)
             self.attributes.append(attribute)
             return attribute
         else:
             raise SemanticError(
                 f'Attribute "{name}" is already defined in {self.name}.')
+        # try:
+        #     self.get_attribute(name)
+        # except SemanticError:
+        #     attribute = Attribute(name, typex)
+        #     self.attributes.append(attribute)
+        #     return attribute
+        # else:
+        #     raise SemanticError(
+        #         f'Attribute "{name}" is already defined in {self.name}.')
 
     def get_method(self, name: str):
         try:
@@ -271,7 +278,7 @@ class Scope:
         try:
             return next(x for x in locals if x.name == vname)
         except StopIteration:
-            return self.parent.find_variable(vname, self.index) if self.parent is None else None
+            return self.parent.find_variable(vname, self.index) if self.parent else None
 
     def is_defined(self, vname):
         return self.find_variable(vname) is not None
