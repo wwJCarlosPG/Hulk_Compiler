@@ -22,7 +22,7 @@ def iterabilizate(body):
 class TypeChecker:
     def __init__(self, context, errors=[]):
         self.context: Context = context
-        self.current_type = None
+        self.current_type:Type = None
         self.current_method = None
         self.errors: list = errors
 
@@ -102,7 +102,6 @@ class TypeChecker:
     def visit(self, node: TypePropDefNode, scope: Scope):
         # define local properties
         # Semantic errors related to duplicate name were cleared in TypeBuilder
-        scope.define_variable(node.id, node.type)
 
         body = iterabilizate(node.exp)
         exp_type_name = None
@@ -477,6 +476,39 @@ class TypeChecker:
                 return 'error'
         else:
             self.errors.append(SemanticError(VARIABLE_NOT_DEFINED %var_name %"scope"))
+            return 'error'
+
+
+    @visitor.when(SelfCallPropNode)
+    def visit(self, node: SelfCallPropNode, scope:Scope):
+        try:
+            attr: Attribute = self.current_type.get_attribute(node.id)
+            return attr.type
+        except SemanticError as e:
+            self.errors.append(e)
+            return 'error'
+        
+
+    @visitor.when(SelfCallFuncNode)
+    def visit(self, node: SelfCallFuncNode, scope:Scope):
+        try:
+            method: Method = self.current_type.get_method(node.id)
+            for i, param in enumerate(node.params):
+                body = iterabilizate(param)
+                param_type_name = None
+                for item in body:
+                    param_type_name = self.visit(item, scope)
+                
+                param_type: Type = self.context.get_type(param_type_name)
+                method_param_type = self.context.get_type(method.param_types[i])
+
+                if not param_type.conforms_to(method_param_type):
+                    self.errors.append(SemanticError(f"Types provided in {method.name} function call do not match with expected types"))
+                    return 'error'
+
+            return method.return_type
+        except SemanticError as e:
+            self.errors.append(e)
             return 'error'
 
 

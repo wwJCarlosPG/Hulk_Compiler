@@ -30,9 +30,6 @@ class Method:
         params = ', '.join(f'{n}:{t.name}' for n, t in zip(
             self.param_names, self.param_types))
         return f'[method] {self.name}({params}): {self.return_type.name};'
-    
-    def __repr__(self):
-        return str(self)
 
     def __eq__(self, other):
         return other.name == self.name and \
@@ -41,11 +38,13 @@ class Method:
 
 
 class Type:
-    def __init__(self, name: str):
+    def __init__(self, name: str, params = None, params_types = None):
         self.name = name
         self.attributes = []
         self.methods = []
         self.parent = None
+        self.params = params #----------
+        self.params_types = params_types  #----------
 
     def set_parent(self, parent):
         if self.parent is not None:
@@ -58,15 +57,14 @@ class Type:
         try:
             return next(attr for attr in self.attributes if attr.name == name)
         except StopIteration:
-            # if self.parent is None:
-            #     raise SemanticError(
-            #         f'Attribute "{name}" is not defined in {self.name}.')
-            # try:
-            #     return self.parent.get_attribute(name)
-            # except SemanticError:
-            #     raise SemanticError(
-            #         f'Attribute "{name}" is not defined in {self.name}.')
-            raise SemanticError(f'Attribute "{name}" is not defined in {self.name}.')
+            if self.parent is None:
+                raise SemanticError(
+                    f'Attribute "{name}" is not defined in {self.name}.')
+            try:
+                return self.parent.get_attribute(name)
+            except SemanticError:
+                raise SemanticError(
+                    f'Attribute "{name}" is not defined in {self.name}.')
 
     def define_attribute(self, name: str, typex):
         if name == "self":
@@ -212,11 +210,11 @@ class Context:
     def __init__(self):
         self.types = {}
 
-    def create_type(self, name: str):
+    def create_type(self, name: str, params = None, params_types = None):
         if name in self.types:
             raise SemanticError(
                 f'Type with the same name ({name}) already in context.')
-        typex = self.types[name] = Type(name)
+        typex = self.types[name] = Type(name, params, params_types)
         return typex
 
     def get_type(self, name: str):
@@ -233,9 +231,12 @@ class Context:
 
 
 class VariableInfo:
-    def __init__(self, name, vtype):
+    def __init__(self, name, vtype, is_func=False, params=[], params_types=[]):
         self.name = name
         self.type = vtype
+        self.is_func = is_func
+        self.params = params
+        self.params_types = params_types
 
 
 class Scope:
@@ -253,10 +254,16 @@ class Scope:
         self.children.append(child)
         return child
 
-    def define_variable(self, vname, vtype):
-        info = VariableInfo(vname, vtype)
+    def define_variable(self, vname, vtype, is_func=False, params=[], params_types=[]):
+        info = VariableInfo(vname, vtype, is_func, params, params_types)
         self.locals.append(info)
         return info
+    
+    def redefine_variable(self, vname, vtype):
+        var: VariableInfo = self.find_variable(vname)
+        var.name = vname
+        var.type = vtype
+        return var
 
     def find_variable(self, vname, index=None):
         locals = self.locals if index is None else itt.islice(
