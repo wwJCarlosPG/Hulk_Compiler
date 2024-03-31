@@ -39,6 +39,7 @@ table = [
     (obracket_, '{'),
     (cbracket_, '}'),
     (semicolon_, ';'),
+    (colon_, ':'),
     (coma_, ','),
     (dot_,'.'),
     (equals_, '='),

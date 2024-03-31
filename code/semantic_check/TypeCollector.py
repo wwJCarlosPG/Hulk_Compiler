@@ -17,13 +17,17 @@ class TypeCollector(object):
     @visitor.when(ProgramNode)
     def visit(self, node: ProgramNode):
         self.context = Context()
+        self.context.types['any'] = AnyType()
         self.context.types['number'] = NumberType()
         self.context.types['string'] = StringType()
         self.context.types['bool'] = BoolType()
-        self.context.types['void'] = VoidType()
-        self.context.types['error'] = ErrorType()
-        self.context.types['any'] = AnyType()
         self.context.types['object'] = ObjectType()
+        self.context.types['error'] = ErrorType()
+
+        self.context.types['any'].set_parent(self.context.types['object'])
+        self.context.types['number'].set_parent(self.context.types['object'])
+        self.context.types['string'].set_parent(self.context.types['object'])
+        self.context.types['bool'].set_parent(self.context.types['object'])
 
         for statement in node.statement_seq:
             self.visit(statement)
@@ -31,7 +35,7 @@ class TypeCollector(object):
     @visitor.when(TypeDefNode)
     def visit(self, node: TypeDefNode):
         try:
-            self.context.create_type(node.id, node.params, node.params_types)
+            self.context.create_type(node.id, [p.id for p in node.params], [p.type for p in node.params])
 
         except SemanticError as ex:
             self.errors.append(ex)

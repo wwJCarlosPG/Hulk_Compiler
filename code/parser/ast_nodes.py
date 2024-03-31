@@ -22,13 +22,12 @@ class ExpressionNode(Node):
 
 # body_exp = ( <exp> | <block_exp> )
 class FuncDefNode(StatementNode):
-    def __init__(self, id, params, body_expr, token):
+    def __init__(self, id, params, body_expr, token, return_type='any'):
         self.id = id
         self.params = params
-        self.params_types = ['any'] * len(params)
-        self.return_type = 'any'
         self.body = body_expr
         self.token = token
+        self.return_type = return_type
 
 
 class TypeDefNode(StatementNode):
@@ -37,7 +36,6 @@ class TypeDefNode(StatementNode):
         self.body = body
         self.token = token
         self.params = params
-        self.params_types = ['any'] * len(params)
         self.parent = parent_id
         self.parent_params = parent_params
 
@@ -45,31 +43,29 @@ class TypeBodyItemNode(Node):
     pass
 
 class TypePropDefNode(TypeBodyItemNode):
-    def __init__(self, id, exp, token):
+    def __init__(self, id, exp, token, type='any'):
         self.id = id
         self.exp = exp
-        self.type = 'any'
+        self.type = type
         self.token = token
 
 class TypeFuncDefNode(TypeBodyItemNode):
-    def __init__(self, id, params, body):
+    def __init__(self, id, params, body, return_type='any'):
         self.id = id
         self.params = params
-        self.params_types = ['any'] * len(params)
-        self.return_type = 'any'
+        self.return_type = return_type
         self.body = body
         self.token = 'typeFuncNode'
 
 
 
-
 # Use also for <destr_assignation>
 class AssignationNode(Node):
-    def __init__(self, id, body, token):
+    def __init__(self, id, body, token, type='any'):
         self.id = id
         self.body = body
-        self.type = 'any'
         self.token = token
+        self.type = type
 
 class DestructiveAssignationNode(Node):
     def __init__(self, id, body, token):
@@ -178,6 +174,12 @@ class BaseCallNode(AtomicNode):
     def __init__(self, token, params=[]):
         self.token = token
         self.params = params
+
+class VarTyped(AtomicNode):
+    def __init__(self, token, id, type='any'):
+        self.token = token
+        self.id = id
+        self.type = type
 
 
 class NumNode(AtomicNode):

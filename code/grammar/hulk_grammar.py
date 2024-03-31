@@ -39,12 +39,12 @@ exp = G.NonTerminal('<exp>')
 base_element, self_call, base_call = G.NonTerminals('<base_element> <self_call> <base_call>')
 
 # var assingnment
-let_, in_, equals_, coma_, destr_assign_ = G.Terminals('let in = , :=')
+let_, in_, equals_, coma_, destr_assign_, colon_ = G.Terminals('let in = , := :')
 var_def, var_def_list, destr_assignment = G.NonTerminals('<var_def> <var_def_list> <destr_assignment>')
 
 # functions
 function_, arrow_, semicolon_, obracket_, cbracket_ = G.Terminals('function => ; { }')
-inline_func_def, exp_list, block_func_def, block_exp, block_items = G.NonTerminals('<inline_func_def> <exp_list> <block_func_def> <block_exp> <block_items>')
+inline_func_def, exp_list, block_func_def, block_exp, block_items, id_list = G.NonTerminals('<inline_func_def> <exp_list> <block_func_def> <block_exp> <block_items> <id_list>')
 
 # types
 type_def, type_header_def, type_body, type_body_statements, type_body_item, type_body_prop, type_body_func, type_instance = G.NonTerminals('<type_def> <type_header_def> <type_body> <type_body_statements> <type_body_item> <type_body_prop> <type_body_func> <type_instance>')
@@ -70,11 +70,15 @@ optional_semicolon %= semicolon_, lambda _, s: s[1]
 optional_semicolon %= G.Epsilon, lambda _, s: _
 
 # Function definitions
-inline_func_def %= function_ + id_ + opar_ + exp_list + cpar_ + arrow_ + exp, lambda _, s: FuncDefNode(s[2], s[4], s[7], s[1])
+inline_func_def %= function_ + id_ + opar_ + id_list + cpar_ + arrow_ + exp, lambda _, s: FuncDefNode(s[2], s[4], s[7], s[1])
+inline_func_def %= function_ + id_ + opar_ + id_list + cpar_ + colon_ + id_ + arrow_ + exp, lambda _, s: FuncDefNode(s[2], s[4], s[9], s[1], s[7])
 inline_func_def %= function_ + id_ + opar_ + cpar_ + arrow_ + exp, lambda _, s: FuncDefNode(s[2], [], s[6], s[1])
+inline_func_def %= function_ + id_ + opar_ + cpar_ + colon_ + id_ + arrow_ + exp, lambda _, s: FuncDefNode(s[2], [], s[8], s[1], s[6])
 
-block_func_def %= function_ + id_ + opar_ + exp_list + cpar_ + block_exp, lambda _, s: FuncDefNode(s[2], s[4], s[6], s[1])
+block_func_def %= function_ + id_ + opar_ + id_list + cpar_ + block_exp, lambda _, s: FuncDefNode(s[2], s[4], s[6], s[1])
+block_func_def %= function_ + id_ + opar_ + id_list + cpar_ + colon_ + id_ + block_exp, lambda _, s: FuncDefNode(s[2], s[4], s[8], s[1], s[7])
 block_func_def %= function_ + id_ + opar_ + cpar_ + block_exp, lambda _, s: FuncDefNode(s[2], [], s[5], s[1])
+block_func_def %= function_ + id_ + opar_ + cpar_ + colon_ + id_ + block_exp, lambda _, s: FuncDefNode(s[2], [], s[7], s[1], s[6])
 
 
 # Expression block
@@ -89,13 +93,21 @@ block_items %= exp + semicolon_ + block_items, lambda _, s: [s[1]] + s[3]
 exp_list %= exp, lambda _, s: [s[1]]
 exp_list %= exp + coma_ + exp_list, lambda _, s: [s[1]] + s[3]
 
+#-------------------
+id_list %= id_, lambda _, s: [VarTyped(s[1], s[1])]
+id_list %= id_ + colon_ + id_, lambda _, s: [VarTyped(s[1], s[1], s[3])]
+id_list %= id_ + coma_ + id_list, lambda _, s: [VarTyped(s[1], s[1])] + s[3]
+id_list %= id_ + colon_ + id_ + coma_ + id_list, lambda _, s: [VarTyped(s[1], s[1], s[3])] + s[5]
+
 
 
 # Variable definition
 var_def %= let_ + var_def_list + in_ + exp, lambda _, s: LetNode(s[2], s[4], s[1])
 
 var_def_list %= id_ + equals_ + exp, lambda _, s: [AssignationNode(s[1], s[3], s[2])]
+var_def_list %= id_ + colon_ + id_ + equals_ + exp, lambda _, s: [AssignationNode(s[1], s[5], s[4], s[3])]
 var_def_list %= id_ + equals_ + exp + coma_ + var_def_list, lambda _, s: [AssignationNode(s[1], s[3], s[2])] + s[5]
+var_def_list %= id_ + colon_ + id_ + equals_ + exp + coma_ + var_def_list, lambda _, s: [AssignationNode(s[1], s[5], s[4], s[3])] + s[7]
 
 destr_assignment %= id_ + destr_assign_ + exp, lambda _, s: AssignationNode(s[1], s[3], s[2])
 
@@ -116,9 +128,9 @@ exp %= bool_exp, lambda _, s: s[1]
 # Types definition
 type_def %= type_header_def, lambda _, s: s[1]
 type_def %= type_ + id_ + inherits_ + id_ + type_body, lambda _, s: TypeDefNode(s[2], s[5], s[1], [], s[4], [])
-type_def %= type_ + id_ + opar_ + exp_list + cpar_ + inherits_ + id_ + opar_ + exp_list + cpar_ + type_body, lambda _, s: TypeDefNode(s[2], s[11], s[1], s[4], s[7], s[9])
+type_def %= type_ + id_ + opar_ + id_list + cpar_ + inherits_ + id_ + opar_ + exp_list + cpar_ + type_body, lambda _, s: TypeDefNode(s[2], s[11], s[1], s[4], s[7], s[9])
 
-type_header_def %= type_ + id_ + opar_ + exp_list + cpar_ + type_body, lambda _, s: TypeDefNode(s[2], s[6], s[1], s[4], None, [])
+type_header_def %= type_ + id_ + opar_ + id_list + cpar_ + type_body, lambda _, s: TypeDefNode(s[2], s[6], s[1], s[4], None, [])
 type_header_def %= type_ + id_ + type_body, lambda _, s: TypeDefNode(s[2], s[3], s[1], [], None, [])
 
 type_body %= obracket_ + cbracket_, lambda _, s: []
@@ -131,10 +143,11 @@ type_body_item %= type_body_prop, lambda _, s: s[1]
 type_body_item %= type_body_func, lambda _, s: s[1]
 
 type_body_prop %= id_ + equals_ + exp + semicolon_, lambda _, s: [TypePropDefNode(s[1], s[3], s[2])]
+type_body_prop %= id_ + colon_ + id_ + equals_ + exp + semicolon_, lambda _, s: [TypePropDefNode(s[1], s[5], s[4], s[3])]
 
-type_body_func %= id_ + opar_ + exp_list + cpar_ + arrow_ + exp + semicolon_, lambda _, s: [TypeFuncDefNode(s[1], s[3], s[6])]
+type_body_func %= id_ + opar_ + id_list + cpar_ + arrow_ + exp + semicolon_, lambda _, s: [TypeFuncDefNode(s[1], s[3], s[6])]
 type_body_func %= id_ + opar_ + cpar_ + arrow_ + exp + semicolon_, lambda _, s: [TypeFuncDefNode(s[1], [], s[5])]
-type_body_func %= id_ + opar_ + exp_list + cpar_ + block_exp + semicolon_ , lambda _, s: [TypeFuncDefNode(s[1], s[3], s[5])]
+type_body_func %= id_ + opar_ + id_list + cpar_ + block_exp + semicolon_ , lambda _, s: [TypeFuncDefNode(s[1], s[3], s[5])]
 type_body_func %= id_ + opar_ + cpar_ + block_exp + semicolon_, lambda _, s: [TypeFuncDefNode(s[1], [], s[4])]
 
 type_instance %= new_ + id_ + opar_ + exp_list + cpar_, lambda _, s: InstanceNode(s[2], s[4], s[1])

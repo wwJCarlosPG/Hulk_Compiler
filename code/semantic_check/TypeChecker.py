@@ -37,7 +37,7 @@ class TypeChecker:
             # define functions as variables
             if isinstance(statement, FuncDefNode):
                 if not scope.is_local(statement.id):
-                    scope.define_variable(statement.id, statement.return_type, is_func=True, params=statement.params, params_types=statement.params_types)
+                    scope.define_variable(statement.id, statement.return_type, is_func=True, params=[x.id for x in statement.params] , params_types=[x.type for x in statement.params])
                 else:
                     self.errors.append(SemanticError(LOCAL_ALREADY_DEFINED_FUNC %statement.id))
 
@@ -56,12 +56,12 @@ class TypeChecker:
     def visit(self, node: FuncDefNode, scope: Scope):
         child_scope = scope.create_child()
 
-        for i, param in enumerate(node.params):
+        for param in node.params:
             # define params variables
-            if not child_scope.is_local(param.token):
-                child_scope.define_variable(param.token, node.params_types[i])
+            if not child_scope.is_local(param.id):
+                child_scope.define_variable(param.id, param.type)
             else:
-                self.errors.append(SemanticError(SCOPE_ALREADY_DEFINED %param))
+                self.errors.append(SemanticError(SCOPE_ALREADY_DEFINED %param.id))
         
         body = iterabilizate(node.body)
         exp_type_name = None
@@ -69,11 +69,7 @@ class TypeChecker:
         for exp in body:
            exp_type_name = self.visit(exp, child_scope)
         
-        try:
-            exp_type : Type = self.context.get_type(exp_type_name)
-        except TypeError as e:
-            print(exp_type_name)
-            raise e
+        exp_type : Type = self.context.get_type(exp_type_name)
 
         try:
             node_type = self.context.get_type(node.return_type)
@@ -89,27 +85,27 @@ class TypeChecker:
         self.current_type = self.context.get_type(node.id)
         child_scope = scope.create_child()
 
-        for i, param in enumerate(node.params):
+        for param in node.params:
             # define params variables
-            if not child_scope.is_local(param.token):
-                child_scope.define_variable(param.token, node.params_types[i])
+            if not child_scope.is_local(param.id):
+                child_scope.define_variable(param.id, param.type)
             else:
-                self.errors.append(SemanticError(SCOPE_ALREADY_DEFINED %param))
+                self.errors.append(SemanticError(SCOPE_ALREADY_DEFINED %param.id))
         
         for item in node.body:
             self.visit(item, child_scope)
 
         if node.parent is not None:
             parent = node.parent
-            parent_type:Type = self.context.get_type(parent)
+            parent_type: Type = self.context.get_type(parent)
             if len(parent_type.params) == len(node.parent_params):
                 for i, param in enumerate(node.parent_params):
                     node_parent_param = iterabilizate(param)
                     node_parent_param_name = None
                     for item in node_parent_param:
                         node_parent_param_name=self.visit(item, child_scope)
-                    node_parent_param_type:Type = self.context.get_type(node_parent_param_name)
-                    parent_param_type:Type = self.context.get_type(parent_type.params_types[i])
+                    node_parent_param_type: Type = self.context.get_type(node_parent_param_name)
+                    parent_param_type: Type = self.context.get_type(parent_type.params_types[i])
                     
                     if not node_parent_param_type.conforms_to(parent_param_type):
                         self.errors.append(SemanticError(f"Types provided in {node_parent_param_type.name} type do not match with expected types"))
@@ -148,13 +144,10 @@ class TypeChecker:
         self.current_method = self.current_type.get_method(node.id)
         child_scope: Scope = scope.create_child()
 
-        for i in range(len(node.params)):
-            vname = node.params[i]
-            vtype = node.params_types[i]
-
+        for p in node.params:
             # define params variables
             # Semantic errors related to duplicate name and method signature were cleared in TypeBuilder
-            child_scope.define_variable(vname, vtype)
+            child_scope.define_variable(p.id, p.type)
 
         body = iterabilizate(node.body)
         exp_type_name = None
@@ -214,6 +207,8 @@ class TypeChecker:
 
         if not exp_type.conforms_to(node_type):
             self.errors.append(SemanticError(INCOMPATIBLE_TYPES % (exp_type_name, node.type)))
+        # else:
+            # node.type = exp_type_name
 
     
     @visitor.when(DestructiveAssignationNode)

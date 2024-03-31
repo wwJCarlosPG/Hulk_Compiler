@@ -96,7 +96,7 @@ class TypeBuilder:
     @visitor.when(TypeFuncDefNode)
     def visit(self, node: TypeFuncDefNode):
         param_names = node.params
-        param_types = [self.context.get_type(x) for x in node.params_types]
+        param_types = [self.context.get_type(x.type) for x in node.params]
 
         try:
             return_type = self.context.get_type(node.return_type)
