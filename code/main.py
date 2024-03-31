@@ -20,7 +20,6 @@ def check_errors(errors: list, name: str):
 
 
 G = get_grammar()
-
 for program in get_cases(1):
     print(f'Program:\n\n {program}')
 
