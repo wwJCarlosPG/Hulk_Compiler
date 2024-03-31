@@ -26,26 +26,15 @@ class Regex():
         """
         text = self.exp
         tokens = []    
-        fixed_tokens = { lex: Token(lex, G[lex]) for lex in '| * + - ? [ ] ( ) ε'.split() }
+        fixed_tokens = { lex: Token(lex, G[lex]) for lex in '| * ( ) ε'.split() }
         is_escape = False
-        is_range = False
         for char in text:
             if is_escape:
                 token = Token(char, symbol)
-                tokens.append(token)
-                is_escape = False   
-                continue  
-            if char == ']':
-                is_range = False            
-            elif is_range:
-                if char != '-':
-                    tokens.append(Token(char, symbol))
-                    continue
-            elif char == '[':
-                is_range = True
+                is_escape = False            
             elif char == '\\':
                 is_escape = True
-                continue
+                continue 
             else:
                 try:
                     token = fixed_tokens[char]
