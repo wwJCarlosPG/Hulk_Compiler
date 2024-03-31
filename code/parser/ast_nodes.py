@@ -187,6 +187,12 @@ class AsNode(AtomicNode):
         self.expr = expr
         self.type = type
 
+class IsNode(AtomicNode):
+    def __init__(self, token, expr, type):
+        self.token = token
+        self.expr = expr
+        self.type = type
+
 class NumNode(AtomicNode):
     pass
 class StringNode(AtomicNode):
