@@ -24,36 +24,41 @@ class Regex():
         Returns:
             list: List of tokens representing the regular expression.
         """
+        tokens = []
+
+        fixed_tokens = {lex: Token(lex,G[lex]) for lex in '| * + - ? ( ) [ ] symbol ε'.split()}
+    
+        is_symbol_set = is_escape = False    
         text = self.exp
-        tokens = []    
-        fixed_tokens = { lex: Token(lex, G[lex]) for lex in '| * + - ? [ ] ( ) ε'.split() }
-        is_escape = False
-        is_range = False
         for char in text:
+
             if is_escape:
                 token = Token(char, symbol)
                 tokens.append(token)
-                is_escape = False   
-                continue  
+                is_escape = False
+                continue
+
             if char == ']':
-                is_range = False            
-            elif is_range:
+                is_symbol_set = False            
+            elif is_symbol_set:
                 if char != '-':
                     tokens.append(Token(char, symbol))
                     continue
             elif char == '[':
-                is_range = True
+                is_symbol_set = True
             elif char == '\\':
                 is_escape = True
                 continue
-            else:
-                try:
-                    token = fixed_tokens[char]
-                except:
-                    token = Token(char, G['symbol'])
-            tokens.append(token)        
+
+            try:
+                token = fixed_tokens[char]
+            except KeyError:
+                token = Token(char, symbol)
+            tokens.append(token)                 
+            
         tokens.append(Token('$', G.EOF))
         return tokens
+    
 
 
 

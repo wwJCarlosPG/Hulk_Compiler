@@ -32,7 +32,7 @@ type Cat(name, skin) {
     name = name;
     skin = skin;
 };
-if (x == 0)print("4") elif(x<5) {print(64);} else{4;}
+if (x == 0)print(0.21) elif(x<5.73) {print(64);} else{0.04;}
 '''
 program1 = '''
 while(x<=4){

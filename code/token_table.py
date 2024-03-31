@@ -7,8 +7,8 @@ sym = [
     ';',
     '<',
     '>',
-    '?',
     '!',
+    '\?',
     '%',
     '.',
     '\'',
@@ -28,8 +28,8 @@ alphanumeric_with_symbols= alphanumeric+'|'+symbols
 
 table = [
     (string_, f'((")({alphanumeric_with_symbols})*("))'),
-    (plus_, '+'),
-    (minus_, '-'),
+    (plus_, '\+'),
+    (minus_, '\-'),
     (times_, '\*'),
     (div_, '/'),
     (pow_, '^'),

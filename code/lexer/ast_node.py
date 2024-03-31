@@ -1,6 +1,5 @@
 from lexer.automata import NFA
-from lexer.automaton_operations import *
-from grammar.regex_grammar import G
+from cmp.pycompiler import Grammar as G
 EPSILON = 'ε'
 
 class Node:
@@ -50,17 +49,17 @@ class SymbolNode(AtomicNode):
 class ClosureNode(UnaryNode):
     @staticmethod
     def operate(value):
-        return automata_closure(value)
+        return NFA.automata_closure(value)
     
 class UnionNode(BinaryNode):
     @staticmethod
     def operate(lvalue, rvalue):
-        return automata_union(lvalue, rvalue)
+        return NFA.automata_union(lvalue, rvalue)
     
 class ConcatNode(BinaryNode):
     @staticmethod
     def operate(lvalue, rvalue):
-        return automata_concatenation(lvalue, rvalue)
+        return NFA.automata_concatenation(lvalue, rvalue)
     
 class PositiveClosureNode(UnaryNode):
     @staticmethod
@@ -70,8 +69,18 @@ class PositiveClosureNode(UnaryNode):
 class ZeroOrOneNode(UnaryNode):
     @staticmethod
     def operate(value: NFA):        
-        return NFA.automata_union(value,EpsilonNode(G.EOF).evaluate())
+        return NFA.automata_union(value,EpsilonNode(EPSILON).evaluate())
     
+class SymbolSetNode(Node):
+    def __init__(self, symbols: list[SymbolNode]) -> None:
+        self.symbols = symbols
+
+    def evaluate(self):
+        value = self.symbols[0].evaluate()  
+        for symbol in self.symbols[1:]:            
+            value = value.automata_union(symbol.evaluate())  
+        return value
+
 class RangeNode(Node):
     def __init__(self, first: SymbolNode, last: SymbolNode) -> None:
         self.first = first
@@ -82,4 +91,4 @@ class RangeNode(Node):
         for i in range(ord(self.first.lex)+1,ord(self.last.lex)):
             value.append(SymbolNode(chr(i)))
         value.append(self.last)
-        return value      
+        return value   
