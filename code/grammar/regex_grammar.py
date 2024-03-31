@@ -4,8 +4,8 @@ from cmp.pycompiler import Grammar
 G = Grammar()
 
 E = G.NonTerminal('E', True)
-T, F, A, X, Y, Z = G.NonTerminals('T F A X Y Z')
-pipe, star, opar, cpar, symbol, epsilon = G.Terminals('| * ( ) symbol ε')
+T, F, A, X, Y, Z, S = G.NonTerminals('T F A X Y Z S')
+pipe, star, plus, minus, quest, obrack, cbrack, opar, cpar, symbol, epsilon = G.Terminals('| * + - ? [ ] ( ) symbol ε')
 
 
 E %= E + pipe + T, lambda _,s:UnionNode(s[1],s[3])

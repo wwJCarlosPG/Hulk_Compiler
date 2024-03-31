@@ -20,18 +20,18 @@ def check_errors(errors: list, name: str):
 
 
 G = get_grammar()
-for program in get_cases(1):
+lexer = Lexer(table, G.EOF)
+slr1 = SLR1Parser(G)
+for program in get_cases():
     print(f'Program:\n\n {program}')
 
     print("\n|---------- Lexer results -----------|\n")
-    lexer = Lexer(table, G.EOF)
     tokenss = lexer(program)
     # print(tokenss)
     tokens = [token.token_type for token in tokenss]
     print('✅ OK')
     
     print("\n|---------- Parser results ----------|\n")
-    slr1 = SLR1Parser(G)
     out, oper = slr1(tokens)
     # print(out)
     # print(oper)
