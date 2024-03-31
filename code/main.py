@@ -150,17 +150,18 @@ program11 = '''
         );
 '''
 program12 = '''
-                type Point(x: number){
-                    x_attr: number = x;
-                    f(x) => self.x_attr;
-                }
-                function A(a: number, b: number){
-                    let p = new Point(2) in {
-                        a+b+ p.f(100);
-                    };
-                }
-                print(5);
-            '''
+    type Point(x: number){
+        x_attr = x;
+        f(x) => self.x_attr;
+        g(x) => self.f(76);
+    }
+    function A(a: number, b: number){
+        let p = new Point(2) in {
+            b + p.g("100");
+        };
+    }
+    print(5);
+'''
 
 selector = 0
 match selector:
