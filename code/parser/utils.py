@@ -1,8 +1,8 @@
-from parser.ContainerSet import ContainerSet
-from parser.Item import Item
-from parser.automata import State
-from parser.grammar.grammar import Grammar
-from parser.definitions import NonTerminal, Sentence
+from cmp.utils import ContainerSet
+from cmp.pycompiler import Item
+from cmp.automata import State
+from cmp.pycompiler import Grammar 
+from cmp.pycompiler import NonTerminal, Sentence
 
 def compute_firsts(G: Grammar):
     """
@@ -50,7 +50,7 @@ def compute_firsts(G: Grammar):
             change |= first_X.hard_update(local_first)
                     
     # First(Vt) + First(Vt) + First(RightSides)
-    with open('firsts.txt', 'w') as file:
+    with open('firsts.txt', 'w', encoding="utf-8") as file:
         file.write("Non Terminals:\n")
         for key, value in firsts.items():
             if isinstance(key, NonTerminal):
@@ -64,6 +64,8 @@ def compute_firsts(G: Grammar):
     return firsts
 
 def __compute_local_first(firsts, alpha):
+    if not alpha.IsEpsilon and alpha._symbols[0].Name == '<type_body_prop>':
+        pass
     first_alpha = ContainerSet()
     
     try:
@@ -84,11 +86,11 @@ def __compute_local_first(firsts, alpha):
             if i == len(alpha._symbols):
                 first_alpha.set_epsilon()
                 break
-            i += 1
             Xi = alpha._symbols[i]
             if not firsts[Xi].contains_epsilon:
                 first_alpha.update(firsts[Xi])  
                 break 
+            i += 1
     
     return first_alpha
 
@@ -144,7 +146,7 @@ def compute_follows(G: Grammar, firsts):
                     if i == len_alpha-1 and Y.IsNonTerminal:
                         change |= follows[Y].update(follow_X)
 
-    with open('follows.txt', 'w') as file:
+    with open('follows.txt', 'w', encoding="utf-8") as file:
         for key, value in follows.items():
             file.write(f"{key}: {value}\n")
 
@@ -217,120 +219,10 @@ def build_LR0_automaton(G: Grammar):
                 
     return automaton
 
-
-
-class DisjointSet:
-    def __init__(self, *items):
-        self.nodes = { x: DisjointNode(x) for x in items }
-
-    def merge(self, items):
-        items = (self.nodes[x] for x in items)
-        try:
-            head, *others = items
-            for other in others:
-                head.merge(other)
-        except ValueError:
-            pass
-
-    @property
-    def representatives(self):
-        return { n.representative for n in self.nodes.values() }
-
-    @property
-    def groups(self):
-        return [[n for n in self.nodes.values() if n.representative == r] for r in self.representatives]
-
-    def __len__(self):
-        return len(self.representatives)
-
-    def __getitem__(self, item):
-        return self.nodes[item]
-
-    def __str__(self):
-        return str(self.groups)
-
-    def __repr__(self):
-        return str(self)
-
-class DisjointNode:
-    def __init__(self, value):
-        self.value = value
-        self.parent = self
-
-    @property
-    def representative(self):
-        if self.parent != self:
-            self.parent = self.parent.representative
-        return self.parent
-
-    def merge(self, other):
-        other.representative.parent = self.representative
-
-    def __str__(self):
-        return str(self.value)
-
-    def __repr__(self):
-        return str(self)
-
-
-class Token:
-    """
-    Basic token class.
-
-    Parameters
-    ----------
-    lex : str
-        Token's lexeme.
-    token_type : Enum
-        Token's type.
-    """
-
-    def __init__(self, lex, token_type):
-        self.lex = lex
-        self.token_type = token_type
-
-    def __str__(self):
-        return f'{self.token_type}: {self.lex}'
-
-    def __repr__(self):
-        return str(self)
-
-    @property
-    def is_valid(self):
-        return True
-
-class UnknownToken(Token):
-    def __init__(self, lex):
-        Token.__init__(self, lex, None)
-
-    def transform_to(self, token_type):
-        return Token(self.lex, token_type)
-
-    @property
-    def is_valid(self):
-        return False
-
-def tokenizer(G, fixed_tokens):
-    def decorate(func):
-        def tokenize_text(text):
-            tokens = []
-            for lex in text.split():
-                try:
-                    token = fixed_tokens[lex]
-                except KeyError:
-                    token = UnknownToken(lex)
-                    try:
-                        token = func(token)
-                    except TypeError:
-                        pass
-                tokens.append(token)
-            tokens.append(Token('$', G.EOF))
-            return tokens
-
-        if hasattr(func, '__call__'):
-            return tokenize_text
-        elif isinstance(func, str):
-            return tokenize_text(func)
-        else:
-            raise TypeError('Argument must be "str" or a callable object.')
-    return decorate
+def is_in_vocabulary(tokens):
+    for index in range(len(tokens)):
+        if tokens[index].token_type == None:
+            raise SyntaxError(f'The token {tokens[index].lex} does not exist in this vocabulary')
+        if tokens[index].token_type == 'num' and index<len(tokens)-1 and tokens[index+1].token_type=='num':
+            raise SyntaxError(f'The token {tokens[index].lex}{tokens[index+1].lex} does not exist in this vocabulary')
+    return True

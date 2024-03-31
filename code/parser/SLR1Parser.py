@@ -1,8 +1,8 @@
-from parser.automata import State, lr0_formatter
+from cmp.automata import State, lr0_formatter
 from parser.ShiftReduceParser import ShiftReduceParser
 
     
-from utils import build_LR0_automaton, compute_firsts, compute_follows
+from parser.utils import build_LR0_automaton, compute_firsts, compute_follows
 
 class SLR1Parser(ShiftReduceParser):
     """
@@ -13,7 +13,7 @@ class SLR1Parser(ShiftReduceParser):
     # self.action
     # self.goto
     # self._build_parsing_table
-
+    
     def _build_parsing_table(self):
         """
         Build the parsing table for SLR(1) parser.
@@ -35,9 +35,16 @@ class SLR1Parser(ShiftReduceParser):
         DFA.graph().write("dfa.dot", format='raw', encoding='utf-8')
 
 
-        for i, node in enumerate(DFA):
-            if self.verbose: print(i, '\t', '\n\t '.join(str(x) for x in node.state), '\n')
-            node.idx = i
+        with open('states.txt', 'w') as file:
+            for i, node in enumerate(DFA):
+
+                if self.verbose:
+                    file.write(f"{i}\t")
+                    file.write('\n\t'.join(str(x) for x in node.state))
+                    file.write('\n')
+                    # print(i, '\t', '\n\t '.join(str(x) for x in node.state), '\n')
+
+                node.idx = i
 
         for node in DFA:
             idx = node.idx

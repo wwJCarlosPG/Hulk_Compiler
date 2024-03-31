@@ -1,4 +1,4 @@
-from grammar.Grammar import Grammar
+from cmp.pycompiler import Grammar
 
 # Grammar a^{n}b^{n}
 G = Grammar()

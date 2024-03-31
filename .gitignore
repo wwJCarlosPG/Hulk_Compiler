@@ -1,5 +1,10 @@
 **/__pycache__
-/code/firsts.txt
-/code/follows.txt
-/code/nfa.dot
-/code/dfa.dot
+**/firsts.txt
+**/follows.txt
+**/nfa.dot
+**/dfa.dot
+**/states.txt
+firsts.txt
+follows.txt
+nfa.dot
+dfa.dot
