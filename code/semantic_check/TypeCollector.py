@@ -24,10 +24,11 @@ class TypeCollector(object):
         self.context.types['object'] = ObjectType()
         self.context.types['error'] = ErrorType()
 
-        self.context.types['any'].set_parent(self.context.types['object'])
         self.context.types['number'].set_parent(self.context.types['object'])
         self.context.types['string'].set_parent(self.context.types['object'])
         self.context.types['bool'].set_parent(self.context.types['object'])
+
+        self.context.types['object'].set_parent(self.context.types['any'])
 
         for statement in node.statement_seq:
             self.visit(statement)

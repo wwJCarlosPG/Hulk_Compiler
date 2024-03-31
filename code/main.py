@@ -149,6 +149,19 @@ program11 = '''
             else "No, it's Superman!"
         );
 '''
+program12 = '''
+    type Point(x: number){
+        x_attr = x;
+        f(x) => self.x_attr;
+        g(x) => self.f(76);
+    }
+    function A(a: number, b: number){
+        let p = new Point(2) in {
+            b + p.g("100");
+        };
+    }
+    print(5);
+'''
 
 selector = 0
 match selector:
@@ -176,6 +189,8 @@ match selector:
         program= program10
     case 11:
         program= program11
+    case 12:
+        program= program12
     case _:
         raise Exception("Selector error: selector out of range")
 
@@ -187,7 +202,7 @@ slr1 = SLR1Parser(G)
 lexer = Lexer(table, G.EOF)
 for i in range(1):
     selector = i
-    selector = 11
+    selector = 12
 
     match selector:
         case 0:
@@ -214,6 +229,8 @@ for i in range(1):
             program= program10
         case 11:
             program= program11
+        case 12:
+            program= program12
         case _:
             raise Exception("Selector error: selector out of range")
 
