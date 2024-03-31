@@ -21,7 +21,18 @@ def check_errors(errors: list, name: str):
 G = get_grammar()
 
 program0 = '''
-print("Hello, World, \\"dear\\" Mr. while")
+type Animal(name){
+    name = name;
+    sound() => "Make Sound";
+}
+type Dog(name,color) inherits Animal(name, apsasp){
+    name = name;
+}
+type Cat(name, skin) {
+    name = name;
+    skin = skin;
+};
+if (x == 5)print("4") elif(x<5) {print(6);} else{7;}
 '''
 program1 = '''
 while(x<=4){
@@ -194,7 +205,7 @@ for i in range(11):
     collector.visit(ast)
     context = collector.context
     check_errors(errors, "Type Collector")
-
+    
 
     print("\nBuilding types...") #------------------------------------
     builder = TypeBuilder(context, errors)

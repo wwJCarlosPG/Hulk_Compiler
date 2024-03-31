@@ -2,7 +2,7 @@ import cmp.visitor as visitor
 from parser.ast_nodes import *
 from cmp.semantic import SemanticError, Context, VariableInfo, Type, Scope, Method, Attribute
 from cmp.semantic import *
-
+from semantic_check.utils import pseudo_graph, Temp, get_graph
 WRONG_SIGNATURE = 'Method or Function "%s" already defined in "%s" with a different signature.'
 SELF_IS_READONLY = 'Variable "self" is read-only.'
 LOCAL_ALREADY_DEFINED_PROP = 'Property "%s" is already defined in method "%s".'
@@ -257,14 +257,12 @@ class TypeChecker:
         for item in else_body:
             else_type_name = self.visit(item, else_scope)
         
-        # determinate return type
-        elif_type_names.append(else_type_name)
-        for item in elif_type_names:
-            if then_type_name != item:
-                self.errors.append(SemanticError('Return types for if-else-elif expressions are incompatible'))
-                return 'error'
-            
-        return then_type_name
+        # determinate return type    
+        types_list = [Temp(x, self.context.types[x].parent) for x in list(self.context.types.keys())]
+        graph = get_graph(types_list)
+        x = pseudo_graph(graph)
+        type_lca = x.find_LCA([then_type_name, *elif_type_names, else_type_name])
+        return type_lca
     
 
     @visitor.when(ElifNode)
