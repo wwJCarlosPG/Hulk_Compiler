@@ -487,7 +487,7 @@ class TypeChecker:
                                 self.errors.append(SemanticError(f"Types provided in {method.name} function call do not match with expected types"))
                                 return 'error'
                         
-                        return method.return_type
+                        return node_param_type_name
                     else:
                         self.errors.append(SemanticError(f"{len(method.param_names)} parameters expected for {node.func_id} method"))
                         return 'error'
