@@ -137,6 +137,8 @@ class TypeChecker:
         
         if not exp_type.conforms_to(node_type):
             self.errors.append(SemanticError(INCOMPATIBLE_TYPES % (exp_type_name, node.type)))
+        else: 
+            node.type = exp_type_name
         
 
     @visitor.when(TypeFuncDefNode)
@@ -163,6 +165,8 @@ class TypeChecker:
 
         if not exp_type.conforms_to(node_type):
             self.errors.append(SemanticError(INCOMPATIBLE_TYPES % (exp_type_name, node.return_type)))
+        else:
+            node.return_type = exp_type_name
 
         self.current_method = None
 
@@ -207,8 +211,8 @@ class TypeChecker:
 
         if not exp_type.conforms_to(node_type):
             self.errors.append(SemanticError(INCOMPATIBLE_TYPES % (exp_type_name, node.type)))
-        # else:
-            # node.type = exp_type_name
+        else:
+            node.type = exp_type_name
 
     
     @visitor.when(DestructiveAssignationNode)
@@ -476,7 +480,8 @@ class TypeChecker:
                                 node_param_type_name = self.visit(item, scope)
 
                             node_param_type: Type = self.context.get_type(node_param_type_name)
-                            method_param_type = self.context.get_type(method.param_types[i])
+                            method_param_type = method.param_types[i]
+
 
                             if not node_param_type.conforms_to(method_param_type):
                                 self.errors.append(SemanticError(f"Types provided in {method.name} function call do not match with expected types"))
@@ -501,7 +506,7 @@ class TypeChecker:
     def visit(self, node: SelfCallPropNode, scope:Scope):
         try:
             attr: Attribute = self.current_type.get_attribute(node.id)
-            return attr.type
+            return attr.type.name
         except SemanticError as e:
             self.errors.append(e)
             return 'error'

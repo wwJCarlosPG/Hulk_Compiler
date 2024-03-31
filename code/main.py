@@ -185,9 +185,8 @@ match selector:
 # SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
 slr1 = SLR1Parser(G)
 lexer = Lexer(table, G.EOF)
-for i in range(1):
+for i in range(12):
     selector = i
-    selector = 11
 
     match selector:
         case 0:

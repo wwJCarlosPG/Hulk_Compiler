@@ -154,9 +154,9 @@ class TypePropCallNode(AtomicNode):
         self.prop_id = prop_id
 
 class TypeFuncCallNode(AtomicNode):
-    def __init__(self, type_id, prop_id, params=[]):
+    def __init__(self, type_id, func_id, params=[]):
         self.instance_id = type_id
-        self.prop_id = prop_id
+        self.func_id = func_id
         self.params = params
 
 class SelfCallPropNode(AtomicNode):
