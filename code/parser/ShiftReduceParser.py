@@ -97,9 +97,9 @@ class ShiftReduceParser:
             end = cursor + 10
 
         if cursor == 0:
-            return '', w[0:cursor]
+            position +=1
         if cursor == len(w)-1:
-            return w[start:cursor], ''
+            position -=1
         
         tokens_list = w[start:end]
         sizes = [len(x.Name) for x in tokens_list]

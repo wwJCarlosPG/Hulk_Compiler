@@ -270,6 +270,8 @@ class TypeChecker:
         graph = get_graph(types_list)
         x = pseudo_graph(graph)
         type_lca = x.find_LCA([then_type_name, *elif_type_names, else_type_name])
+        if type_lca == 'error':
+            self.errors.append(SemanticError('The expression body into if-else block throws error'))
         return type_lca
     
 

@@ -32,7 +32,7 @@ type Cat(name, skin) {
     name = name;
     skin = skin;
 };
-if (x == 5)print("4") elif(x<5) {print(6);} else{7;}
+if (x == 0)print("4") elif(x<5) {print(64);} else{4;}
 '''
 program1 = '''
 while(x<=4){
@@ -82,15 +82,8 @@ program5 = '''
     for (x in range(gcd(6,2), 10)) print(x)
 '''
 program6 = '''
-    function gcd(a, b) {
-        while (a > 0){
-            let m = a % b in {
-                b := a;
-                a := m;
-            };
-        };
-    }
-    print(5)
+    function fib(n: number) => if (n == 0 | n == 1) 1 else fib(n-1) + fib(n-2);
+    4
 '''
 program7 = '''
     function A() => let x=5 in {print(5);};
@@ -153,11 +146,11 @@ program12 = '''
     type Point(x: number){
         x_attr = x;
         f(x) => self.x_attr;
-        g(x) => self.f(76);
+        g(x: number) => self.f(76) + x;
     }
-    function A(a: number, b: number){
-        let p = new Point(2) in {
-            b + p.g("100");
+    function A(a: number, b){
+        let p = new Point(a) in {
+            a + p.g(100);
         };
     }
     print(5);
@@ -200,9 +193,8 @@ match selector:
 # SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
 slr1 = SLR1Parser(G)
 lexer = Lexer(table, G.EOF)
-for i in range(1):
+for i in range(13):
     selector = i
-    selector = 12
 
     match selector:
         case 0:

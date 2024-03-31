@@ -4,6 +4,12 @@ class pseudo_graph:
         self.relations = self.invert_dict(adyacacence_list)
         pass
 
+    def there_is_error(self):
+        for item in self.relations:
+            if item == 'error':
+                return True
+        return False
+    
     @staticmethod
     def invert_dict(dictionary):
         inverted_dict = {}
@@ -28,6 +34,8 @@ class pseudo_graph:
         return list(reversed(path_v))
 
     def find_LCA(self, nodes):
+        if self.there_is_error():
+            return 'error'
         paths = self.find_paths(nodes)
         if not paths:
             return None 
