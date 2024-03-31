@@ -16,7 +16,6 @@ sym = [
     '\t',
     r'\\"'
     ]
-print(sym)
 symbols = '|'.join(str(n) for n in sym)
 nonzero_digits = '|'.join(str(n) for n in range(1,10))
 zero_digits = '|'.join(str(n) for n in range(0,10))
