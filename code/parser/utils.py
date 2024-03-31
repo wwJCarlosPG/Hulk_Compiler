@@ -218,3 +218,11 @@ def build_LR0_automaton(G: Grammar):
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 
     return automaton
+
+def is_in_vocabulary(tokens):
+    for index in range(len(tokens)):
+        if tokens[index].token_type == None:
+            raise SyntaxError(f'The token {tokens[index].lex} does not exist in this vocabulary')
+        if tokens[index].token_type == 'num' and index<len(tokens)-1 and tokens[index+1].token_type=='num':
+            raise SyntaxError(f'The token {tokens[index].lex}{tokens[index+1].lex} does not exist in this vocabulary')
+    return True
