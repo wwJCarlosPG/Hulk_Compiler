@@ -60,6 +60,7 @@ table = [
     (elif_,'elif'),
     (let_ , 'let'),
     (in_ , 'in'), 
+    (as_, 'as'),
     (while_,'while'),
     (for_,'for'),
     (range_,'range'),

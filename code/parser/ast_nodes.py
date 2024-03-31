@@ -181,6 +181,11 @@ class VarTyped(AtomicNode):
         self.id = id
         self.type = type
 
+class AsNode(AtomicNode):
+    def __init__(self, token, expr, type):
+        self.token = token
+        self.expr = expr
+        self.type = type
 
 class NumNode(AtomicNode):
     pass

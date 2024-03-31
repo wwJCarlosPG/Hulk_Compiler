@@ -118,10 +118,16 @@ type Firulai(name) inherits Dog(name) {
 print("CYCLEEE")
 '''
 program10 ='''
+    type Animal(name){
+        name = name;
+        sound() => "Make Sound";
+    }
+    type Dog(name) inherits Animal(name){
+        name = name;
+    }
     function A(a: number, b: number): number{
-        let x = 5 in {
-            a+b+x;
-
+        let x: Dog = new Dog("Pep") in {
+            let y = x as Animal in 2;
         };
     }
     print(5);
@@ -159,8 +165,9 @@ match selector:
 # SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
 slr1 = SLR1Parser(G)
 lexer = Lexer(table, G.EOF)
-for i in range(11):
+for i in range(1):
     selector = i
+    selector = 10
 
     match selector:
         case 0:

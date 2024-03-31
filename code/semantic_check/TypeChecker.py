@@ -561,6 +561,28 @@ class TypeChecker:
             self.errors.append(e)
             return 'error'
 
+    
+    @visitor.when(AsNode)
+    def visit(self, node: AsNode, scope: Scope):
+
+        body = iterabilizate(node.expr)
+        param_type_name = None
+        for item in body:
+            param_type_name = self.visit(item, scope)
+
+        param_type: Type = self.context.get_type(param_type_name)
+        try:
+            node_type = self.context.get_type(node.type)
+        except SemanticError as e:
+            self.errors.append(e)
+            return 'error'
+        
+        if not node_type.conforms_to(param_type):
+            self.errors.append(SemanticError("Cannot downcast %s to %s" % (param_type_name, node.type)))
+            return 'error'
+
+        return node.type
+        
 
     @visitor.when(NumNode)
     def visit(self, node, scope):
