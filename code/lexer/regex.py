@@ -34,6 +34,7 @@ class Regex():
 
             if is_escape:
                 token = Token(char, symbol)
+
                 tokens.append(token)
                 is_escape = False
                 continue
@@ -56,6 +57,7 @@ class Regex():
                 token = Token(char, symbol)
             tokens.append(token)                 
             
+
         tokens.append(Token('$', G.EOF))
         return tokens
     

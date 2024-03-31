@@ -1,5 +1,6 @@
 from lexer.automata import NFA
 from cmp.pycompiler import Grammar as G
+
 EPSILON = 'ε'
 
 class Node:
