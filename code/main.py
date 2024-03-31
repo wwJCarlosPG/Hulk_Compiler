@@ -132,6 +132,24 @@ program10 ='''
     }
     print(5);
 '''
+program11 = '''
+    type Bird {
+    }
+
+    type Plane {
+    }
+
+    type Superman {
+    }
+
+    let x = new Superman() in
+        print(
+            if (x is Bird) "It's bird!"
+            elif (x is Plane) "It's a plane!"
+            else "No, it's Superman!"
+        );
+'''
+
 selector = 0
 match selector:
     case 0:
@@ -156,6 +174,8 @@ match selector:
         program= program9
     case 10:
         program= program10
+    case 11:
+        program= program11
     case _:
         raise Exception("Selector error: selector out of range")
 
@@ -167,7 +187,7 @@ slr1 = SLR1Parser(G)
 lexer = Lexer(table, G.EOF)
 for i in range(1):
     selector = i
-    selector = 10
+    selector = 11
 
     match selector:
         case 0:
@@ -192,6 +212,8 @@ for i in range(1):
             program= program9
         case 10:
             program= program10
+        case 11:
+            program= program11
         case _:
             raise Exception("Selector error: selector out of range")
 
@@ -200,6 +222,7 @@ for i in range(1):
 
 
     tokenss = lexer(program)
+    print(tokenss)
     tokens = [token.token_type for token in tokenss]
     out, oper = slr1(tokens)
     # print(out)

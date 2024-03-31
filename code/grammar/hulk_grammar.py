@@ -50,8 +50,8 @@ inline_func_def, exp_list, block_func_def, block_exp, block_items, id_list = G.N
 type_def, type_header_def, type_body, type_body_statements, type_body_item, type_body_prop, type_body_func, type_instance = G.NonTerminals('<type_def> <type_header_def> <type_body> <type_body_statements> <type_body_item> <type_body_prop> <type_body_func> <type_instance>')
 type_, inherits_, new_, dot_ = G.Terminals('type inherits new .')
 
-as_ = G.Terminal('as')
-atom = G.NonTerminal('<atom>')
+as_, is_ = G.Terminals('as is')
+atom, upper_exp = G.NonTerminals('<atom> <upper_exp>')
 
 optional_semicolon = G.NonTerminal('<optional_semicolon>')
 
@@ -217,6 +217,7 @@ factor %= factor + pow_ + const, lambda _, s: BinaryNumOperationNode(s[1], s[3],
 factor %= atom, lambda _, s: s[1]
 
 atom %= atom + as_ + id_, lambda _, s: AsNode(s[2], s[1], s[3])
+atom %= atom + is_ + id_, lambda _, s: IsNode(s[2], s[1], s[3])
 atom %= const, lambda _, s: s[1]
 
 const %= opar_ + num_exp + cpar_, lambda _, s: s[2]

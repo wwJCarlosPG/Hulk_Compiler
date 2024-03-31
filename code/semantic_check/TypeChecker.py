@@ -582,7 +582,25 @@ class TypeChecker:
             return 'error'
 
         return node.type
-        
+
+
+    @visitor.when(IsNode)
+    def visit(self, node: IsNode, scope: Scope):
+
+        body = iterabilizate(node.expr)
+        param_type_name = None
+        for item in body:
+            param_type_name = self.visit(item, scope)
+
+        param_type: Type = self.context.get_type(param_type_name)
+        try:
+            node_type = self.context.get_type(node.type)
+        except SemanticError as e:
+            self.errors.append(e)
+            return 'error'
+
+        return 'bool'
+    
 
     @visitor.when(NumNode)
     def visit(self, node, scope):
