@@ -139,11 +139,13 @@ class TypeChecker:
             self.errors.append(SemanticError(INCOMPATIBLE_TYPES % (exp_type_name, node.type)))
         else: 
             node.type = exp_type_name
+            attr: Attribute = self.current_type.get_attribute(node.id)
+            attr.type = exp_type
         
 
     @visitor.when(TypeFuncDefNode)
     def visit(self, node: TypeFuncDefNode, scope: Scope):
-        self.current_method = self.current_type.get_method(node.id)
+        self.current_method : Method = self.current_type.get_method(node.id)
         child_scope: Scope = scope.create_child()
 
         for p in node.params:
@@ -167,6 +169,8 @@ class TypeChecker:
             self.errors.append(SemanticError(INCOMPATIBLE_TYPES % (exp_type_name, node.return_type)))
         else:
             node.return_type = exp_type_name
+            self.current_method.return_type = exp_type_name
+
 
         self.current_method = None
 
@@ -266,6 +270,8 @@ class TypeChecker:
         graph = get_graph(types_list)
         x = pseudo_graph(graph)
         type_lca = x.find_LCA([then_type_name, *elif_type_names, else_type_name])
+        if type_lca == 'error':
+            self.errors.append(SemanticError('The expression body into if-else block throws error'))
         return type_lca
     
 
@@ -437,26 +443,6 @@ class TypeChecker:
             return 'error'
 
 
-    # @visitor.when(TypePropCallNode)
-    # def visit(self, node: TypePropCallNode, scope: Scope):
-    #     var_name = node.instance_id
-
-    #     # check variables existence in scope
-    #     if scope.is_defined(var_name):
-    #         var: VariableInfo = scope.find_variable(var_name)
-    #         try:
-    #             # check type existence
-    #             var_type: Type = self.context.get_type(var.type)
-    #             try:
-    #                 attribute: Attribute = var_type.get_attribute(node.prop_id)
-    #             except SemanticError as e:
-    #                 self.errors.append(e)
-    #         except SemanticError as e:
-    #             self.errors.append(e)
-    #     else:
-    #         self.errors.append(SemanticError(VARIABLE_NOT_DEFINED %var.name %"scope"))
-
-
     @visitor.when(TypeFuncCallNode)
     def visit(self, node: TypeFuncCallNode, scope: Scope):
         var_name = node.instance_id
@@ -486,8 +472,9 @@ class TypeChecker:
                             if not node_param_type.conforms_to(method_param_type):
                                 self.errors.append(SemanticError(f"Types provided in {method.name} function call do not match with expected types"))
                                 return 'error'
+                            
+                        return method.return_type
                         
-                        return node_param_type_name
                     else:
                         self.errors.append(SemanticError(f"{len(method.param_names)} parameters expected for {node.func_id} method"))
                         return 'error'
@@ -524,7 +511,7 @@ class TypeChecker:
                         param_type_name = self.visit(item, scope)
                     
                     param_type: Type = self.context.get_type(param_type_name)
-                    method_param_type = self.context.get_type(method.param_types[i])
+                    method_param_type = method.param_types[i]
 
                     if not param_type.conforms_to(method_param_type):
                         self.errors.append(SemanticError(f"Types provided in {method.name} function call do not match with expected types"))

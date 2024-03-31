@@ -1,5 +1,5 @@
 from cmp.pycompiler import Grammar
-
+from parser.utils import is_in_vocabulary
 
 class ShiftReduceParser:
     """An abstract shift-reduce parser implementation."""
@@ -36,6 +36,7 @@ class ShiftReduceParser:
         Returns:
             list: The list of productions used for parsing.
         """
+        is_in = is_in_vocabulary(w)
         stack = [ 0 ]
         cursor = 0
         output = []
@@ -96,9 +97,9 @@ class ShiftReduceParser:
             end = cursor + 10
 
         if cursor == 0:
-            return '', w[0:cursor]
+            position +=1
         if cursor == len(w)-1:
-            return w[start:cursor], ''
+            position -=1
         
         tokens_list = w[start:end]
         sizes = [len(x.Name) for x in tokens_list]

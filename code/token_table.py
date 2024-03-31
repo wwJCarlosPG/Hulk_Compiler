@@ -80,7 +80,7 @@ table = [
     (log_,'log'),
     (rand_,'rand'),     
     (id_, f'(({letters})({alphanumeric})*)'),
-    (num_, f'0|(({nonzero_digits})({zero_digits})*)'),
+    (num_, '(0|[1-9][0-9]*)(.[0-9]+)?'),
     (at_,'@'),
     (doubleat_,'@@')
 ]

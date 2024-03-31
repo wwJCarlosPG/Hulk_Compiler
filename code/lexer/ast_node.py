@@ -1,5 +1,6 @@
 from lexer.automata import NFA
 from lexer.automaton_operations import *
+from grammar.regex_grammar import G
 EPSILON = 'ε'
 
 class Node:
@@ -61,8 +62,24 @@ class ConcatNode(BinaryNode):
     def operate(lvalue, rvalue):
         return automata_concatenation(lvalue, rvalue)
     
-# class ComplementNode(UnaryNode):
-#     @staticmethod
-#     def operate(value):
-#         return automata_complement(value)
+class PositiveClosureNode(UnaryNode):
+    @staticmethod
+    def operate(value: NFA):        
+        return NFA.automata_concatenation(value,value.automata_closure())
+    
+class ZeroOrOneNode(UnaryNode):
+    @staticmethod
+    def operate(value: NFA):        
+        return NFA.automata_union(value,EpsilonNode(G.EOF).evaluate())
+    
+class RangeNode(Node):
+    def __init__(self, first: SymbolNode, last: SymbolNode) -> None:
+        self.first = first
+        self.last = last
 
+    def evaluate(self):
+        value = [self.first]
+        for i in range(ord(self.first.lex)+1,ord(self.last.lex)):
+            value.append(SymbolNode(chr(i)))
+        value.append(self.last)
+        return value      
