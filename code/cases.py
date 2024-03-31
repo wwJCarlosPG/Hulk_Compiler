@@ -17,7 +17,7 @@ def get_cases(case_number=None):
     """
     all_cases = [program0, program1, program2, program3, program4,
                 program5, program6, program7, program8, program9,
-                program10, program11, program12]
+                program10, program11, program12, program13, program14]
     
     if case_number is None:
         return all_cases
@@ -28,7 +28,7 @@ def get_cases(case_number=None):
 
 
 program0 = '''
-type Animal(name){
+type Animal([name]){
     name = name;
     sound() => "Make Sound";
 }
@@ -139,7 +139,7 @@ program11 = '''
     type Plane {
     }
 
-    type Superman {
+    type Bird {
     }
 
     let x = new Superman() in
@@ -161,4 +161,20 @@ program12 = '''
         };
     }
     print(5);
+'''
+
+program13 = '''
+    function f(x:bool) => while (x){
+    print(x);
+    }
+    4
+    
+'''
+
+program14 = '''
+    function f(x:bool) => while (x){
+    print(x);
+    };
+    function f(x:int) => print(x);
+    4
 '''
