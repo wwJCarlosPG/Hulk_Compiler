@@ -147,10 +147,10 @@ type_body_item %= type_body_func, lambda _, s: s[1]
 type_body_prop %= id_ + equals_ + exp + semicolon_, lambda _, s: [TypePropDefNode(s[1], s[3], s[2])]
 type_body_prop %= id_ + colon_ + id_ + equals_ + exp + semicolon_, lambda _, s: [TypePropDefNode(s[1], s[5], s[4], s[3])]
 
-type_body_func %= id_ + opar_ + id_list + cpar_ + arrow_ + exp + semicolon_, lambda _, s: [TypeFuncDefNode(s[1], s[3], s[6])]
-type_body_func %= id_ + opar_ + cpar_ + arrow_ + exp + semicolon_, lambda _, s: [TypeFuncDefNode(s[1], [], s[5])]
-type_body_func %= id_ + opar_ + id_list + cpar_ + block_exp + semicolon_ , lambda _, s: [TypeFuncDefNode(s[1], s[3], s[5])]
-type_body_func %= id_ + opar_ + cpar_ + block_exp + semicolon_, lambda _, s: [TypeFuncDefNode(s[1], [], s[4])]
+type_body_func %= id_ + opar_ + id_list + cpar_ + arrow_ + exp + optional_semicolon, lambda _, s: [TypeFuncDefNode(s[1], s[3], s[6])]
+type_body_func %= id_ + opar_ + cpar_ + arrow_ + exp + optional_semicolon, lambda _, s: [TypeFuncDefNode(s[1], [], s[5])]
+type_body_func %= id_ + opar_ + id_list + cpar_ + block_exp + optional_semicolon , lambda _, s: [TypeFuncDefNode(s[1], s[3], s[5])]
+type_body_func %= id_ + opar_ + cpar_ + block_exp + optional_semicolon, lambda _, s: [TypeFuncDefNode(s[1], [], s[4])]
 
 type_instance %= new_ + id_ + opar_ + exp_list + cpar_, lambda _, s: InstanceNode(s[2], s[4], s[1])
 type_instance %= new_ + id_ + opar_ + cpar_, lambda _, s: InstanceNode(s[2], [], s[1])
@@ -220,7 +220,7 @@ atom %= atom + as_ + id_, lambda _, s: AsNode(s[2], s[1], s[3])
 atom %= atom + is_ + id_, lambda _, s: IsNode(s[2], s[1], s[3])
 atom %= const, lambda _, s: s[1]
 
-const %= opar_ + num_exp + cpar_, lambda _, s: s[2]
+const %= opar_ + exp + cpar_, lambda _, s: s[2]
 const %= num_, lambda _, s: NumNode(s[1])
 const %= E_const_, lambda _, s: NumNode(s[1])
 const %= PI_const_, lambda _, s: NumNode(s[1])

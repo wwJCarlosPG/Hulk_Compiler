@@ -22,7 +22,7 @@ def check_errors(errors: list, name: str):
 G = get_grammar()
 lexer = Lexer(table, G.EOF)
 slr1 = SLR1Parser(G)
-for program in get_cases():
+for program in get_cases(13):
     print(f'Program:\n\n {program}')
 
     print("\n|---------- Lexer results -----------|\n")

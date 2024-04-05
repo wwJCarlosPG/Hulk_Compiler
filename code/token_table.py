@@ -28,11 +28,13 @@ alphanumeric_with_symbols= alphanumeric+'|'+symbols
 
 table = [
     (string_, f'((")({alphanumeric_with_symbols})*("))'),
+    (PI_const_, 'PI'),
+    (E_const_ ,'E'),
     (plus_, '\+'),
     (minus_, '\-'),
+    (pow_, '^|(\*\*)'),
     (times_, '\*'),
     (div_, '/'),
-    (pow_, '^'),
     (mod_,'%'),
     (opar_, '\('),
     (cpar_, '\)'),
