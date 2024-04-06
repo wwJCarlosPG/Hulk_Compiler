@@ -28,11 +28,13 @@ alphanumeric_with_symbols= alphanumeric+'|'+symbols
 
 table = [
     (string_, f'((")({alphanumeric_with_symbols})*("))'),
+    (PI_const_, 'PI'),
+    (E_const_ ,'E'),
     (plus_, '\+'),
     (minus_, '\-'),
+    (pow_, '^|(\*\*)'),
     (times_, '\*'),
     (div_, '/'),
-    (pow_, '^'),
     (mod_,'%'),
     (opar_, '\('),
     (cpar_, '\)'),
@@ -80,7 +82,7 @@ table = [
     (log_,'log'),
     (rand_,'rand'),     
     (id_, f'(({letters})({alphanumeric})*)'),
-    (num_, f'0|(({nonzero_digits})({zero_digits})*)'),
+    (num_, f'(0|[1-9][0-9]*)(.[0-9]+)?'),
     (at_,'@'),
     (doubleat_,'@@')
 ]

@@ -71,15 +71,23 @@ class TypeChecker:
         
         
 
+        func: VariableInfo = scope.find_variable(node.id)
+
         try:
             node_type = self.context.get_type(node.return_type)
             exp_type : Type = self.context.get_type(exp_type_name)
         except SemanticError as e:
             self.errors.append(e)
-            return 'error'
+
+            if func.is_func:
+                func.type = 'error'
+
 
         if not exp_type.conforms_to(node_type):
             self.errors.append(SemanticError(INCOMPATIBLE_TYPES % (exp_type_name, node.return_type)))
+        
+        if func.is_func and node.return_type == 'any':
+            func.type = exp_type_name
 
 
     @visitor.when(TypeDefNode)
@@ -219,11 +227,16 @@ class TypeChecker:
             node_type = self.context.get_type(node.type)
         except SemanticError as e:
             self.errors.append(e)
+            return 'error'
 
         if not exp_type.conforms_to(node_type):
             self.errors.append(SemanticError(INCOMPATIBLE_TYPES % (exp_type_name, node.type)))
-        else:
+            return 'error'
+            
+        if node.type == 'any': 
             node.type = exp_type_name
+            return exp_type_name
+
 
     
     @visitor.when(DestructiveAssignationNode)
@@ -237,10 +250,10 @@ class TypeChecker:
         is_defined = scope.is_defined(node.id)
         if not is_defined:
             self.errors.append(SemanticError(VARIABLE_NOT_DEFINED % (node.id, 'scope')))
+            return 'error'
         else:
             scope.redefine_variable(node.id, exp_type_name)
-        
-        return exp_type_name
+            return exp_type_name
         
 
     @visitor.when(IfElseNode)
@@ -553,9 +566,10 @@ class TypeChecker:
                     if not param_type.conforms_to(parent_method_param_type):
                         self.errors.append(SemanticError(f"Types provided in {parent_method.name} function call do not match with expected types"))
                         return 'error'
-                return parent_method.return_type
+                return parent_method.return_type.name
             else:
                 self.errors.append(SemanticError(f"{len(parent_method.param_names)} parameters expected for base method call."))
+                return 'error'
         except SemanticError as e:
             self.errors.append(e)
             return 'error'
