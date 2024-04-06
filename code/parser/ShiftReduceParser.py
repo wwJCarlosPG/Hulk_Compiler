@@ -26,7 +26,7 @@ class ShiftReduceParser:
         """Build the parsing table for the parser."""
         raise NotImplementedError()
 
-    def __call__(self, w):
+    def __call__(self, tokens):
         """
         Parse the input sequence using shift-reduce parsing.
 
@@ -36,7 +36,13 @@ class ShiftReduceParser:
         Returns:
             list: The list of productions used for parsing.
         """
-        is_in = is_in_vocabulary(w)
+        try:
+            w = [token.token_type for token in tokens]
+            _ = is_in_vocabulary(tokens)
+        except AttributeError:
+            w = tokens
+            
+        
         stack = [ 0 ]
         cursor = 0
         output = []
@@ -48,7 +54,7 @@ class ShiftReduceParser:
             if self.verbose: print(stack, '<---||--->', w[cursor:])
                 
             if (state, lookahead) not in self.action:
-                snnipet = self.__getSnnipet__(w, cursor)
+                snnipet = self.__getSnnipet__([t.lex for t in tokens], cursor)
                 raise SyntaxError(' Symbol not expected:\n' + snnipet)
             
             action, tag = self.action[state, lookahead]
@@ -102,12 +108,12 @@ class ShiftReduceParser:
             position -=1
         
         tokens_list = w[start:end]
-        sizes = [len(x.Name) for x in tokens_list]
+        sizes = [len(x) for x in tokens_list]
         
         first_line = ''
         seconde_line = ''
         for i in range(len(tokens_list)):
-            first_line += tokens_list[i].Name + ' '
+            first_line += tokens_list[i] + ' '
             if i == position:
                 seconde_line += ('^' * sizes[i]) + ' '
             else:

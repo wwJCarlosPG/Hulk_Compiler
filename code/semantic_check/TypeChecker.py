@@ -69,16 +69,19 @@ class TypeChecker:
         for exp in body:
            exp_type_name = self.visit(exp, child_scope)
         
-        exp_type : Type = self.context.get_type(exp_type_name)
+        
 
         func: VariableInfo = scope.find_variable(node.id)
 
         try:
             node_type = self.context.get_type(node.return_type)
+            exp_type : Type = self.context.get_type(exp_type_name)
         except SemanticError as e:
             self.errors.append(e)
+
             if func.is_func:
                 func.type = 'error'
+
 
         if not exp_type.conforms_to(node_type):
             self.errors.append(SemanticError(INCOMPATIBLE_TYPES % (exp_type_name, node.return_type)))
@@ -111,9 +114,14 @@ class TypeChecker:
                     node_parent_param_name = None
                     for item in node_parent_param:
                         node_parent_param_name=self.visit(item, child_scope)
-                    node_parent_param_type: Type = self.context.get_type(node_parent_param_name)
-                    parent_param_type: Type = self.context.get_type(parent_type.params_types[i])
                     
+                    try:
+                        node_parent_param_type: Type = self.context.get_type(node_parent_param_name)
+                        parent_param_type: Type = self.context.get_type(parent_type.params_types[i])
+                    except SemanticError as e:
+                        self.errors.append(e)
+                        return 'error'
+
                     if not node_parent_param_type.conforms_to(parent_param_type):
                         self.errors.append(SemanticError(f"Types provided in {node_parent_param_type.name} type do not match with expected types"))
                         return 'error' 

@@ -7,6 +7,7 @@ from semantic_check.TypeCollector import TypeCollector
 from semantic_check.TypeBuilder import TypeBuilder
 from semantic_check.TypeChecker import TypeChecker
 from cases import get_cases
+from parser.utils import LexicalError
 
 def check_errors(errors: list, name: str):
     try:
@@ -15,52 +16,71 @@ def check_errors(errors: list, name: str):
         print(f"\n\n ⚠⚠⚠⚠⚠⚠ Semantic errors in {name} ⚠⚠⚠⚠⚠⚠")
         print('Errors: [')
         for error in errors:
-            print('\t', error)
+            print('\t ❌', error)
         print(']')
+        return True
 
 
 G = get_grammar()
 lexer = Lexer(table, G.EOF)
 slr1 = SLR1Parser(G)
-for program in get_cases(13):
+for program in get_cases():
+    print("\n☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎")
+
     print(f'Program:\n\n {program}')
 
     print("\n|---------- Lexer results -----------|\n")
-    tokenss = lexer(program)
-    # print(tokenss)
-    tokens = [token.token_type for token in tokenss]
+    tokens = lexer(program)
+    # print(tokens)
+    #tokens = [token.token_type for token in tokenss]
     print('✅ OK')
     
     print("\n|---------- Parser results ----------|\n")
-    out, oper = slr1(tokens)
+    try:
+        out, oper = slr1(tokens)
+    except SyntaxError as e:
+        print(f'❌ ERROR: {e}')
+        print('❌ Finished with errors')
+        continue
+    except LexicalError as e:
+        print(f'❌ ERROR: {e}')
+        print('❌ Finished with errors')
+        continue
     # print(out)
     # print(oper)
-    ast = evaluate_reverse_parse(out,oper,tokenss)
+    ast = evaluate_reverse_parse(out,oper,tokens)
     print('✅ OK')
 
 
     print("\n|----- Semantic-Checker results -----|\n")
     errors = []
 
-    print("\nCollecting types...") #----------------------------------
+    print("\n🌱 Collecting types...") #----------------------------------
     collector = TypeCollector(errors)
     collector.visit(ast)
     context = collector.context
-    check_errors(errors, "Type Collector")
+    if check_errors(errors, "Type Collector"):
+        print('❌ Finished with errors')
+        continue
 
 
-    print("\nBuilding types...") #------------------------------------
+    print("\n🏗️ Building types...") #------------------------------------
     builder = TypeBuilder(context, errors)
     builder.visit(ast)
-    check_errors(errors, "Type Builder")
+    if check_errors(errors, "Type Builder"):
+        print('❌ Finished with errors')
+        continue
     print('\nContext:')
     print(context)
 
 
-    print("\nChecking types...") #------------------------------------
+    print("\n👀 Checking types...") #------------------------------------
     checker = TypeChecker(context, errors)
     exp_type = checker.visit(ast)
-    check_errors(errors, "Type Checker")
+    if check_errors(errors, "Type Checker"):
+        print('❌ Finished with errors')
+        continue
+        
 
-    print('✅ OK')
+    print('✅ Finished successfully')
 
