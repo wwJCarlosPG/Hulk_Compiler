@@ -247,13 +247,28 @@ class TypeChecker:
         for item in body:
             exp_type_name = self.visit(item, scope)
 
-        is_defined = scope.is_defined(node.id)
-        if not is_defined:
-            self.errors.append(SemanticError(VARIABLE_NOT_DEFINED % (node.id, 'scope')))
-            return 'error'
+        if node.self_assign:
+            # Cannot use self outside a type definition
+            if self.current_type is None:
+                self.errors.append(SemanticError(f"'self' can only be used inside a type definition"))
+                return 'error'
+            
+            try:
+                prop: Attribute = self.current_type.get_attribute(node.id)
+                prop.type = exp_type_name
+                return exp_type_name
+            except SemanticError as e:
+                self.errors.append(e)
+                return 'error'
+            
         else:
-            scope.redefine_variable(node.id, exp_type_name)
-            return exp_type_name
+            is_defined = scope.is_defined(node.id)
+            if not is_defined:
+                self.errors.append(SemanticError(VARIABLE_NOT_DEFINED % (node.id, 'scope')))
+                return 'error'
+            else:
+                scope.redefine_variable(node.id, exp_type_name)
+                return exp_type_name
         
 
     @visitor.when(IfElseNode)

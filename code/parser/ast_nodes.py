@@ -68,10 +68,11 @@ class AssignationNode(Node):
         self.type = type
 
 class DestructiveAssignationNode(Node):
-    def __init__(self, id, body, token):
+    def __init__(self, id, body, token, self_assign=False):
         self.id = id
         self.body = body
         self.token = token 
+        self.self_assign = self_assign
 
 
 class LetNode(ExpressionNode):

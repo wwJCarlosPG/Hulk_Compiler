@@ -31,6 +31,8 @@ class Method:
             self.param_names, self.param_types))
         return f'[method] {self.name}({params}): {self.return_type.name};'
 
+    def __repr__(self) -> str:
+        return str(self)
     def __eq__(self, other):
         return other.name == self.name and \
             other.return_type == self.return_type and \

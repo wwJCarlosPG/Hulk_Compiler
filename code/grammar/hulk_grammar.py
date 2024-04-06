@@ -111,7 +111,8 @@ var_def_list %= id_ + colon_ + id_ + equals_ + exp, lambda _, s: [AssignationNod
 var_def_list %= id_ + equals_ + exp + coma_ + var_def_list, lambda _, s: [AssignationNode(s[1], s[3], s[2])] + s[5]
 var_def_list %= id_ + colon_ + id_ + equals_ + exp + coma_ + var_def_list, lambda _, s: [AssignationNode(s[1], s[5], s[4], s[3])] + s[7]
 
-destr_assignment %= id_ + destr_assign_ + exp, lambda _, s: AssignationNode(s[1], s[3], s[2])
+destr_assignment %= id_ + destr_assign_ + exp, lambda _, s: DestructiveAssignationNode(s[1], s[3], s[2])
+destr_assignment %= self_ + dot_ + id_ + destr_assign_ + exp, lambda _, s: DestructiveAssignationNode(s[3], s[5], s[4], self_assign=True)
 
 
 

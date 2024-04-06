@@ -206,6 +206,8 @@ program15 = '''
         getX() => self.x;
         getY() => self.y;
 
+        setX(x) => self.x := x;
+        setY(y) => self.y := y;
     }
     type PolarPoint(phi, rho) inherits Point(rho * sin(phi), rho * cos(phi)) {
         rho() => sqrt(self.getX() ^ 2 + self.getY() ^ 2);

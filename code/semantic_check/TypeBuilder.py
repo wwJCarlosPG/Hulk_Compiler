@@ -54,8 +54,8 @@ class TypeBuilder:
                                     if len(method.param_types) == len(parent_method.param_types): # same params length
                                         if(method.return_type.name == parent_method.return_type.name): # same return type
                                             for i in range(len(method.param_types)): # same params types
-                                                current_param_type: Type = self.context.get_type(method.param_types[i])
-                                                parent_param_type = self.context.get_type(parent_method.param_types[i])
+                                                current_param_type: Type = self.context.get_type(method.param_types[i].name)
+                                                parent_param_type = self.context.get_type(parent_method.param_types[i].name)
 
                                                 if not current_param_type.conforms_to(parent_param_type):
                                                     self.errors.append(SemanticError(f'{method} method must have same types for parameters in parent ({parent_type.name}) and inheritor ({current_type.name}) types.'))
