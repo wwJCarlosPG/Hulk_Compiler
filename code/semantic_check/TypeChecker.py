@@ -76,16 +76,16 @@ class TypeChecker:
         try:
             node_type = self.context.get_type(node.return_type)
             exp_type : Type = self.context.get_type(exp_type_name)
+
+            if not exp_type.conforms_to(node_type):
+                self.errors.append(SemanticError(INCOMPATIBLE_TYPES % (exp_type_name, node.return_type)))
+        
         except SemanticError as e:
             self.errors.append(e)
 
             if func.is_func:
                 func.type = 'error'
 
-
-        if not exp_type.conforms_to(node_type):
-            self.errors.append(SemanticError(INCOMPATIBLE_TYPES % (exp_type_name, node.return_type)))
-        
         if func.is_func and node.return_type == 'any':
             func.type = exp_type_name
 

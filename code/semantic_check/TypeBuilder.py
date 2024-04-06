@@ -35,7 +35,10 @@ class TypeBuilder:
                     current_type = self.context.get_type(item.id)
 
                     if item.parent:
-                        parent_type: Type = self.context.get_type(item.parent)
+                        try:
+                            parent_type: Type = self.context.get_type(item.parent)
+                        except SemanticError as e:
+                            pass
 
                         # parent defined
                         if parent_type in self.visited:

@@ -222,9 +222,9 @@ program15 = '''
             5;
         }
     }
-    type Superman inherits Bird{
+    type Superman{
     }
-    type Bird inherits Superman{
+    type Bird{
     }
     type Plane {
     }
