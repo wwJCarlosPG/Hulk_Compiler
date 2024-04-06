@@ -209,17 +209,17 @@ program15 = '''
         setX(x) => self.x := x;
         setY(y) => self.y := y;
     }
-    type PolarPoint(phi, rho) inherits Point(rho * sin(phi), rho * cos(phi)) {
+    type PolarPoint(phi : number, rho : number) inherits Point(rho * sin(phi), rho * cos(phi)) {
         rho() => sqrt(self.getX() ^ 2 + self.getY() ^ 2);
     }
-    type Knight(firstname, lastname) inherits Person(firstname, lastname) {
-        name() => "Sir" @@ base();
+    type Knight(firstname: string, lastname: string) inherits Person(firstname, lastname) {
+        name(): string => "Sir" @@ base();
     }
-    type Person(firstname, lastname) {
+    type Person(firstname: string, lastname: string) {
         firstname = firstname;
         lastname = lastname;
 
-        name() => self.firstname @@ self.lastname;
+        name(): string => self.firstname @@ self.lastname;
         hash() {
             5;
         }
