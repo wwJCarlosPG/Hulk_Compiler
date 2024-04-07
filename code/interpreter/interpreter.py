@@ -63,21 +63,38 @@ class Interpreter:
 
         assignations = iterabilizate(node.assignations)
         for assign in assignations:
-            self.visit(assign)
+            self.visit(assign, child_scope)
 
-        # Not finished yet
-        pass
+        body = iterabilizate(node.body)
+        value = None
+        for exp in body:
+            value = self.visit(exp, child_scope)
+        
+        return value
     
 
     @visitor.when(AssignationNode)
     def visit(self, node: AssignationNode, scope: Scope):
-        pass
+        body = iterabilizate(node.body)
+        value = None
+        for exp in body:
+            value = self.visit(exp, scope)
+        
+        scope.create_variable(node.id, value)
 
 
     
     @visitor.when(DestructiveAssignationNode)
     def visit(self, node: DestructiveAssignationNode, scope: Scope):
-        pass
+        # if is self assign is at the same way
+        var_name = node.id
+
+        body = iterabilizate(node.body)
+        var_value = None
+        for exp in body:
+            var_value = self.visit(exp, scope)
+
+        scope.edit_variable(var_name, var_value)
         
 
     @visitor.when(IfElseNode)
@@ -116,12 +133,32 @@ class Interpreter:
 
     @visitor.when(ForNode)
     def visit(self, node: ForNode, scope: Scope):
-        pass
+        iterable = self.visit(node.iterable, scope)
+        
+        body_scope = Scope(scope)
+
+        return_value = None
+        first = True
+        for i in iterable:
+            if first:
+                body_scope.create_variable(node.id, i)
+                first=False
+            else:
+                body_scope.edit_variable(node.id, i)
+
+            body = iterabilizate(node.body)
+            value = None
+            for exp in body:
+                value = self.visit(exp, body_scope)
+            
+            return_value = value
+
+        return return_value
 
 
     @visitor.when(RangeNode)
     def visit(self, node: RangeNode, scope: Scope):
-        pass      
+        return range(node.start, node.end)
      
     
     @visitor.when(PrintNode)

@@ -27,21 +27,21 @@ class Scope:
         
     # VARIABLE SECTION
     def create_variable(self, name, value):
-        self. functions[name] = value
+        self.variables[name] = value
 
     def edit_variable(self, name, new_value):
         if name in self.variables:
             self.variables[name] = new_value
         else:
-            parent: Scope = self.parent
+            parent = self.parent
             if parent:
                 parent.edit_variable(name, new_value)
 
     def get_variable(self, name):
-        if self.variables[name]:
+        if name in self.variables:
             return self.variables[name]
         else:
-            parent: Scope = self.parent
+            parent = self.parent
             if parent: 
                 return parent.get_variable(name)
 
