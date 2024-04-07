@@ -82,17 +82,36 @@ class Interpreter:
 
     @visitor.when(IfElseNode)
     def visit(self, node: IfElseNode, scope: Scope):
-        pass
+        principal_condition_value = self.visit(scope)
+        if principal_condition_value:
+            then_value = self.visit(node.then_expr, scope)
+            return then_value
+        for i in node.elif_list:
+            elif_value = self.visit(node.elif_list[i], scope)
+            if elif_value is not None:
+                return elif_value
+        else_value = self.visit(node.else_expr)
+        return else_value
+
     
 
     @visitor.when(ElifNode)
     def visit(self, node: ElifNode, scope: Scope):
-        pass
+        elif_condition = self.visit(node.condition)
+        if elif_condition:
+            then_value = self.visit(node.then_expr, scope)
+            return then_value
+        return None
     
 
     @visitor.when(WhileNode)
     def visit(self, node: WhileNode, scope: Scope):
-        pass
+        condition_value = self.visit(node.condition, scope)
+        body_value = None
+        while condition_value:
+            body_value = self.visit(node.body, scope)
+            condition_value = self.visit(node.condition, scope)
+        return body_value
     
 
     @visitor.when(ForNode)
@@ -107,7 +126,9 @@ class Interpreter:
     
     @visitor.when(PrintNode)
     def visit(self, node: PrintNode, scope: Scope):
-        pass
+        value = str(self.visit(node.expr, scope))
+        print(value)
+        return value
     
 
     # instance type
@@ -169,7 +190,7 @@ class Interpreter:
 
     @visitor.when(VarNode)
     def visit(self, node: VarNode, scope: Scope):
-        pass
+        return scope.get_variable(node.token)
 
 
     @visitor.when(RanNode)
@@ -179,7 +200,17 @@ class Interpreter:
 
     @visitor.when(UnaryNumOperationNode)
     def visit(self, node: UnaryNumOperationNode, scope: Scope):
-        pass
+        arg_value = self.visit(node.expr,scope)
+        if node.token == 'sin':
+            return math.sin(arg_value)
+        elif node.token == 'cos':
+            return math.cos(arg_value)
+        elif node.token == 'sqrt':
+            return math.sqrt(arg_value,2)
+        elif node.token == 'exp':
+            return math.exp(arg_value)
+        else: 
+            raise Exception(f'Operation {node.token} is invalid.')
 
     
     @visitor.when(NotNode)
@@ -202,6 +233,8 @@ class Interpreter:
             return left/right
         elif node.token == '**' or node.token == '^':
             return math.pow(left, right)
+        elif node.token == 'log':
+            return math.log(left, right)
         else:
             raise Exception(f'Operator {node.token} is invalid')
             # never raise this exception
