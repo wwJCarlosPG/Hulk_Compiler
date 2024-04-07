@@ -57,26 +57,26 @@ class Interpreter:
     def visit(self, node: TypeDefNode, scope: Scope):
         body_scope = Scope(scope)
 
-        class defined_type():
-            def __init__(self, *args):
+        class defined_type:
+            def __init__(self, interpreter, *args):
                 self.props = {}
                 self.funcs = {}
                 self.args = list(args)
 
-            for i in range(len(node.params)):
-                param_name = node.params[i]
-                param_value = self.args[i]
-                body_scope.create_variable(param_name, param_value)
+                for i in range(len(node.params)):
+                    param_name = node.params[i]
+                    param_value = self.args[i]
+                    body_scope.create_variable(param_name, param_value)
 
-            for item in node.body:
-                value = self.visit(item, body_scope) 
-                
-                if item.token == 'typeFuncNode':
-                    self.funcs[item.id] = value
-                    self.current_funcs[item.id] = value
-                else:
-                    self.props[item.id] = value
-                    self.current_props[item.id] = value
+                for item in node.body:
+                    value = interpreter.visit(item, body_scope) 
+                    
+                    if item.token == 'typeFuncNode':
+                        self.funcs[item.id] = value
+                        interpreter.current_funcs[item.id] = value
+                    else:
+                        self.props[item.id] = value
+                        interpreter.current_props[item.id] = value
 
         self.context.create_type(node.id, defined_type)
         self.current_props = {}
@@ -240,7 +240,7 @@ class Interpreter:
             params.append(value)
 
         params = tuple(params)
-        instance = current_type(*params)
+        instance = current_type(self, *params)
         return instance
 
 

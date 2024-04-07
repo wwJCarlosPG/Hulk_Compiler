@@ -30,8 +30,16 @@ def get_cases(case_number=None):
 
 
 program0 = '''
-function factorial(n: number):number => if (n==1) 1 else factorial(n-1)*n;
-factorial(3)
+type Point(x, y){
+    x = x;
+    y = y;
+
+    getX() => 23
+    getY() => self.y
+}
+let p = new Point(0, 0) in{
+    p.getX();
+}
 '''
 program1 = '''
 function fib(n: number): number => if (n == 0 | n == 1) 1 else fib(n-1) + fib(n-2);

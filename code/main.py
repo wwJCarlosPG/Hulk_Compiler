@@ -25,7 +25,7 @@ def check_errors(errors: list, name: str):
 G = get_grammar()
 lexer = Lexer(table, G.EOF)
 slr1 = SLR1Parser(G)
-for program in get_cases(1):
+for program in get_cases(0):
     print("\n☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎")
 
     print(f'Program:\n\n {program}')
