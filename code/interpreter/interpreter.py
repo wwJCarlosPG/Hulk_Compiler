@@ -4,7 +4,7 @@ from cmp.semantic import Context, context
 from cmp.semantic import *
 import math
 import random
-from interpreter.interpreter_context import Interpreter_Context
+from interpreter.utils import Context
 
 def iterabilizate(body):
     if not isinstance(body, list):
@@ -14,7 +14,7 @@ def iterabilizate(body):
 
 class Interpreter:
     def __init__(self, context):
-        self.context: Interpreter_Context  = context
+        self.context: Context  = context
 
     @visitor.on('node')
     def visit(self, node, context):
@@ -26,84 +26,84 @@ class Interpreter:
 
 
     @visitor.when(FuncDefNode)
-    def visit(self, node: FuncDefNode, context: Interpreter_Context):
+    def visit(self, node: FuncDefNode, context: Context):
         pass
 
 
     @visitor.when(TypeDefNode)
-    def visit(self, node: TypeDefNode, context: Interpreter_Context):
+    def visit(self, node: TypeDefNode, context: Context):
         pass
         
 
     @visitor.when(TypePropDefNode)
-    def visit(self, node: TypePropDefNode, context: Interpreter_Context):
+    def visit(self, node: TypePropDefNode, context: Context):
         pass
         
 
     @visitor.when(TypeFuncDefNode)
-    def visit(self, node: TypeFuncDefNode, context: Interpreter_Context):
+    def visit(self, node: TypeFuncDefNode, context: Context):
         pass
 
     
     @visitor.when(LetNode)
-    def visit(self, node: LetNode, context: Interpreter_Context):
+    def visit(self, node: LetNode, context: Context):
        pass
     
 
     @visitor.when(AssignationNode)
-    def visit(self, node: AssignationNode, context: Interpreter_Context):
+    def visit(self, node: AssignationNode, context: Context):
         pass
 
 
     
     @visitor.when(DestructiveAssignationNode)
-    def visit(self, node: DestructiveAssignationNode, context: Interpreter_Context):
+    def visit(self, node: DestructiveAssignationNode, context: Context):
         pass
         
 
     @visitor.when(IfElseNode)
-    def visit(self, node: IfElseNode, context: Interpreter_Context):
+    def visit(self, node: IfElseNode, context: Context):
         pass
     
 
     @visitor.when(ElifNode)
-    def visit(self, node: ElifNode, context: Interpreter_Context):
+    def visit(self, node: ElifNode, context: Context):
         pass
     
 
     @visitor.when(WhileNode)
-    def visit(self, node: WhileNode, context: Interpreter_Context):
+    def visit(self, node: WhileNode, context: Context):
         pass
     
 
     @visitor.when(ForNode)
-    def visit(self, node: ForNode, context: Interpreter_Context):
+    def visit(self, node: ForNode, context: Context):
         pass
 
 
     @visitor.when(RangeNode)
-    def visit(self, node: RangeNode, context: Interpreter_Context):
+    def visit(self, node: RangeNode, context: Context):
         pass      
      
     
     @visitor.when(PrintNode)
-    def visit(self, node: PrintNode, context: Interpreter_Context):
+    def visit(self, node: PrintNode, context: Context):
         pass
     
 
     # instance type
     @visitor.when(InstanceNode)
-    def visit(self, node: InstanceNode, context: Interpreter_Context):
+    def visit(self, node: InstanceNode, context: Context):
         pass
 
 
     @visitor.when(CallNode)
-    def visit(self, node: CallNode, context: Interpreter_Context):
+    def visit(self, node: CallNode, context: Context):
         pass
 
 
     @visitor.when(TypeFuncCallNode)
-    def visit(self, node: TypeFuncCallNode, context: Interpreter_Context):
+    def visit(self, node: TypeFuncCallNode, context: Context):
         pass
 
 
@@ -123,11 +123,11 @@ class Interpreter:
 
     
     @visitor.when(AsNode)
-    def visit(self, node: AsNode, context: Interpreter_Context):
+    def visit(self, node: AsNode, context: Context):
         pass
 
     @visitor.when(IsNode)
-    def visit(self, node: IsNode, context: Interpreter_Context):
+    def visit(self, node: IsNode, context: Context):
         pass
     
 
@@ -149,7 +149,7 @@ class Interpreter:
         return bool(node.token)
 
     @visitor.when(VarNode)
-    def visit(self, node: VarNode, context: Interpreter_Context):
+    def visit(self, node: VarNode, context: Context):
         pass
 
 
@@ -159,18 +159,18 @@ class Interpreter:
     
 
     @visitor.when(UnaryNumOperationNode)
-    def visit(self, node: UnaryNumOperationNode, context: Interpreter_Context):
+    def visit(self, node: UnaryNumOperationNode, context: Context):
         pass
 
     
     @visitor.when(NotNode)
-    def visit(self, node: NotNode, context: Interpreter_Context):
+    def visit(self, node: NotNode, context: Context):
         value_expr = self.visit(node.expr, context)
         return not value_expr 
     
 
     @visitor.when(BinaryNumOperationNode)
-    def visit(self, node: BinaryNumOperationNode, context: Interpreter_Context):
+    def visit(self, node: BinaryNumOperationNode, context: Context):
         left = self.visit(node.left,context)
         right = self.visit(node.right,context)
         if node.token == '+':
@@ -189,7 +189,7 @@ class Interpreter:
         
     
     @visitor.when(BinaryStringOperationNode)
-    def visit(self, node: BinaryStringOperationNode, context: Interpreter_Context):
+    def visit(self, node: BinaryStringOperationNode, context: Context):
         right_value = self.visit(node.right, context)
         left_value = self.visit(node.left, context)
         if node.token == '@':
