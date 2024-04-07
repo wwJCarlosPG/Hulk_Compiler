@@ -66,9 +66,7 @@ class Interpreter:
             self.visit(assign, child_scope)
 
         body = iterabilizate(node.body)
-        value = None
-        for exp in body:
-            value = self.visit(exp, child_scope)
+        value = self.get_last_value(body, child_scope)
         
         return value
     
@@ -76,9 +74,8 @@ class Interpreter:
     @visitor.when(AssignationNode)
     def visit(self, node: AssignationNode, scope: Scope):
         body = iterabilizate(node.body)
-        value = None
-        for exp in body:
-            value = self.visit(exp, scope)
+
+        value = self.get_last_value(body, scope)
         
         scope.create_variable(node.id, value)
 
@@ -90,9 +87,7 @@ class Interpreter:
         var_name = node.id
 
         body = iterabilizate(node.body)
-        var_value = None
-        for exp in body:
-            var_value = self.visit(exp, scope)
+        var_value = self.get_last_value(body, scope)
 
         scope.edit_variable(var_name, var_value)
         
@@ -100,14 +95,19 @@ class Interpreter:
     @visitor.when(IfElseNode)
     def visit(self, node: IfElseNode, scope: Scope):
         principal_condition_value = self.visit(scope)
+        principal_body = iterabilizate(node.then_expr)
+        
         if principal_condition_value:
-            then_value = self.visit(node.then_expr, scope)
+            then_value = self.get_last_value(principal_body, scope)
             return then_value
+        
         for i in node.elif_list:
             elif_value = self.visit(node.elif_list[i], scope)
             if elif_value is not None:
                 return elif_value
-        else_value = self.visit(node.else_expr)
+            
+        else_body = iterabilizate(node.else_expr)
+        else_value = self.get_last_value(else_body, scope)
         return else_value
 
     
@@ -116,19 +116,24 @@ class Interpreter:
     def visit(self, node: ElifNode, scope: Scope):
         elif_condition = self.visit(node.condition)
         if elif_condition:
-            then_value = self.visit(node.then_expr, scope)
+            then_body = iterabilizate(node.then_expr)
+            then_value = self.get_last_value(then_body, scope)
             return then_value
+        
         return None
     
 
     @visitor.when(WhileNode)
     def visit(self, node: WhileNode, scope: Scope):
         condition_value = self.visit(node.condition, scope)
-        body_value = None
+        body_value = iterabilizate(node.body)
+        body_scope = Scope(scope)
+        
         while condition_value:
-            body_value = self.visit(node.body, scope)
+            final_value = self.get_last_value(body_value, body_scope)
             condition_value = self.visit(node.condition, scope)
-        return body_value
+        
+        return final_value
     
 
     @visitor.when(ForNode)
@@ -147,10 +152,8 @@ class Interpreter:
                 body_scope.edit_variable(node.id, i)
 
             body = iterabilizate(node.body)
-            value = None
-            for exp in body:
-                value = self.visit(exp, body_scope)
-            
+            value = self.get_last_value(body, scope)
+        
             return_value = value
 
         return return_value
@@ -163,7 +166,8 @@ class Interpreter:
     
     @visitor.when(PrintNode)
     def visit(self, node: PrintNode, scope: Scope):
-        value = str(self.visit(node.expr, scope))
+        body = iterabilizate(node.expr, scope)
+        value = str(self.get_last_value(body, scope))
         print(value)
         return value
     
@@ -237,7 +241,8 @@ class Interpreter:
 
     @visitor.when(UnaryNumOperationNode)
     def visit(self, node: UnaryNumOperationNode, scope: Scope):
-        arg_value = self.visit(node.expr,scope)
+        body = iterabilizate(node.expr)
+        arg_value = self.get_last_value(body,scope)
         if node.token == 'sin':
             return math.sin(arg_value)
         elif node.token == 'cos':
@@ -258,8 +263,12 @@ class Interpreter:
 
     @visitor.when(BinaryNumOperationNode)
     def visit(self, node: BinaryNumOperationNode, scope: Scope):
-        left = self.visit(node.left, scope)
-        right = self.visit(node.right, scope)
+        left_body = iterabilizate(node.left)
+        right_body = iterabilizate(node.right)
+        
+        left = self.get_last_value(left_body, scope)
+        right = self.get_last_value(right_body, scope)
+
         if node.token == '+':
             return left + right
         elif node.token == '-':
@@ -279,8 +288,12 @@ class Interpreter:
     
     @visitor.when(BinaryStringOperationNode)
     def visit(self, node: BinaryStringOperationNode, scope: Scope):
-        right_value = self.visit(node.right, scope)
-        left_value = self.visit(node.left, scope)
+        left_body = iterabilizate(node.left)
+        right_body = iterabilizate(node.right)
+        
+        left_value = self.get_last_value(left_body, scope)
+        right_value = self.get_last_value(right_body, scope)
+
         if node.token == '@':
             return str(right_value) + str(left_value)
         elif node.token == '@@':
@@ -298,9 +311,12 @@ class Interpreter:
 
     @visitor.when(EqualDiffNode)
     def visit(self, node, scope: Scope):
-        # no me queda clara la separación esta por qué
-        left_value = self.visit(node.left, scope)
-        right_value = self.visit(node.right, scope)
+        left_body = iterabilizate(node.left)
+        right_body = iterabilizate(node.right)
+        
+        left_value = self.get_last_value(left_body, scope)
+        right_value = self.get_last_value(right_body, scope)
+
         if node.token == '==':
             return left_value == right_value
         elif node.token == '!=':
@@ -311,8 +327,12 @@ class Interpreter:
 
     @visitor.when(ComparisonNode)
     def visit(self, node, scope: Scope):
-        left_value = self.visit(node.left, scope)
-        right_value = self.visit(node.right, scope)
+        left_body = iterabilizate(node.left)
+        right_body = iterabilizate(node.right)
+        
+        left_value = self.get_last_value(left_body, scope)
+        right_value = self.get_last_value(right_body, scope)
+        
         if node.token == '<':
             return left_value<right_value
         elif node.token == '>':
@@ -325,5 +345,11 @@ class Interpreter:
             raise Exception(f'Operator {node.token} is invalid')
             
 
-
-        
+    # ---------------- #
+    # AUXILIAR METHOD  #
+    # ---------------- #  
+    def get_last_value(self, body, scope):
+        return_value = None
+        for exp in body:
+            return_value = self.visit(exp, scope)
+        return return_value
