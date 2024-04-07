@@ -191,7 +191,16 @@ class Interpreter:
 
     @visitor.when(CallNode)
     def visit(self, node: CallNode, scope: Scope):
-        pass
+        params = []
+        for param in node.params:
+            body = iterabilizate(param)
+            value = self.get_last_value(body, scope)
+            params.append(value)
+            
+        params = tuple(params)
+        target_function = scope.get_function(node.id)
+        return_value = target_function(*params)
+        return return_value
 
 
     @visitor.when(TypeFuncCallNode)
