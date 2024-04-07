@@ -184,13 +184,20 @@ class Interpreter:
         elif node.token == '**' or node.token == '^':
             return math.pow(left, right)
         else:
-            raise Exception(f'Operation {node.token} is invalid')
+            raise Exception(f'Operator {node.token} is invalid')
             # never raise this exception
         
     
     @visitor.when(BinaryStringOperationNode)
     def visit(self, node: BinaryStringOperationNode, context: Interpreter_Context):
-        pass
+        right_value = self.visit(node.right, context)
+        left_value = self.visit(node.left, context)
+        if node.token == '@':
+            return str(right_value) + str(left_value)
+        elif node.token == '@@':
+            return str(right_value) + ' ' + str(left_value)
+        else: 
+            raise Exception(f'Operator {node.token} is invalid')
     
 
     @visitor.when(AndOrNode)
@@ -202,11 +209,32 @@ class Interpreter:
 
     @visitor.when(EqualDiffNode)
     def visit(self, node, context):
-        pass
+        # no me queda clara la separación esta por qué
+        left_value = self.visit(node.left, context)
+        right_value = self.visit(node.right, context)
+        if node.token == '==':
+            return left_value == right_value
+        elif node.token == '!=':
+            return left_value != right_value
+        else:
+            raise Exception(f'Operator {node.token} is invalid')
     
 
     @visitor.when(ComparisonNode)
     def visit(self, node, context):
+        left_value = self.visit(node.left, context)
+        right_value = self.visit(node.right, context)
+        if node.token == '<':
+            return left_value<right_value
+        elif node.token == '>':
+            return left_value>right_value
+        elif node.token == '>=':
+            return left_value>=right_value
+        elif node.token == '<=':
+            return left_value<=right_value
+        else:
+            raise Exception(f'Operator {node.token} is invalid')
+        
         pass
             
 
