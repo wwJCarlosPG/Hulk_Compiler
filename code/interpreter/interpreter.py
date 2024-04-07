@@ -42,7 +42,7 @@ class Interpreter:
         def defined_function(*args):
             # Add variables for each param
             for i in range(len(node.params)):
-                param_name = node.params[i]
+                param_name = node.params[i].token
                 param_value = args[i]
                 body_scope.create_variable(param_name, param_value)
 
@@ -139,34 +139,38 @@ class Interpreter:
         var_value = self.get_last_value(body, scope)
 
         scope.edit_variable(var_name, var_value)
+        return var_value
         
 
     @visitor.when(IfElseNode)
     def visit(self, node: IfElseNode, scope: Scope):
-        principal_condition_value = self.visit(scope)
+        principal_condition_value = self.visit(node.condition, scope)
         principal_body = iterabilizate(node.then_expr)
         
         if principal_condition_value:
-            then_value = self.get_last_value(principal_body, scope)
+            then_scope = Scope(scope)
+            then_value = self.get_last_value(principal_body, then_scope)
             return then_value
         
-        for i in node.elif_list:
+        for i in range(len(node.elif_list)):
             elif_value = self.visit(node.elif_list[i], scope)
             if elif_value is not None:
                 return elif_value
             
         else_body = iterabilizate(node.else_expr)
-        else_value = self.get_last_value(else_body, scope)
+        else_scope = Scope(scope)
+        else_value = self.get_last_value(else_body, else_scope)
         return else_value
 
     
 
     @visitor.when(ElifNode)
     def visit(self, node: ElifNode, scope: Scope):
-        elif_condition = self.visit(node.condition)
+        elif_condition = self.visit(node.condition, scope)
         if elif_condition:
+            body_scope = Scope(scope)
             then_body = iterabilizate(node.then_expr)
-            then_value = self.get_last_value(then_body, scope)
+            then_value = self.get_last_value(then_body, body_scope)
             return then_value
         
         return None
@@ -178,6 +182,7 @@ class Interpreter:
         body_value = iterabilizate(node.body)
         body_scope = Scope(scope)
         
+        final_value = None
         while condition_value:
             final_value = self.get_last_value(body_value, body_scope)
             condition_value = self.visit(node.condition, scope)
@@ -201,7 +206,7 @@ class Interpreter:
                 body_scope.edit_variable(node.id, i)
 
             body = iterabilizate(node.body)
-            value = self.get_last_value(body, scope)
+            value = self.get_last_value(body, body_scope)
         
             return_value = value
 
@@ -210,12 +215,14 @@ class Interpreter:
 
     @visitor.when(RangeNode)
     def visit(self, node: RangeNode, scope: Scope):
-        return range(node.start, node.end)
+        start_value = self.visit(node.start, scope)
+        end_value = self.visit(node.end, scope)
+        return range(start_value, end_value)
      
     
     @visitor.when(PrintNode)
     def visit(self, node: PrintNode, scope: Scope):
-        body = iterabilizate(node.expr, scope)
+        body = iterabilizate(node.expr)
         value = str(self.get_last_value(body, scope))
         print(value)
         return value
@@ -292,19 +299,41 @@ class Interpreter:
     @visitor.when(NumNode)
     def visit(self, node, scope: Scope):
         # previous analysis to return correct type (idk if it's relevant)
-        float_repr = float(node.token) 
-        int_repr = int(node.token)
-        return float_repr if float_repr - int_repr != 0 else int_repr
+        if node.token == 'PI':
+            return math.pi
+        elif node.token == 'E':
+            return math.e
+        else:
+            float_repr = float(node.token) 
+            int_repr = int(node.token)
+            return float_repr if float_repr - int_repr != 0 else int_repr
     
     
     @visitor.when(StringNode)
     def visit(self, node, scope: Scope):
-        return str(node.token)
+        result = ''
+        value = node.token
+        try:
+            if value[0] == '"':
+                value = value[1:len(value)-1]
+        except:
+            pass
+        for c in value:
+            if c == '\\':
+                continue
+            else:
+                result += c
+        return result
     
 
     @visitor.when(BoolNode)
     def visit(self, node, scope: Scope):
-        return bool(node.token)
+        if node.token == 'false':
+            return False
+        elif node.token == 'true':
+            return True
+        else:
+            raise Exception(f"Cannot convert {node.token} to boolean type")
 
     @visitor.when(VarNode)
     def visit(self, node: VarNode, scope: Scope):
@@ -334,7 +363,8 @@ class Interpreter:
     
     @visitor.when(NotNode)
     def visit(self, node: NotNode, scope: Scope):
-        value_expr = self.visit(node.expr, scope)
+        body = iterabilizate(node.expr)
+        value_expr = self.get_last_value(body, scope)
         return not value_expr 
     
 
@@ -372,18 +402,21 @@ class Interpreter:
         right_value = self.get_last_value(right_body, scope)
 
         if node.token == '@':
-            return str(right_value) + str(left_value)
+            return str(left_value) + str(right_value)
         elif node.token == '@@':
-            return str(right_value) + ' ' + str(left_value)
+            return str(left_value) + ' ' + str(right_value)
         else: 
             raise Exception(f'Operator {node.token} is invalid')
     
 
     @visitor.when(AndOrNode)
     def visit(self, node, scope: Scope):
-        left_value = self.visit(node.left, scope)
-        right_value = self.visit(node.right, scope)
-        return left_value or right_value if node.token == '&' else left_value and right_value
+        left_body = iterabilizate(node.left)
+        right_body = iterabilizate(node.right)
+
+        left_value = self.get_last_value(left_body, scope)
+        right_value = self.get_last_value(right_body, scope)
+        return left_value and right_value if node.token == '&' else left_value or right_value
     
 
     @visitor.when(EqualDiffNode)

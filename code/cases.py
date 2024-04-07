@@ -30,23 +30,13 @@ def get_cases(case_number=None):
 
 
 program0 = '''
-type Animal([name]){
-    name = name;
-    sound() => "Make Sound";
-}
-type Dog(name,color) inherits Animal(name, apsasp){
-    name = name;
-}
-type Cat(name, skin) {
-    name = name;
-    skin = skin;
-};
-if (x == 0)print("4") elif(x<5) {print(64);} else{4;}
+function fib(n: number): number => if (n == 0 | n == 1) 1 else fib(n-1) + fib(n-2);
+fib(3)
 '''
 program1 = '''
-while(x<=4){
-    print(x); 
-    x:="6";}
+{
+    print(2);
+}
 '''
 program2 = '''
 type Point(x, y) {

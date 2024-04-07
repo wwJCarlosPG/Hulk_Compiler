@@ -34,7 +34,7 @@ class Scope:
             self.variables[name] = new_value
         else:
             parent = self.parent
-            if parent:
+            if parent is not None:
                 parent.edit_variable(name, new_value)
 
     def get_variable(self, name):
@@ -42,7 +42,7 @@ class Scope:
             return self.variables[name]
         else:
             parent = self.parent
-            if parent: 
+            if parent is not None: 
                 return parent.get_variable(name)
 
     # FUNCTION SECTION
@@ -53,6 +53,9 @@ class Scope:
     def get_function(self, name):
         if name in self.functions:
             return self.functions[name]
+        else:
+            if self.parent is not None:
+                return self.parent.get_function(name)
         return 
     
 
