@@ -30,15 +30,16 @@ def get_cases(case_number=None):
 
 
 program0 = '''
-type Point(x, y){
+type Point(x: number, y: number){
     x = x;
     y = y;
 
-    getX() => 23
+    getX() => self.x
     getY() => self.y
+    fib(n: number): number => if (n == 0 | n == 1) 1 else self.fib(n-1) + self.fib(n-2);
 }
-let p = new Point(0, 0) in{
-    p.getX();
+let p = new Point(0, 1) in{
+    p.fib(9);
 }
 '''
 program1 = '''

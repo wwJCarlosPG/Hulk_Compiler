@@ -68,7 +68,7 @@ class Interpreter:
                 self.parent = node.parent
 
                 for i in range(len(node.params)):
-                    param_name = node.params[i]
+                    param_name = node.params[i].token
                     param_value = self.args[i]
                     body_scope.create_variable(param_name, param_value)
 
@@ -296,7 +296,7 @@ class Interpreter:
             params.append(value)
 
         params = tuple(params)
-        return target_function(*params)
+        return target_function(scope, *params)
 
 
     @visitor.when(BaseCallNode)
