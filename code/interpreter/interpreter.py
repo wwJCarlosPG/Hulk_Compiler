@@ -55,17 +55,54 @@ class Interpreter:
 
     @visitor.when(TypeDefNode)
     def visit(self, node: TypeDefNode, scope: Scope):
-        pass
+        body_scope = Scope(scope)
+
+        class defined_type():
+            def __init__(self, *args):
+                self.props = {}
+                self.funcs = {}
+                self.args = list(args)
+
+            for i in range(len(node.params)):
+                param_name = node.params[i]
+                param_value = self.args[i]
+                body_scope.create_variable(param_name, param_value)
+
+            for item in node.body:
+                value = self.visit(item, body_scope) 
+                
+                if item.token == 'typeFuncNode':
+                    self.funcs[item.id] = value
+                else:
+                    self.props[item.id] = value
+
+        self.context.create_type(node.id, defined_type)
         
 
     @visitor.when(TypePropDefNode)
     def visit(self, node: TypePropDefNode, scope: Scope):
-        pass
+        body = iterabilizate(node.exp)
+        prop_value = self.get_last_value(body, scope)
+
+        return prop_value
         
 
     @visitor.when(TypeFuncDefNode)
     def visit(self, node: TypeFuncDefNode, scope: Scope):
-        pass
+        body_scope = Scope(scope)
+
+        def defined_function(*args):
+            for i in range(len(node.params)):
+                param_name = node.params[i]
+                param_value = args[i]
+                body_scope.create_variable(param_name, param_value)
+
+            body = iterabilizate(node.body)
+            return_value = self.get_last_value(body, body_scope)
+            
+            return return_value
+        
+        return defined_function
 
     
     @visitor.when(LetNode)
