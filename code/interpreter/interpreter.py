@@ -37,9 +37,9 @@ class Interpreter:
 
     @visitor.when(FuncDefNode)
     def visit(self, node: FuncDefNode, scope: Scope):
-        body_scope = Scope(scope)
 
-        def defined_function(*args):
+        def defined_function(scope, *args):
+            body_scope = Scope(scope)
             # Add variables for each param
             for i in range(len(node.params)):
                 param_name = node.params[i].token
@@ -254,7 +254,7 @@ class Interpreter:
             
         params = tuple(params)
         target_function = scope.get_function(node.id)
-        return_value = target_function(*params)
+        return_value = target_function(scope, *params)
         return return_value
 
 
