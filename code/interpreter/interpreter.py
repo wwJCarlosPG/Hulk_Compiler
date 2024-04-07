@@ -15,6 +15,8 @@ def iterabilizate(body):
 class Interpreter:
     def __init__(self):
         self.context: Context = Context()
+        self.current_props = {}
+        self.current_funcs = {}
 
     @visitor.on('node')
     def visit(self, node, scope=None):
@@ -30,7 +32,6 @@ class Interpreter:
         
         body = iterabilizate(node.expr)
         expr_value =  self.get_last_value(body, program_scope)
-
         return expr_value
 
 
@@ -47,7 +48,6 @@ class Interpreter:
 
             body = iterabilizate(node.body)
             return_value = self.get_last_value(body, body_scope)
-            
             return return_value
 
         scope.create_function(node.id, defined_function)
@@ -73,17 +73,20 @@ class Interpreter:
                 
                 if item.token == 'typeFuncNode':
                     self.funcs[item.id] = value
+                    self.current_funcs[item.id] = value
                 else:
                     self.props[item.id] = value
+                    self.current_props[item.id] = value
 
         self.context.create_type(node.id, defined_type)
+        self.current_props = {}
+        self.current_funcs = {}
         
 
     @visitor.when(TypePropDefNode)
     def visit(self, node: TypePropDefNode, scope: Scope):
         body = iterabilizate(node.exp)
         prop_value = self.get_last_value(body, scope)
-
         return prop_value
         
 
@@ -99,7 +102,6 @@ class Interpreter:
 
             body = iterabilizate(node.body)
             return_value = self.get_last_value(body, body_scope)
-            
             return return_value
         
         return defined_function
@@ -115,7 +117,6 @@ class Interpreter:
 
         body = iterabilizate(node.body)
         value = self.get_last_value(body, child_scope)
-        
         return value
     
 
@@ -223,7 +224,17 @@ class Interpreter:
     # instance type
     @visitor.when(InstanceNode)
     def visit(self, node: InstanceNode, scope: Scope):
-        pass
+        current_type = self.context.get_type(node.id)
+
+        params = []
+        for param in node.params:
+            body = iterabilizate(param)
+            value = self.get_last_value(body, scope)
+            params.append(value)
+
+        params = tuple(params)
+        instance = current_type(*params)
+        return instance
 
 
     @visitor.when(CallNode)
@@ -247,12 +258,21 @@ class Interpreter:
 
     @visitor.when(SelfCallPropNode)
     def visit(self, node: SelfCallPropNode, scope: Scope):
-        pass
+        return self.current_props[node.id]
         
 
     @visitor.when(SelfCallFuncNode)
     def visit(self, node: SelfCallFuncNode, scope: Scope):
-        pass
+        target_function = self.current_funcs[node.id]
+
+        params = []
+        for param in node.params:
+            body = iterabilizate(param)
+            value = self.get_last_value(body, scope)
+            params.append(value)
+
+        params = tuple(params)
+        return target_function(*params)
 
 
     @visitor.when(BaseCallNode)
