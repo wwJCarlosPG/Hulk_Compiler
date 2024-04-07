@@ -17,6 +17,8 @@ class Interpreter:
         self.context: Context = Context()
         self.current_props = {}
         self.current_funcs = {}
+        self.current_type: TypeDefNode = None
+        self.current_func: TypeFuncDefNode = None
 
     @visitor.on('node')
     def visit(self, node, scope=None):
@@ -55,6 +57,7 @@ class Interpreter:
 
     @visitor.when(TypeDefNode)
     def visit(self, node: TypeDefNode, scope: Scope):
+        self.current_type = node
         body_scope = Scope(scope)
 
         class defined_type:
@@ -62,6 +65,7 @@ class Interpreter:
                 self.props = {}
                 self.funcs = {}
                 self.args = list(args)
+                self.parent = node.parent
 
                 for i in range(len(node.params)):
                     param_name = node.params[i]
@@ -81,6 +85,7 @@ class Interpreter:
         self.context.create_type(node.id, defined_type)
         self.current_props = {}
         self.current_funcs = {}
+        self.current_type = None
         
 
     @visitor.when(TypePropDefNode)
@@ -92,9 +97,10 @@ class Interpreter:
 
     @visitor.when(TypeFuncDefNode)
     def visit(self, node: TypeFuncDefNode, scope: Scope):
-        body_scope = Scope(scope)
+        self.current_func = node
 
-        def defined_function(*args):
+        def defined_function(scope, *args):
+            body_scope = Scope(scope)
             for i in range(len(node.params)):
                 param_name = node.params[i]
                 param_value = args[i]
@@ -104,6 +110,7 @@ class Interpreter:
             return_value = self.get_last_value(body, body_scope)
             return return_value
         
+        self.current_func = None
         return defined_function
 
     
@@ -260,7 +267,17 @@ class Interpreter:
 
     @visitor.when(TypeFuncCallNode)
     def visit(self, node: TypeFuncCallNode, scope: Scope):
-        pass
+        var = scope.get_variable(node.instance_id)
+    
+        params = []
+        for param in node.params:
+            body = iterabilizate(param)
+            value = self.get_last_value(body, scope)
+            params.append(value)
+            
+        params = tuple(params)
+        target_function = var.funcs[node.func_id]
+        return target_function(scope, *params)
 
 
     @visitor.when(SelfCallPropNode)
@@ -284,7 +301,25 @@ class Interpreter:
 
     @visitor.when(BaseCallNode)
     def visit(self, node: BaseCallNode, scope: Scope):
-        pass
+        parent_id = self.current_type.parent
+        parent_type = self.context.get_type(parent_id)
+
+        target_function = None
+        while(target_function is None):
+            try:
+                target_function = parent_type.funcs[self.current_func.id]
+            except:
+                parent_id = parent_type.parent
+                parent_type = self.context.get_type(parent_id)
+        
+        params = []
+        for param in node.params:
+            body = iterabilizate(param)
+            value = self.get_last_value(body, scope)
+            params.append(value)
+
+        params = tuple(params)
+        return target_function(*params)
 
     
     @visitor.when(AsNode)
