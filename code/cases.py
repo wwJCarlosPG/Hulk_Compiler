@@ -30,23 +30,21 @@ def get_cases(case_number=None):
 
 
 program0 = '''
-type Animal([name]){
-    name = name;
-    sound() => "Make Sound";
+type Point(x: number, y: number){
+    x = x;
+    y = y;
+
+    getX() => self.x
+    getY() => self.y
+    fib(n: number): number => if (n == 0 | n == 1) 1 else self.fib(n-1) + self.fib(n-2);
 }
-type Dog(name,color) inherits Animal(name, apsasp){
-    name = name;
+let p = new Point(0, 1) in{
+    p.fib(9);
 }
-type Cat(name, skin) {
-    name = name;
-    skin = skin;
-};
-if (x == 0)print("4") elif(x<5) {print(64);} else{4;}
 '''
 program1 = '''
-while(x<=4){
-    print(x); 
-    x:="6";}
+function fib(n: number): number => if (n == 0 | n == 1) 1 else fib(n-1) + fib(n-2);
+fib(9)
 '''
 program2 = '''
 type Point(x, y) {
