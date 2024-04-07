@@ -39,7 +39,22 @@ class Interpreter:
 
     @visitor.when(FuncDefNode)
     def visit(self, node: FuncDefNode, scope: Scope):
-        pass
+        body_scope = Scope(scope)
+
+        # en args voy a tener lo que se le paso a la funcion
+        # en node.params el nombre de los parametros
+        def defined_function(*args):
+            for i in range(len(node.params)):
+                param_name = node.params[i]
+                param_value = args[i]
+                body_scope.create_variable(param_name, param_value)
+
+            body = iterabilizate(node.body)
+            return_value = self.get_last_value(body, body_scope)
+            
+            return return_value
+
+        scope.create_function(node.id, defined_function)
 
 
     @visitor.when(TypeDefNode)
