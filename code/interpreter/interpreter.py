@@ -28,11 +28,8 @@ class Interpreter:
         for stat in statements:
             self.visit(stat, program_scope)
         
-        # Evaluar la expresion final
         body = iterabilizate(node.expr)
-        expr_value = None
-        for exp in body:
-            expr_value = self.visit(exp, program_scope)
+        expr_value =  self.get_last_value(body, program_scope)
 
         return expr_value
 
@@ -41,9 +38,8 @@ class Interpreter:
     def visit(self, node: FuncDefNode, scope: Scope):
         body_scope = Scope(scope)
 
-        # en args voy a tener lo que se le paso a la funcion
-        # en node.params el nombre de los parametros
         def defined_function(*args):
+            # Add variables for each param
             for i in range(len(node.params)):
                 param_name = node.params[i]
                 param_value = args[i]
