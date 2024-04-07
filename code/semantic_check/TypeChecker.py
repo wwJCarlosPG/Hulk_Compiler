@@ -667,6 +667,9 @@ class TypeChecker:
         for item in body:
             exp_type_name = self.visit(item, scope)
 
+        if exp_type_name == 'error':
+            return 'error'
+        
         if exp_type_name != 'number':
             self.errors.append(SemanticError(INCOMPATIBLE_TYPES % (exp_type_name, "number")))
             return "error"
@@ -681,6 +684,9 @@ class TypeChecker:
         for item in body:
             exp_type_name = self.visit(item, scope)
 
+        if exp_type_name == 'error':
+            return 'error'
+        
         if exp_type_name != 'bool':
             self.errors.append(SemanticError(INCOMPATIBLE_TYPES % (exp_type_name, "bool")))
             return "error"
@@ -700,6 +706,9 @@ class TypeChecker:
         for item in right_body:
             right_type = self.visit(item, scope)
 
+        if left_type == 'error' or right_type == 'error':
+            return 'error'
+        
         if left_type != 'number' or right_type != 'number':
             self.errors.append(INVALID_OPERATION % (node.token, left_type, right_type))
             return 'error'
@@ -717,6 +726,9 @@ class TypeChecker:
         right_type = None
         for item in right_body:
             right_type = self.visit(item, scope)
+        
+        if left_type == 'error' or right_type == 'error':
+            return 'error'
 
         basic_types = ['number', 'string', 'bool']
         if left_type not in basic_types or right_type not in basic_types:
@@ -737,6 +749,9 @@ class TypeChecker:
         right_type = None
         for item in right_body:
             right_type = self.visit(item, scope)
+        
+        if left_type == 'error' or right_type == 'error':
+            return 'error'
 
         if left_type != 'bool' or right_type != 'bool':
             self.errors.append(INVALID_OPERATION % (node.token, left_type, right_type))
@@ -756,6 +771,9 @@ class TypeChecker:
         right_type = None
         for item in right_body:
             right_type = self.visit(item, scope)
+        
+        if left_type == 'error' or right_type == 'error':
+            return 'error'
 
         if left_type != right_type:
             self.errors.append(INVALID_OPERATION % (node.token, left_type, right_type))
@@ -776,6 +794,9 @@ class TypeChecker:
         for item in right_body:
             right_type = self.visit(item, scope)
 
+        if left_type == 'error' or right_type == 'error':
+            return 'error'
+        
         if left_type != 'number' or right_type != 'number':
             self.errors.append(INVALID_OPERATION % (node.token, left_type, right_type))
             return 'error'
