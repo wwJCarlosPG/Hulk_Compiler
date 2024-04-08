@@ -376,7 +376,7 @@ class Interpreter:
             return math.e
         else:
             float_repr = float(node.token) 
-            int_repr = int(node.token)
+            int_repr = int(float_repr)
             return float_repr if float_repr - int_repr != 0 else int_repr
     
     
