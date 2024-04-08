@@ -6,6 +6,7 @@ from cmp.evaluation import evaluate_reverse_parse
 from semantic_check.TypeCollector import TypeCollector
 from semantic_check.TypeBuilder import TypeBuilder
 from semantic_check.TypeChecker import TypeChecker
+from interpreter.interpreter import Interpreter
 from cases import get_cases
 from parser.utils import LexicalError
 
@@ -24,7 +25,7 @@ def check_errors(errors: list, name: str):
 G = get_grammar()
 lexer = Lexer(table, G.EOF)
 slr1 = SLR1Parser(G)
-for program in get_cases():
+for program in get_cases(15):
     print("\n☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎☀︎")
 
     print(f'Program:\n\n {program}')
@@ -81,6 +82,10 @@ for program in get_cases():
         print('❌ Finished with errors')
         continue
         
+    print("\n🧮 Evaluating...")
+    interpreter = Interpreter(context.types)
+    result = interpreter.visit(ast)
+    print(f'##############################\nResult: {result}\n##############################')
 
     print('✅ Finished successfully')
 

@@ -31,6 +31,8 @@ class Method:
             self.param_names, self.param_types))
         return f'[method] {self.name}({params}): {self.return_type.name};'
 
+    def __repr__(self) -> str:
+        return str(self)
     def __eq__(self, other):
         return other.name == self.name and \
             other.return_type == self.return_type and \
@@ -244,6 +246,9 @@ class VariableInfo:
         self.is_func = is_func
         self.params = params
         self.params_types = params_types
+    
+    def __repr__(self) -> str:
+        return self.name
 
 
 class Scope:
@@ -278,7 +283,7 @@ class Scope:
         try:
             return next(x for x in locals if x.name == vname)
         except StopIteration:
-            return self.parent.find_variable(vname, self.index) if self.parent else None
+            return self.parent.find_variable(vname, self.index) if self.parent is not None else None
 
     def is_defined(self, vname):
         return self.find_variable(vname) is not None

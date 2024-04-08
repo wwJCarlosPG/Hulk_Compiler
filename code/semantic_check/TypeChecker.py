@@ -76,16 +76,16 @@ class TypeChecker:
         try:
             node_type = self.context.get_type(node.return_type)
             exp_type : Type = self.context.get_type(exp_type_name)
+
+            if not exp_type.conforms_to(node_type):
+                self.errors.append(SemanticError(INCOMPATIBLE_TYPES % (exp_type_name, node.return_type)))
+        
         except SemanticError as e:
             self.errors.append(e)
 
             if func.is_func:
                 func.type = 'error'
 
-
-        if not exp_type.conforms_to(node_type):
-            self.errors.append(SemanticError(INCOMPATIBLE_TYPES % (exp_type_name, node.return_type)))
-        
         if func.is_func and node.return_type == 'any':
             func.type = exp_type_name
 
@@ -94,7 +94,7 @@ class TypeChecker:
     def visit(self, node: TypeDefNode, scope: Scope):
         self.current_type = self.context.get_type(node.id)
         child_scope = scope.create_child()
-
+        
         for param in node.params:
             # define params variables
             if not child_scope.is_local(param.id):
@@ -107,8 +107,18 @@ class TypeChecker:
 
         if node.parent is not None:
             parent = node.parent
+            
             parent_type: Type = self.context.get_type(parent)
+
+            if node.no_params:
+                type: Type = self.context.get_type(node.id)
+                type.params = type.parent.params
+                type.params_types = type.parent.params_types
+            
+
             if len(parent_type.params) == len(node.parent_params):
+                if len(parent_type.params) != len(node.params):
+                    self.errors.append(SemanticError(f'{node.id} type initalization must have {len(parent_type.params)} parameters equal than its father.'))
                 for i, param in enumerate(node.parent_params):
                     node_parent_param = iterabilizate(param)
                     node_parent_param_name = None
@@ -247,13 +257,28 @@ class TypeChecker:
         for item in body:
             exp_type_name = self.visit(item, scope)
 
-        is_defined = scope.is_defined(node.id)
-        if not is_defined:
-            self.errors.append(SemanticError(VARIABLE_NOT_DEFINED % (node.id, 'scope')))
-            return 'error'
+        if node.self_assign:
+            # Cannot use self outside a type definition
+            if self.current_type is None:
+                self.errors.append(SemanticError(f"'self' can only be used inside a type definition"))
+                return 'error'
+            
+            try:
+                prop: Attribute = self.current_type.get_attribute(node.id)
+                prop.type = exp_type_name
+                return exp_type_name
+            except SemanticError as e:
+                self.errors.append(e)
+                return 'error'
+            
         else:
-            scope.redefine_variable(node.id, exp_type_name)
-            return exp_type_name
+            is_defined = scope.is_defined(node.id)
+            if not is_defined:
+                self.errors.append(SemanticError(VARIABLE_NOT_DEFINED % (node.id, 'scope')))
+                return 'error'
+            else:
+                scope.redefine_variable(node.id, exp_type_name)
+                return exp_type_name
         
 
     @visitor.when(IfElseNode)
@@ -493,7 +518,10 @@ class TypeChecker:
                                 self.errors.append(SemanticError(f"Types provided in {method.name} function call do not match with expected types"))
                                 return 'error'
                             
-                        return method.return_type
+                        if isinstance(method.return_type, str):
+                            return method.return_type
+                        else:
+                            return method.return_type.name
                         
                     else:
                         self.errors.append(SemanticError(f"{len(method.param_names)} parameters expected for {node.func_id} method"))
@@ -513,7 +541,10 @@ class TypeChecker:
     def visit(self, node: SelfCallPropNode, scope:Scope):
         try:
             attr: Attribute = self.current_type.get_attribute(node.id)
-            return attr.type.name
+            if isinstance(attr.type, str):
+                return attr.type
+            else:
+                return attr.type.name
         except SemanticError as e:
             self.errors.append(e)
             return 'error'
@@ -536,8 +567,11 @@ class TypeChecker:
                     if not param_type.conforms_to(method_param_type):
                         self.errors.append(SemanticError(f"Types provided in {method.name} function call do not match with expected types"))
                         return 'error'
-
-                return method.return_type
+                
+                if isinstance(method.return_type, str):
+                    return method.return_type
+                else:
+                    return method.return_type.name
             else:
                 self.errors.append(SemanticError(f"{len(method.param_names)} parameters expected for {node.id} call."))
                 
@@ -566,7 +600,11 @@ class TypeChecker:
                     if not param_type.conforms_to(parent_method_param_type):
                         self.errors.append(SemanticError(f"Types provided in {parent_method.name} function call do not match with expected types"))
                         return 'error'
-                return parent_method.return_type.name
+                    
+                if isinstance(parent_method.return_type, str):
+                    return parent_method.return_type
+                else:
+                    return parent_method.return_type.name
             else:
                 self.errors.append(SemanticError(f"{len(parent_method.param_names)} parameters expected for base method call."))
                 return 'error'
@@ -652,6 +690,9 @@ class TypeChecker:
         for item in body:
             exp_type_name = self.visit(item, scope)
 
+        if exp_type_name == 'error':
+            return 'error'
+        
         if exp_type_name != 'number':
             self.errors.append(SemanticError(INCOMPATIBLE_TYPES % (exp_type_name, "number")))
             return "error"
@@ -666,6 +707,9 @@ class TypeChecker:
         for item in body:
             exp_type_name = self.visit(item, scope)
 
+        if exp_type_name == 'error':
+            return 'error'
+        
         if exp_type_name != 'bool':
             self.errors.append(SemanticError(INCOMPATIBLE_TYPES % (exp_type_name, "bool")))
             return "error"
@@ -685,6 +729,9 @@ class TypeChecker:
         for item in right_body:
             right_type = self.visit(item, scope)
 
+        if left_type == 'error' or right_type == 'error':
+            return 'error'
+        
         if left_type != 'number' or right_type != 'number':
             self.errors.append(INVALID_OPERATION % (node.token, left_type, right_type))
             return 'error'
@@ -702,6 +749,9 @@ class TypeChecker:
         right_type = None
         for item in right_body:
             right_type = self.visit(item, scope)
+        
+        if left_type == 'error' or right_type == 'error':
+            return 'error'
 
         basic_types = ['number', 'string', 'bool']
         if left_type not in basic_types or right_type not in basic_types:
@@ -722,6 +772,9 @@ class TypeChecker:
         right_type = None
         for item in right_body:
             right_type = self.visit(item, scope)
+        
+        if left_type == 'error' or right_type == 'error':
+            return 'error'
 
         if left_type != 'bool' or right_type != 'bool':
             self.errors.append(INVALID_OPERATION % (node.token, left_type, right_type))
@@ -741,6 +794,9 @@ class TypeChecker:
         right_type = None
         for item in right_body:
             right_type = self.visit(item, scope)
+        
+        if left_type == 'error' or right_type == 'error':
+            return 'error'
 
         if left_type != right_type:
             self.errors.append(INVALID_OPERATION % (node.token, left_type, right_type))
@@ -761,6 +817,9 @@ class TypeChecker:
         for item in right_body:
             right_type = self.visit(item, scope)
 
+        if left_type == 'error' or right_type == 'error':
+            return 'error'
+        
         if left_type != 'number' or right_type != 'number':
             self.errors.append(INVALID_OPERATION % (node.token, left_type, right_type))
             return 'error'
