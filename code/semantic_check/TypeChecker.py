@@ -508,7 +508,10 @@ class TypeChecker:
                                 self.errors.append(SemanticError(f"Types provided in {method.name} function call do not match with expected types"))
                                 return 'error'
                             
-                        return method.return_type
+                        if isinstance(method.return_type, str):
+                            return method.return_type
+                        else:
+                            return method.return_type.name
                         
                     else:
                         self.errors.append(SemanticError(f"{len(method.param_names)} parameters expected for {node.func_id} method"))
@@ -528,7 +531,10 @@ class TypeChecker:
     def visit(self, node: SelfCallPropNode, scope:Scope):
         try:
             attr: Attribute = self.current_type.get_attribute(node.id)
-            return attr.type.name
+            if isinstance(attr.type, str):
+                return attr.type
+            else:
+                return attr.type.name
         except SemanticError as e:
             self.errors.append(e)
             return 'error'
@@ -551,8 +557,11 @@ class TypeChecker:
                     if not param_type.conforms_to(method_param_type):
                         self.errors.append(SemanticError(f"Types provided in {method.name} function call do not match with expected types"))
                         return 'error'
-
-                return method.return_type
+                
+                if isinstance(method.return_type, str):
+                    return method.return_type
+                else:
+                    return method.return_type.name
             else:
                 self.errors.append(SemanticError(f"{len(method.param_names)} parameters expected for {node.id} call."))
                 
@@ -581,7 +590,11 @@ class TypeChecker:
                     if not param_type.conforms_to(parent_method_param_type):
                         self.errors.append(SemanticError(f"Types provided in {parent_method.name} function call do not match with expected types"))
                         return 'error'
-                return parent_method.return_type.name
+                    
+                if isinstance(parent_method.return_type, str):
+                    return parent_method.return_type
+                else:
+                    return parent_method.return_type.name
             else:
                 self.errors.append(SemanticError(f"{len(parent_method.param_names)} parameters expected for base method call."))
                 return 'error'

@@ -57,20 +57,32 @@ class Interpreter:
 
     @visitor.when(TypeDefNode)
     def visit(self, node: TypeDefNode, scope: Scope):
-        self.current_type = node
         body_scope = Scope(scope)
 
         class defined_type:
             def __init__(self, interpreter, *args):
+                interpreter.current_type = node
                 self.props = {}
                 self.funcs = {}
                 self.args = list(args)
-                self.parent = node.parent
+                self.parent = None
 
                 for i in range(len(node.params)):
                     param_name = node.params[i].token
                     param_value = self.args[i]
                     body_scope.create_variable(param_name, param_value)
+
+                # Set parent case
+                if node.parent is not None:
+                    parent_type = interpreter.context.get_type(node.parent)
+
+                    parent_params = []
+                    for param in node.parent_params:
+                        value = interpreter.visit(param, body_scope)
+                        parent_params.append(value)
+
+                    parent_params = tuple(parent_params)
+                    self.parent = parent_type(interpreter, *parent_params)
 
                 for item in node.body:
                     value = interpreter.visit(item, body_scope) 
@@ -82,10 +94,12 @@ class Interpreter:
                         self.props[item.id] = value
                         interpreter.current_props[item.id] = value
 
+                interpreter.current_type = None
+                    
+
         self.context.create_type(node.id, defined_type)
         self.current_props = {}
         self.current_funcs = {}
-        self.current_type = None
         
 
     @visitor.when(TypePropDefNode)
@@ -97,20 +111,26 @@ class Interpreter:
 
     @visitor.when(TypeFuncDefNode)
     def visit(self, node: TypeFuncDefNode, scope: Scope):
-        self.current_func = node
+        current_type = self.current_type
 
-        def defined_function(scope, *args):
+        def defined_function(scope, interpreter, current_instance, *args):
+            interpreter.current_func = node
+            interpreter.current_type = current_instance
+            
             body_scope = Scope(scope)
             for i in range(len(node.params)):
-                param_name = node.params[i]
+                param_name = node.params[i].token
                 param_value = args[i]
                 body_scope.create_variable(param_name, param_value)
 
             body = iterabilizate(node.body)
             return_value = self.get_last_value(body, body_scope)
+
+            interpreter.current_type = None
+            interpreter.current_func = None
             return return_value
         
-        self.current_func = None
+        
         return defined_function
 
     
@@ -145,7 +165,11 @@ class Interpreter:
         body = iterabilizate(node.body)
         var_value = self.get_last_value(body, scope)
 
-        scope.edit_variable(var_name, var_value)
+        if node.self_assign:
+            self.current_props[var_name] = var_value
+        else:
+            scope.edit_variable(var_name, var_value)
+
         return var_value
         
 
@@ -222,15 +246,15 @@ class Interpreter:
 
     @visitor.when(RangeNode)
     def visit(self, node: RangeNode, scope: Scope):
-        start_value = self.visit(node.start, scope)
-        end_value = self.visit(node.end, scope)
+        start_value = int(self.visit(node.start, scope))
+        end_value = int(self.visit(node.end, scope))
         return range(start_value, end_value)
      
     
     @visitor.when(PrintNode)
     def visit(self, node: PrintNode, scope: Scope):
         body = iterabilizate(node.expr)
-        value = str(self.get_last_value(body, scope))
+        value = self.get_last_value(body, scope)
         print(value)
         return value
     
@@ -276,8 +300,22 @@ class Interpreter:
             params.append(value)
             
         params = tuple(params)
-        target_function = var.funcs[node.func_id]
-        return target_function(scope, *params)
+        
+        parent_type = var.parent
+
+        # Case defined in same function
+        if node.func_id in var.funcs:
+            target_function = var.funcs[node.func_id]
+            return target_function(scope, self, var, *params)
+
+        # Parent cases
+        target_function = None
+        while(target_function is None):
+            try:
+                target_function = parent_type.funcs[node.func_id]
+            except Exception as e:
+                parent_type = parent_type.parent
+        return target_function(scope, self, parent_type, *params)
 
 
     @visitor.when(SelfCallPropNode)
@@ -296,21 +334,19 @@ class Interpreter:
             params.append(value)
 
         params = tuple(params)
-        return target_function(scope, *params)
+        return target_function(scope, self, None, *params)
 
 
     @visitor.when(BaseCallNode)
     def visit(self, node: BaseCallNode, scope: Scope):
-        parent_id = self.current_type.parent
-        parent_type = self.context.get_type(parent_id)
+        parent_type = self.current_type.parent
 
         target_function = None
         while(target_function is None):
             try:
                 target_function = parent_type.funcs[self.current_func.id]
             except:
-                parent_id = parent_type.parent
-                parent_type = self.context.get_type(parent_id)
+                parent_type = parent_type.parent
         
         params = []
         for param in node.params:
@@ -319,7 +355,7 @@ class Interpreter:
             params.append(value)
 
         params = tuple(params)
-        return target_function(*params)
+        return target_function(scope, self, parent_type, *params)
 
     
     @visitor.when(AsNode)
@@ -389,7 +425,7 @@ class Interpreter:
         elif node.token == 'cos':
             return math.cos(arg_value)
         elif node.token == 'sqrt':
-            return math.sqrt(arg_value,2)
+            return math.sqrt(arg_value)
         elif node.token == 'exp':
             return math.exp(arg_value)
         else: 
@@ -419,6 +455,8 @@ class Interpreter:
             return left*right
         elif node.token == '/':
             return left/right
+        elif node.token == '%':
+            return left % right
         elif node.token == '**' or node.token == '^':
             return math.pow(left, right)
         elif node.token == 'log':

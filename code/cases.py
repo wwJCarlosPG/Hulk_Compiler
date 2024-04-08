@@ -30,16 +30,23 @@ def get_cases(case_number=None):
 
 
 program0 = '''
-type Point(x: number, y: number){
-    x = x;
-    y = y;
+type Person(name: string, age: number) {
+    name = name;
+    age = age;
 
-    getX() => self.x
-    getY() => self.y
-    fib(n: number): number => if (n == 0 | n == 1) 1 else self.fib(n-1) + self.fib(n-2);
+    getName() => self.name @@ self.getAge();
+    getAge(): number => self.age;
+
+    setName(n) => self.name := n;
+    setAge(a) => self.age := a;
+
+    extra() => 42;
 }
-let p = new Point(0, 1) in{
-    p.fib(9);
+type Baby(name: string, age: number) inherits Person(name @ "erson", age){
+    getName() => base();
+}
+let p = new Baby("ludovico", 2) in{
+    p.getName();
 }
 '''
 program1 = '''
@@ -47,12 +54,53 @@ function fib(n: number): number => if (n == 0 | n == 1) 1 else fib(n-1) + fib(n-
 fib(9)
 '''
 program2 = '''
-type Point(x, y) {
-    x_prop = x;
-    y_prop = y;
-};
-function AbsoluteMove(x, steps) => x + steps;
-print("OK")
+function tan(x: number): number => sin(x) / cos(x);
+function cot(x: number): number => 1 / tan(x);
+function operate(x: number, y: number) {
+    print(x + y);
+    print(x - y);
+    print(x * y);
+    print(x / y);
+}
+function fib(n: number): number => if (n == 0 | n == 1) 1 else fib(n-1) + fib(n-2);
+function fact(x: number): number => let f = 1 in for (i in range(1, x+1)) f := f * i;
+function gcd(a: number, b: number) => while (a > 0)
+        let m = a % b in {
+            b := a;
+            a := m;
+        };
+
+type Range(min:number, max:number) {
+    min = min;
+    max = max;
+    current = min - 1;
+
+    next(): bool => (self.current := self.current + 1) < self.max;
+    current(): number => self.current;
+}
+
+type Point(x: number,y: number) {
+    x = x;
+    y = y;
+
+    getX() => self.x;
+    getY() => self.y;
+
+    setX(x) => self.x := x;
+    setY(y) => self.y := y;
+}
+type PolarPoint(phi: number, rho: number) inherits Point(rho * sin(phi), rho * cos(phi)) {
+    rho() => sqrt(self.getX() ^ 2 + self.getY() ^ 2);
+}
+{
+    print(cot(PI/2));
+    operate(10,2);
+    print(fib(10));
+    print(fact(operate(5,1)));
+    print("OK");
+
+}
+
 '''
 program3 = '''
 type Animal(name){
