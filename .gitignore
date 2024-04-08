@@ -8,3 +8,4 @@ firsts.txt
 follows.txt
 nfa.dot
 dfa.dot
+**/__init__.py
