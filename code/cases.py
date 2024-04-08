@@ -187,9 +187,8 @@ program11 = '''
     type Plane {
     }
 
-    type Bird {
+    type Superman {
     }
-    
 
     let x = new Superman() in
         print(

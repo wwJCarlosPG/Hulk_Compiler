@@ -4,6 +4,7 @@ from cmp.semantic import *
 import math
 import random
 from interpreter.utils import Context, Scope
+from cmp.semantic import Type
 
 def iterabilizate(body):
     if not isinstance(body, list):
@@ -13,12 +14,13 @@ def iterabilizate(body):
 
 
 class Interpreter:
-    def __init__(self):
+    def __init__(self, types):
         self.context: Context = Context()
         self.current_props = {}
         self.current_funcs = {}
         self.current_type: TypeDefNode = None
         self.current_func: TypeFuncDefNode = None
+        self.types = types
 
     @visitor.on('node')
     def visit(self, node, scope=None):
@@ -66,6 +68,7 @@ class Interpreter:
                 self.funcs = {}
                 self.args = list(args)
                 self.parent = None
+                self.type_name = node.id
 
                 for i in range(len(node.params)):
                     param_name = node.params[i].token
@@ -364,7 +367,23 @@ class Interpreter:
 
     @visitor.when(IsNode)
     def visit(self, node: IsNode, scope: Scope):
-        pass
+        body = iterabilizate(node.expr)
+        value = self.get_last_value(body, scope)
+
+        value_type: Type = None
+        if isinstance(value, bool):
+            value_type = self.types['bool']
+        elif isinstance(value, str):
+            value_type = self.types['string']
+        elif isinstance(value, int) or isinstance(value, float):
+            value_type = self.types['number']
+        else:
+            value_type_name = value.type_name
+            value_type = self.types[value_type_name]
+
+        cast_type = self.types[node.type]
+
+        return value_type.conforms_to(cast_type)
     
 
     @visitor.when(NumNode)
