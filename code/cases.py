@@ -212,11 +212,20 @@ program12 = '''
 '''
 
 program13 = '''
-    function f(x:bool) => while (x){
-    print(x);
+    type Animal(color: string){
+        color = color;
+        getColor() => self.color;
     }
-    4
-    
+    type Perro(color: string) inherits Animal(color){
+        color = color;
+        ladrar() => "Jau, jau, jau"
+    }
+    let a = new Animal("blue") in {
+        let a = a as Perro in {
+            a.getColor();
+            a.ladrar();
+        };
+    }
 '''
 
 program14 = '''

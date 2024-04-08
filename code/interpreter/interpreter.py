@@ -363,24 +363,21 @@ class Interpreter:
     
     @visitor.when(AsNode)
     def visit(self, node: AsNode, scope: Scope):
-        pass
+        body = iterabilizate(node.expr)
+        value = self.get_last_value(body, scope)
+
+        cast_constructor = self.context.get_type(node.type)
+        args = tuple(value.args)
+        new_value = cast_constructor(self, *args)
+        
+        return new_value
 
     @visitor.when(IsNode)
     def visit(self, node: IsNode, scope: Scope):
         body = iterabilizate(node.expr)
         value = self.get_last_value(body, scope)
 
-        value_type: Type = None
-        if isinstance(value, bool):
-            value_type = self.types['bool']
-        elif isinstance(value, str):
-            value_type = self.types['string']
-        elif isinstance(value, int) or isinstance(value, float):
-            value_type = self.types['number']
-        else:
-            value_type_name = value.type_name
-            value_type = self.types[value_type_name]
-
+        value_type: Type = self.get_type(value)
         cast_type = self.types[node.type]
 
         return value_type.conforms_to(cast_type)
@@ -555,3 +552,17 @@ class Interpreter:
         for exp in body:
             return_value = self.visit(exp, scope)
         return return_value
+    
+    def get_type(self, value):
+        value_type: Type = None
+        if isinstance(value, bool):
+            value_type = self.types['bool']
+        elif isinstance(value, str):
+            value_type = self.types['string']
+        elif isinstance(value, int) or isinstance(value, float):
+            value_type = self.types['number']
+        else:
+            value_type_name = value.type_name
+            value_type = self.types[value_type_name]
+
+        return value_type
