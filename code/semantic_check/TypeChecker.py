@@ -94,7 +94,7 @@ class TypeChecker:
     def visit(self, node: TypeDefNode, scope: Scope):
         self.current_type = self.context.get_type(node.id)
         child_scope = scope.create_child()
-
+        
         for param in node.params:
             # define params variables
             if not child_scope.is_local(param.id):
@@ -107,8 +107,11 @@ class TypeChecker:
 
         if node.parent is not None:
             parent = node.parent
+            
             parent_type: Type = self.context.get_type(parent)
             if len(parent_type.params) == len(node.parent_params):
+                if len(parent_type.params) != len(node.params):
+                    self.errors.append(SemanticError(f'{node.id} type initalization must have {len(parent_type.params)} parameters equal than its father.'))
                 for i, param in enumerate(node.parent_params):
                     node_parent_param = iterabilizate(param)
                     node_parent_param_name = None
