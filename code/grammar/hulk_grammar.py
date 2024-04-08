@@ -130,7 +130,7 @@ exp %= bool_exp, lambda _, s: s[1]
 
 # Types definition
 type_def %= type_header_def, lambda _, s: s[1]
-type_def %= type_ + id_ + inherits_ + id_ + type_body, lambda _, s: TypeDefNode(s[2], s[5], s[1], [], s[4], [])
+type_def %= type_ + id_ + inherits_ + id_ + type_body, lambda _, s: TypeDefNode(s[2], s[5], s[1], [], s[4], [], no_params=True)
 type_def %= type_ + id_ + opar_ + id_list + cpar_ + inherits_ + id_ + opar_ + exp_list + cpar_ + type_body, lambda _, s: TypeDefNode(s[2], s[11], s[1], s[4], s[7], s[9])
 
 type_header_def %= type_ + id_ + opar_ + id_list + cpar_ + type_body, lambda _, s: TypeDefNode(s[2], s[6], s[1], s[4], None, [])

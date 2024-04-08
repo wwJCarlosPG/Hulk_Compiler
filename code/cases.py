@@ -235,172 +235,180 @@ program14 = '''
     function f(x:int) => print(x);
     4
 '''
+
 program15 = '''
-    function tan(x: number): number => sin(x) / cos(x);
-    function cot(x: number) => 1 / tan(x);
-    function operate(x: number, y: number) {
-        print(x + y);
-        print(x - y);
-        print(x * y);
-        print(x / y);
-    }
-    function fib(n: number): number => if (n == 0 | n == 1) 1 else fib(n-1) + fib(n-2);
-    function fact(x: number) => let f = 1 in for (i in range(1, x+1)) f := f * i;
-    function gcd(a: number, b: number): number => while (a > 0)
-            let m = a % b in {
-                b := a;
-                a := m;
-            };
+function tan(x: number): number => sin(x) / cos(x);
+function cot(x: number): number => 1 / tan(x);
+function operate(x: number, y: number) {
+    print(x + y);
+    print(x - y);
+    print(x * y);
+    print(x / y);
+}
+function fib(n: number): number => if (n == 0 | n == 1) 1 else fib(n-1) + fib(n-2);
+function fact(x: number): number => let f = 1 in for (i in range(1, x+1)) f := f * i;
+function gcd(a: number, b: number) => while (a > 0)
+        let m = a % b in {
+            b := a;
+            a := m;
+        };
+type Range(min:number, max:number) {
+    min = min;
+    max = max;
+    current = min - 1;
 
+    next(): bool => (self.current := self.current + 1) < self.max;
+    current(): number => self.current;
+}
+type Point(x: number,y: number) {
+    x = x;
+    y = y;
 
-    type Point(x:number,y:number) {
-        x = x;
-        y = y;
+    getX() => self.x;
+    getY() => self.y;
 
-        getX() => self.x;
-        getY() => self.y;
+    setX(x) => self.x := x;
+    setY(y) => self.y := y;
+}
+type PolarPoint(phi: number, rho: number) inherits Point(rho * sin(phi), rho * cos(phi)) {
+    rho() => sqrt(self.getX() ^ 2 + self.getY() ^ 2);
+}
 
-        setX(x) => self.x := x;
-        setY(y) => self.y := y;
-    }
-    type PolarPoint(phi : number, rho : number) inherits Point(rho * sin(phi), rho * cos(phi)) {
-        rho() => sqrt(self.getX() ^ 2 + self.getY() ^ 2);
-    }
-    type Knight(firstname: string, lastname: string) inherits Person(firstname, lastname) {
-        name(): string => "Sir" @@ base();
-    }
-    type Person(firstname: string, lastname: string) {
-        firstname = firstname;
-        lastname = lastname;
+type Person(firstname: string, lastname: string) {
+    firstname = firstname;
+    lastname = lastname;
 
-        name(): string => self.firstname @@ self.lastname;
-        hash() {
-            5;
-        }
+    name() => self.firstname @@ self.lastname;
+    hash() : number {
+        5;
     }
-    type Superman{
-    }
-    type Bird{
-    }
-    type Plane {
-    }
-    type A {
-        hello() => print("A");
-    }
+}
+type Knight(f: string, l: string) inherits Person(f, l) {
+    name() => "Sir" @@ base();
+}
+type Superman {
+}
+type Bird {
+}
+type Plane {
+}
+type A {
+    hello() => print("A");
+}
 
-    type B inherits A {
-        hello() => print("B");
-    }
+type B inherits A {
+    hello() => print("B");
+}
 
-    type C inherits A {
-        hello() => print("C");
-    }
+type C inherits A {
+    hello() => print("C");
+}
 
+{
+    42;
+    print(42);
+    print((((1 + 2) ^ 3) * 4) / 5);
+    print("Hello World");
+    print("The message is \\"Hello World\\"");
+    print("The meaning of life is " @ 42);
+    print(sin(2 * PI) ^ 2 + cos(3 * PI / log(4, 64)));
     {
-        42;
         print(42);
-        print((((1 + 2) ^ 3) * 4) / 5);
+        print(sin(PI/2));
         print("Hello World");
-        print("The message is \\"Hello World\\"");
-        print("The meaning of life is " @ 42);
-        print(sin(2 * PI) ^ 2 + cos(3 * PI / log(4, 64)));
-        {
-            print(42);
-            print(sin(PI/2));
-            print("Hello World");
-        };
+    };
 
 
-        print(tan(PI) ** 2 + cot(PI) ** 2);
+    print(tan(PI) ** 2 + cot(PI) ** 2);
 
-        let msg = "Hello World" in print(msg);
-        let number = 42, text = "The meaning of life is" in
+    let msg = "Hello World" in print(msg);
+    let number = 42, text = "The meaning of life is" in
+        print(text @ number);
+    let number = 42 in
+        let text = "The meaning of life is" in
             print(text @ number);
-        let number = 42 in
-            let text = "The meaning of life is" in
-                print(text @ number);
-        let number = 42 in (
-            let text = "The meaning of life is" in (
-                    print(text @ number)
-                )
-            );
-        let a = 6, b = a * 7 in print(b);
-        let a = 6 in
-            let b = a * 7 in
-                print(b);
-        let a = 5, b = 10, c = 20 in {
-            print(a+b);
-            print(b*c);
-            print(c/a);
-        };
-        let a = (let b = 6 in b * 7) in print(a);
-        print(let b = 6 in b * 7);
-        let a = 20 in {
-            let a = 42 in print(a);
+    let number = 42 in (
+        let text = "The meaning of life is" in (
+                print(text @ number)
+            )
+        );
+    let a = 6, b = a * 7 in print(b);
+    let a = 6 in
+        let b = a * 7 in
+            print(b);
+    let a = 5, b = 10, c = 20 in {
+        print(a+b);
+        print(b*c);
+        print(c/a);
+    };
+    let a = (let b = 6 in b * 7) in print(a);
+    print(let b = 6 in b * 7);
+    let a = 20 in {
+        let a = 42 in print(a);
+        print(a);
+    };
+    let a = 7, a = 7 * 6 in print(a);
+    let a = 7 in
+        let a = 7 * 6 in
             print(a);
-        };
-        let a = 7, a = 7 * 6 in print(a);
-        let a = 7 in
-            let a = 7 * 6 in
-                print(a);
-        let a = 0 in {
+    let a = 0 in {
+        print(a);
+        a := 1;
+        print(a);
+    };
+    let a = 0 in
+        let b = a := 1 in {
             print(a);
-            a := 1;
-            print(a);
+            print(b);
         };
-        let a = 0 in
-            let b = a := 1 in {
-                print(a);
-                print(b);
-            };
-        let a = 42 in if (a % 2 == 0) print("Even") else print("odd");
-        let a = 42 in print(if (a % 2 == 0) "even" else "odd");
-        let a = 42 in
-            if (a % 2 == 0) {
-                print(a);
-                print("Even");
+    let a = 42 in if (a % 2 == 0) print("Even") else print("odd");
+    let a = 42 in print(if (a % 2 == 0) "even" else "odd");
+    let a = 42 in
+        if (a % 2 == 0) {
+            print(a);
+            print("Even");
+        }
+        else print("Odd");
+    let a = 42, mod = a % 3 in
+        print(
+            if (mod == 0) "Magic"
+            elif (mod % 3 == 1) "Woke"
+            else "Dumb"
+        );
+    let a = 10 in while (a >= 0) {
+        print(a);
+        a := a - 1;
+    };
+    
+    for (x in range(0, 10)) print(x);
+
+    let pt = new Point(0, 0) in
+        print("x: " @ pt.getX() @ "; y: " @ pt.getY());
+    let pt = new Point(3,4) in
+        print("x: " @ pt.getX() @ "; y: " @ pt.getY());
+    let pt = new PolarPoint(3,4) in
+        print("rho: " @ pt.rho());
+
+    let p = new Knight("Phil", "Collins") in
+        print(p.name());
+    let p: Person = new Knight("Phil", "Collins") in print(p.name());
+    let x: number = 42 in print(x);
+
+    let x = new Superman() in
+        print(
+            if (x is Bird) "It's bird!"
+            elif (x is Plane) "It's a plane!"
+            else "No, it's Superman!"
+        );
+    let x = 42 in print(x);
+    let total = ({ print("Total"); 5; }) + 6 in print(total);
+    let x : A = if (rand() < 0.5) new B() else new C() in
+        if (x is B)
+            let y : B = x as B in {
+                y.hello();
             }
-            else print("Odd");
-        let a = 42, mod = a % 3 in
-            print(
-                if (mod == 0) "Magic"
-                elif (mod % 3 == 1) "Woke"
-                else "Dumb"
-            );
-        let a = 10 in while (a >= 0) {
-            print(a);
-            a := a - 1;
+        else {
+            print("x cannot be downcasted to B");
         };
-
-        for (x in range(0, 10)) print(x);
-
-
-        let pt = new Point(0,0) in
-            print("x: " @ pt.getX() @ "; y: " @ pt.getY());
-        let pt = new Point(3,4) in
-            print("x: " @ pt.getX() @ "; y: " @ pt.getY());
-        let pt = new PolarPoint(3,4) in
-            print("rho: " @ pt.rho());
-
-        let p = new Knight("Phil", "Collins") in
-            print(p.name());
-        let p: Person = new Knight("Phil", "Collins") in print(p.name());
-        let x: number = 42 in print(x);
-
-        let x = new Superman() in
-            print(
-                if (x is Bird) "It's bird!"
-                elif (x is Plane) "It's a plane!"
-                else "No, it's Superman!"
-            );
-        let x = 42 in print(x);
-        let total = ({ print("Total"); 5; }) + 6 in print(total);
-        let x : A = if (rand() < 0.5) new B() else new C() in
-            if (x is B)
-                let y : B = x as B in {
-                    y.hello();
-                }
-            else {
-                print("x cannot be downcasted to B");
-            };
-    }'''
+}
+'''

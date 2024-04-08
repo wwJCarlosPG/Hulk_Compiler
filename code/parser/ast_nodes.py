@@ -31,13 +31,14 @@ class FuncDefNode(StatementNode):
 
 
 class TypeDefNode(StatementNode):
-    def __init__(self, id, body, token, params=[], parent_id=None, parent_params=[]):
+    def __init__(self, id, body, token, params=[], parent_id=None, parent_params=[], no_params=False):
         self.id = id
         self.body = body
         self.token = token
         self.params = params
         self.parent = parent_id
         self.parent_params = parent_params
+        self.no_params = no_params
 
 class TypeBodyItemNode(Node):
     pass

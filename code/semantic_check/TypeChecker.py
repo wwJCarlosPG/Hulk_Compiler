@@ -109,6 +109,13 @@ class TypeChecker:
             parent = node.parent
             
             parent_type: Type = self.context.get_type(parent)
+
+            if node.no_params:
+                type: Type = self.context.get_type(node.id)
+                type.params = type.parent.params
+                type.params_types = type.parent.params_types
+            
+
             if len(parent_type.params) == len(node.parent_params):
                 if len(parent_type.params) != len(node.params):
                     self.errors.append(SemanticError(f'{node.id} type initalization must have {len(parent_type.params)} parameters equal than its father.'))

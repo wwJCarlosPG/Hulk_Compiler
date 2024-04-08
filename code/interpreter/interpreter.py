@@ -550,7 +550,10 @@ class Interpreter:
     def get_last_value(self, body, scope):
         return_value = None
         for exp in body:
-            return_value = self.visit(exp, scope)
+            if isinstance(exp, list):
+                return_value = self.get_last_value(exp, scope)
+            else:
+                return_value = self.visit(exp, scope)
         return return_value
     
     def get_type(self, value):
